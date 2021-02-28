@@ -3,7 +3,7 @@
 A simple bot with a crypto module in bitso
 
 <div align="center">
-    <img src="img/bot.png" 
+    <img width="100px" src="img/bot.png" 
     alt="visitors"/>
 </div>
 
