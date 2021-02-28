@@ -50,8 +50,9 @@ DB_HOST='your host'
 # Telegram access
 telegram_users = 'string separated with comma' 
 telegram_token_bot = 'your token'
+
+# Bot settings
 bot_name = 'bot_name'
-bot_version = "bot_version"
 ```
 
 ## Contribution

@@ -21,10 +21,12 @@ import pyttsx3
 # Init Arthur
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
+version = "0.1.1"
 
 # list of available commands
 commands = {
     "start": "Primeros pasos",
+    "get_cid": "Obten tu identificador único de usuario, este es agregado a la lista blanca para una experiencia personalizada",
     "help": "Comandos soportados",
     "stats": "Estadísticas actuales del BTCMXN",
     "mxn_btc": "Convierte pesos mexicanos a BTC",
@@ -62,6 +64,6 @@ def send_voice(text):
 
 
 def say_hello():
-    send_voice("Hola mi nombre es: " + os.environ["bot_name"])
-    send_voice("Versión: " + os.environ["bot_version"])
-    send_voice("A partir de ahora estoy activa en conjunto con Alexa")
+    send_voice("Hola soy " + os.environ["bot_name"])
+    send_voice("y me actualice a la versión: " + version)
+    send_voice("estoy activa en conjunto con Alexa desde la raspberrypi")

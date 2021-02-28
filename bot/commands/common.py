@@ -3,6 +3,15 @@ from bot.data.trade import userStep
 import random
 import unidecode
 
+
+@bot.message_handler(commands=["get_cid"])
+def command_start(m):
+    cid = m.chat.id
+    bot.send_message(
+        cid, "Tú CID es: "+str(cid)
+    )
+
+
 @bot.message_handler(commands=["start"])
 def command_start(m):
     cid = m.chat.id
