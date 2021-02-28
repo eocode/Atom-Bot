@@ -6,6 +6,7 @@ __pycache__/
 # C extensions
 *.so
 *.mp3
+.handler-saves/
 
 # Distribution / packaging
 .Python
