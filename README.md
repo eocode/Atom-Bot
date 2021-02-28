@@ -66,4 +66,7 @@ Contribute to make the best virtual assistant bot for raspberry pi and python
 ## LICENSE 
 
 GNU GENERAL PUBLIC LICENSE
+
 Version 3, 29 June 2007
+
+https://github.com/eocode/Ada-Bot/blob/main/LICENSE
