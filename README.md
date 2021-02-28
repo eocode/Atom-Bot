@@ -44,3 +44,17 @@ telegram_token_bot = 'your token'
 bot_name = 'bot_name'
 bot_version = "bot_version"
 ```
+
+## Contribution
+
+Contribute to make the best virtual assistant bot for raspberry pi and python
+
+* Contact me @eocode in social media
+* See the issue list
+* Clone this project and add your contributions
+* Send me a pull request
+
+## LICENSE 
+
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
