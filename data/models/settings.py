@@ -26,10 +26,14 @@ class Settings(Base):
 
 
 def update_settings(cid, name, current_market, verified):
-    settings = Settings(cid, name)
-    settings.current_market = current_market
-    settings.is_verified = verified
-    session.merge(settings)
+    try:
+        settings = Settings(cid, name)
+        settings.current_market = current_market
+        settings.is_verified = verified
+        session.merge(settings)
+    except Exception as e:
+        print("Error al guardar datos del usuario")
+        print(e)
     session.commit()
 
 

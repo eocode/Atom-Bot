@@ -19,7 +19,7 @@ thisOS = system()
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
 name = os.environ["bot_name"]
-version = "0.1.3"
+version = "0.1.4"
 
 # list of available commands
 commands = {
@@ -63,9 +63,4 @@ def send_voice(text):
 
 
 def say_hello():
-    send_voice(
-        "Soy "
-        + name
-        + ", mi software se ha actualizado a la versión: "
-        + version
-    )
+    send_voice("Actualización a la versión: " + version)

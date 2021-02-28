@@ -1,6 +1,7 @@
 from bot.bot import bot, knownUsers, commands, send_voice, name, version
+from bot.cognitive.greetings import get_greeting
 from data.models.settings import update_settings
-import random
+
 import unidecode
 
 
@@ -83,14 +84,9 @@ def echo_message(message):
     bot.send_chat_action(cid, "typing")
     text = unidecode.unidecode(message.text)
     if text.lower() == "hola":
-        numberList = [
-            "Hola " + message.chat.first_name + ", buen día",
-            "Buen día",
-            "Que tal",
-            "Hola",
-            "Hola, ¿estás list@ para comenzar?",
-        ]
-        bot.reply_to(message, random.choice(numberList))
+        reply = get_greeting(message.chat.first_name)
+        bot.reply_to(message, reply)
+        send_voice(reply)
     else:
         if text.isalpha():
             bot.reply_to(message, "Pruba con algún comando")
