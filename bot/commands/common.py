@@ -32,27 +32,39 @@ def command_start(m):
 @bot.message_handler(commands=["start"])
 def command_start(m):
     cid = m.chat.id
-    verified = str(cid) in knownUsers
-    print(verified)
-    if verified:
-        knownUsers.append(cid)
-        text = (
-            "Genial! "
-            + m.chat.first_name
-            + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
+    try:
+        verified = str(cid) in knownUsers
+        print(verified)
+        if verified:
+            knownUsers.append(cid)
+            text = (
+                "Genial! "
+                + m.chat.first_name
+                + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
+            )
+        else:
+            text = (
+                "Lo sentimos! "
+                + m.chat.first_name
+                + ", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
+            )
+
+        bot.send_message(
+            cid,
+            text,
         )
-    else:
-        text = "Lo sentimos! "
-        +m.chat.first_name
-        +", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
-    bot.send_message(
-        cid,
-        text,
-    )
-    update_settings(
-        cid=cid, name=m.chat.first_name, current_market="btc_mxn", verified=verified
-    )
-    send_voice("Se agregó la cuenta de: " + m.chat.first_name + " al grupo del hogar")
+        update_settings(
+            cid=cid, name=m.chat.first_name, current_market="btc_mxn", verified=verified
+        )
+        send_voice(
+            "Se agregó la cuenta de: " + m.chat.first_name + " al grupo del hogar"
+        )
+    except Exception as e:
+        print(e)
+        bot.send_message(
+            cid,
+            "Ocurrio un error",
+        )
 
 
 @bot.message_handler(commands=["help"])
