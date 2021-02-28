@@ -1,5 +1,5 @@
-from bot.bot import bot, knownUsers, commands
-from bot.data.trade import userStep
+from bot.bot import bot, knownUsers, commands, send_voice, name, version
+from data.models.settings import update_settings
 import random
 import unidecode
 
@@ -7,28 +7,52 @@ import unidecode
 @bot.message_handler(commands=["get_cid"])
 def command_start(m):
     cid = m.chat.id
-    bot.send_message(
-        cid, "Tú CID es: "+str(cid)
+    bot.send_message(cid, "Tú CID es: " + str(cid))
+
+
+@bot.message_handler(commands=["info"])
+def command_start(m):
+    cid = m.chat.id
+    text = (
+        "Hola "
+        + m.chat.first_name
+        + " mi nombre es: "
+        + name
+        + " y actualmente me encuentro en la versión "
+        + version
     )
+    bot.send_message(
+        cid,
+        text,
+    )
+    if str(cid) in knownUsers:
+        send_voice(text)
 
 
 @bot.message_handler(commands=["start"])
 def command_start(m):
     cid = m.chat.id
-    if str(cid) not in knownUsers:
+    verified = str(cid) in knownUsers
+    print(verified)
+    if verified:
         knownUsers.append(cid)
-        userStep[cid] = 0
-        bot.send_message(
-            cid,
-            "Buen día! "
+        text = (
+            "Genial! "
             + m.chat.first_name
-            + ", bienvenido a trader bot pro by eocode, te puedo ayudar con tus operaciones de Trading.",
+            + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
         )
-        command_help(m)
     else:
-        bot.send_message(
-            cid, "Buen día! " + m.chat.first_name + ", ejecuta un comando para comenzar"
-        )
+        text = "Lo sentimos! "
+        +m.chat.first_name
+        +", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
+    bot.send_message(
+        cid,
+        text,
+    )
+    update_settings(
+        cid=cid, name=m.chat.first_name, current_market="btc_mxn", verified=verified
+    )
+    send_voice("Se agregó la cuenta de: " + m.chat.first_name + " al grupo del hogar")
 
 
 @bot.message_handler(commands=["help"])

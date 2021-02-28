@@ -8,12 +8,7 @@ from datetime import datetime
 import time
 
 
-@bot.message_handler(commands=["stats"])
-def command_start(m):
-    cid = m.chat.id
-    bot.send_chat_action(cid, "typing")
-    message = show_btc_stats()
-    bot.send_message(cid, message)
+
 
 
 @bot.message_handler(commands=["operation"])

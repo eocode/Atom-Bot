@@ -15,19 +15,18 @@ from playsound import playsound
 
 thisOS = system()
 
-# Load tts
-import pyttsx3
-
 # Init Arthur
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
-version = "0.1.1"
+name = os.environ["bot_name"]
+version = "0.1.3"
 
 # list of available commands
 commands = {
-    "start": "Primeros pasos",
-    "get_cid": "Obten tu identificador único de usuario, este es agregado a la lista blanca para una experiencia personalizada",
-    "help": "Comandos soportados",
+    "start": "Primeros pasos y bienvenida",
+    "get_cid": "Obten tu identificador único de usuario, este es agregado a la lista blanca para tener una experiencia personalizada, así como desbloquear funcionalidades adicionales en el bot, daselo al administrador del BOT para tener acceso",
+    "info": "Información acerca del bot",
+    "help": "Lista de los comandos soportados",
     "stats": "Estadísticas actuales del BTCMXN",
     "mxn_btc": "Convierte pesos mexicanos a BTC",
     "btc_mxn": "Convierte BTC a pesos mexicanos",
@@ -64,6 +63,9 @@ def send_voice(text):
 
 
 def say_hello():
-    send_voice("Hola soy " + os.environ["bot_name"])
-    send_voice("y me actualice a la versión: " + version)
-    send_voice("estoy activa en conjunto con Alexa desde la raspberrypi")
+    send_voice(
+        "Soy "
+        + name
+        + ", mi software se ha actualizado a la versión: "
+        + version
+    )
