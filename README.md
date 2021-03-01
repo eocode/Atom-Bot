@@ -1,7 +1,7 @@
 <div align="center">
   <div align="center">
       <img width="100px" src="img/bot.png" 
-      alt="visitors"/>
+      alt="ADA"/>
   </div>
   <h3 align="center">ADA (Home Bot)</h3>
   <p>A simple bot with a crypto module in bitso</p>
@@ -29,6 +29,22 @@
 ### Require
 
 * Python 3.7 +
+* RaspberryPi 3 +
+* Alexa
+* Telegram Bot
+* Static IP and Router configuration
+
+## Support
+
+* Windows
+* Linux
+
+## Architecture
+
+<div align="center">
+    <img src="img/architecture.png" 
+    alt="ada architecture"/>
+</div>
 
 ### Install and run
 
