@@ -19,18 +19,19 @@ thisOS = system()
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
 name = os.environ["bot_name"]
-version = "0.1.6"
+version = "0.1.7"
 
 # list of available commands
 # Common commands
 commands = {
     "start": "Primeros pasos y bienvenida",
     "info": "Información acerca del bot",
-    "help": "Lista de los comandos soportados"
+    "help": "Lista de los comandos"
 }
 
 # Personal commands
-commands["get_cid"] = "Obten tu identificador único de usuario, deberás proporcionarlo al administrador"
+commands["get_cid"] = "Obten tu identificador único"
+commands["get_my_settings"] = "Obten las configuraciones que ada tiene sobre tí"
 
 # Crypto commands
 commands["crypto_set_market"] = "Asigna el mercado actual con el cuál trabajar"

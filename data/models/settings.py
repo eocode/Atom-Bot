@@ -18,11 +18,11 @@ class Settings(Base):
         self.id = cid
         self.name = name
 
-    def __repr__(self):
-        return str(self.current_market)
-
     def __str__(self):
-        return str(self.current_market)
+        text = self.name + " tus configuraciones son: \n"
+        text = text + "Mercado: " + self.current_market + "\n"
+        text = text + "Cuenta verificada: " + ("Sí" if self.is_verified else "No")
+        return text
 
 
 def update_settings(cid, name, current_market, verified):
@@ -38,19 +38,17 @@ def update_settings(cid, name, current_market, verified):
         print(e)
 
 
-def get_market(cid):
+def get_settings(cid):
     try:
         return session.query(Settings).filter(Settings.id == cid).one()
     except Exception as e:
-            session.rollback()
-            print("Error al consultar datos")
-            print(e)
+        session.rollback()
+        print("Error al consultar datos")
+        print(e)
     return null()
-    
-    
 
 
 def update_market(cid, current_market):
-    settings = get_market(cid)
+    settings = get_settings(cid)
     settings.current_market = current_market
     session.commit()

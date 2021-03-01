@@ -1,6 +1,6 @@
 from bot.bot import bot, knownUsers
 from trader_pro.btc import show_btc_stats
-from data.models.settings import get_market
+from data.models.settings import get_settings
 
 
 @bot.message_handler(commands=["crypto_get_stats"])
@@ -9,8 +9,7 @@ def command_start(m):
         cid = m.chat.id
         if str(cid) in knownUsers:
             bot.send_chat_action(cid, "typing")
-            market = get_market(cid).current_market
-            print(market)
+            market = get_settings(cid).current_market
             message = show_btc_stats(market)
             bot.send_message(cid, message)
         else:
