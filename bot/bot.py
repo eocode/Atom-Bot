@@ -19,7 +19,7 @@ thisOS = system()
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
 name = os.environ["bot_name"]
-version = "0.1.4"
+version = "0.1.5"
 
 # list of available commands
 commands = {
