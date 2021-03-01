@@ -42,7 +42,7 @@
 ## Architecture
 
 <div align="center">
-    <img src="img/architecture.png" 
+    <img src="img/architecture2.png" 
     alt="ada architecture"/>
 </div>
 
