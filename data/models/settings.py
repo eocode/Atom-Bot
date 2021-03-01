@@ -39,7 +39,15 @@ def update_settings(cid, name, current_market, verified):
 
 
 def get_market(cid):
-    return session.query(Settings).filter(Settings.id == cid).one()
+    try:
+        return session.query(Settings).filter(Settings.id == cid).one()
+    except Exception as e:
+            session.rollback()
+            print("Error al consultar datos")
+            print(e)
+    return null()
+    
+    
 
 
 def update_market(cid, current_market):
