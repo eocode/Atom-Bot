@@ -31,16 +31,18 @@ def update_settings(cid, name, current_market, verified):
         settings.current_market = current_market
         settings.is_verified = verified
         session.merge(settings)
+        session.commit()
     except Exception as e:
+        session.rollback()
         print("Error al guardar datos del usuario")
         print(e)
-    session.commit()
 
 
 def get_market(cid):
-    return (
-        session.query(Settings)
-        .filter(Settings.id < cid)
-        .order_by(Settings.id.desc())
-        .first()
-    )
+    return session.query(Settings).filter(Settings.id == cid).one()
+
+
+def update_market(cid, current_market):
+    settings = get_market(cid)
+    settings.current_market = current_market
+    session.commit()

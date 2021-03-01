@@ -1,4 +1,4 @@
-from utils.bitso_fn import current_btc, print_values, trade_btc
+from utils.bitso_fn import current_stats, print_values, trade_btc
 from bot.bot import bot
 from bot.data.trade import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
@@ -43,13 +43,13 @@ def mxn_btc_ask_mxn_amount(message):
         bot.reply_to(message, "Algo salio mal al convertir")
 
 
-def mxn_btc_process(message):
+def mxn_btc_process(message, market):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")
         response = message.text
         if response == "Valor actual":
-            current_price = Decimal(current_btc()["ask"])
+            current_price = Decimal(current_stats(market)["ask"])
             convertion = convertion_dict[cid]
             convertion.price = current_price
             value = print_values(trade_btc(convertion.amount, convertion.price))

@@ -32,8 +32,8 @@ def current_btc_trades():
     return json_response["payload"]
 
 
-def current_btc():
-    response = requests.get("https://api.bitso.com/v3/ticker/?book=btc_mxn")
+def current_stats(market):
+    response = requests.get("https://api.bitso.com/v3/ticker/?book=" + market)
     json_response = response.json()
     return json_response["payload"]
 

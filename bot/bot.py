@@ -22,20 +22,26 @@ name = os.environ["bot_name"]
 version = "0.1.5"
 
 # list of available commands
+# Common commands
 commands = {
     "start": "Primeros pasos y bienvenida",
-    "get_cid": "Obten tu identificador único de usuario, este es agregado a la lista blanca para tener una experiencia personalizada, así como desbloquear funcionalidades adicionales en el bot, daselo al administrador del BOT para tener acceso",
     "info": "Información acerca del bot",
-    "help": "Lista de los comandos soportados",
-    "stats": "Estadísticas actuales del BTCMXN",
-    "mxn_btc": "Convierte pesos mexicanos a BTC",
-    "btc_mxn": "Convierte BTC a pesos mexicanos",
-    "operation": "Realiza los cálculos para una operación en este momento",
-    "simulation": "Simula una operación con un monto de inversión y un precio futuro del mercado",
-    "monitor": "Monitorea el precio del BTC por 5 min si tienes una operación abierta",
-    "monitor_trade": "Alerta de valor minimo",
-    "smart_alerts": "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)",
+    "help": "Lista de los comandos soportados"
 }
+
+# Personal commands
+commands["get_cid"] = "Obten tu identificador único de usuario, deberás proporcionarlo al administrador"
+
+# Crypto commands
+commands["crypto_set_market"] = "Asigna el mercado actual con el cuál trabajar"
+commands["crypto_get_stats"] = "Estadísticas actuales del mercado seleccionado"
+commands["mxn_btc"] = "Convierte pesos mexicanos a BTC"
+commands["btc_mxn"] = "Convierte BTC a pesos mexicanos"
+commands["operation"] = "Realiza los cálculos para una operación en este momento"
+commands["simulation"] = "Simula una operación con un monto de inversión y un precio futuro del mercado"
+commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"
+commands["monitor_trade"] = "Alerta de valor minimo"
+commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
 
 # Bot listener
 def listener(messages):

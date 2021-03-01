@@ -1,4 +1,4 @@
-from utils.bitso_fn import current_btc
+from utils.bitso_fn import current_stats
 from bot.bot import bot, send_voice
 from decimal import Decimal
 import time
@@ -13,13 +13,13 @@ def monitor_trade(m):
     bot.register_next_step_handler(msg, monitor_trade_process)
 
 
-def monitor_trade_process(message):
+def monitor_trade_process(message, market):
     try:
         # User chat
         cid = message.chat.id
         # Get price values
         monitor_price = Decimal(message.text)
-        price = Decimal(current_btc()["ask"])
+        price = Decimal(current_stats(market)["ask"])
         bot.send_message(cid, "Ok. Te notificaré en cuanto algo suceda")
         # Indicators
         max_price = price
@@ -33,7 +33,7 @@ def monitor_trade_process(message):
         while 1:
             # Update data
             bot.send_chat_action(cid, "typing")
-            price = Decimal(current_btc()["ask"])
+            price = Decimal(current_stats(market)["ask"])
             percent = (price * 100 / monitor_price) - 100
 
             # Get stats

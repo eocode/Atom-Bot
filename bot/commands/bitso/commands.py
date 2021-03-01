@@ -1,14 +1,11 @@
 from data.models.trade import get_last_trade, save_current_price
-from trader_pro.btc import show_btc_stats, btc_escentials, current_btc
+from trader_pro.btc import show_btc_stats, btc_escentials, current_stats
 from bot.bot import bot
 from bot.data.trade import Trade, trade_dict
 from sqlalchemy.sql.expression import null
 from decimal import Decimal
 from datetime import datetime
 import time
-
-
-
 
 
 @bot.message_handler(commands=["operation"])
@@ -86,7 +83,7 @@ def command_start(m):
     bot.register_next_step_handler(msg, process_btc_monitor_step)
 
 
-def process_btc_monitor_step(message):
+def process_btc_monitor_step(message, market):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")
@@ -100,7 +97,7 @@ def process_btc_monitor_step(message):
             elapsed_time = int(time.time() - starting_point)
             message = show_btc_stats()
 
-            current_price = Decimal(current_btc()["ask"])
+            current_price = Decimal(current_stats(market)["ask"])
             percent = (current_price * 100 / monitor_price) - 100
 
             if percent > max_percent:
@@ -122,12 +119,12 @@ def process_btc_monitor_step(message):
 
 
 @bot.message_handler(commands=["smart_alerts"])
-def command_start(message):
+def command_start(message, market):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")
 
-        current_price = Decimal(current_btc()["ask"])
+        current_price = Decimal(current_stats(market)["ask"])
         max_price = current_price
         min_price = current_price
         try:
@@ -199,6 +196,6 @@ def command_start(message):
                 )
 
             time.sleep(5)
-            current_price = Decimal(current_btc()["ask"])
+            current_price = Decimal(current_stats(market)["ask"])
     except Exception as e:
         bot.reply_to(message, "Algo salio mal")
