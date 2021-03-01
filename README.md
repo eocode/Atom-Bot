@@ -30,11 +30,11 @@
 
 * Python 3.7 +
 
-### Install
+### Install and run
 
 ``pip install -r requirements.txt``
 
-``python arthur.py``
+``python main.py``
 
 #### Env file
 

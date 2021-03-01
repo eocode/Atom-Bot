@@ -8,7 +8,7 @@ def get_hour():
 
 def get_greeting(user):
 
-    words = ["Hola", "Buen día!"]
+    words = ["¡Hola!","¡Quihubole!"]
 
     hour = get_hour()
 
@@ -20,17 +20,18 @@ def get_greeting(user):
         words.append("Buenos días " + user)
         words.append("Hola " + user)
         words.append("Hola, buen día " + user)
+        words.append("Hola, buen día")
 
     if hour >= 12 and hour < 19:
         words.append("Hola " + user)
         words.append("Buenas tardes " + user)
         words.append("Qué tal " + user)        
+        words.append("Hola, buen día")
 
     if hour >= 19 and hour < 22:
         words.append("Buenas noches " + user)
 
     if hour >= 22 and hour <= 24:
-        words.append("Hola, ha sido un día pesado " + user)
         words.append("Hola, ya casi es hora de ir a dormir " + user)
 
     return random.choice(words)
