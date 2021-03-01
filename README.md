@@ -48,12 +48,6 @@
 
 ### Install and run
 
-``pip install -r requirements.txt``
-
-``python main.py``
-
-#### Env file
-
 In root directory create a .env file with:
 
 ```
@@ -70,6 +64,14 @@ telegram_token_bot = 'your token'
 # Bot settings
 bot_name = 'bot_name'
 ```
+
+Install dependencies
+
+``pip install -r requirements.txt``
+
+Run program
+
+``python main.py``
 
 ## Contribution
 
