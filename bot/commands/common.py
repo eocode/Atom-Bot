@@ -88,6 +88,30 @@ def echo_message(message):
         bot.reply_to(message, reply)
         send_voice(reply)
     else:
-        if text.isalpha():
-            bot.reply_to(message, "Pruba con algún comando")
-    command_help(message)
+        if text.lower() == "di":
+            msg = bot.reply_to(message, "¿Qué quieres que diga en el altavoz?")
+            bot.register_next_step_handler(msg, say_something)
+
+
+def say_something(message):
+    try:
+        cid = message.chat.id
+        response = message.text
+        if str(cid) in knownUsers:
+            bot.send_chat_action(cid, "typing")
+            text = "Reproduciendo"
+            bot.send_message(
+                cid,
+                text,
+            )
+            send_voice(response)
+        else:
+            bot.send_chat_action(cid, "typing")
+            text = "Tú usuario no puede realizar está acción"
+            bot.send_message(
+                cid,
+                text,
+            )
+    except Exception as e:
+        print(e)
+        bot.reply_to(message, "Algo salio mal")

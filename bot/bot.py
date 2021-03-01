@@ -63,4 +63,4 @@ def send_voice(text):
 
 
 def say_hello():
-    send_voice("Actualización a la versión: " + version)
+    send_voice("Iniciando ... " + name + " " + version)
