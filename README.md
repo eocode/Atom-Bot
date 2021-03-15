@@ -17,7 +17,7 @@
 </div>
 
 ## Features
-* Bitso API
+* Bitso API (MXN) / Binance (USDT)
   * Smart alerts
   * Commission calculation
   * Simulations

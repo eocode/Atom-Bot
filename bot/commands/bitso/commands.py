@@ -1,5 +1,5 @@
-from data.models.trade import get_last_trade, save_current_price
-from trader_pro.btc import show_btc_stats, btc_escentials, current_stats
+from bot.brain.models.trade import get_last_trade, save_current_price
+from modules.crypto.btc import show_btc_stats, btc_escentials, current_stats
 from bot.bot import bot
 from bot.data.trade import Trade, trade_dict
 from sqlalchemy.sql.expression import null

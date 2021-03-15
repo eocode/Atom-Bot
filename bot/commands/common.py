@@ -1,6 +1,6 @@
 from bot.bot import bot, knownUsers, commands, send_voice, name, version
 from bot.cognitive.greetings import get_greeting
-from data.models.settings import update_settings
+from bot.brain.models.settings import update_settings
 
 import unidecode
 

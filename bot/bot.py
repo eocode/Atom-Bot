@@ -19,7 +19,7 @@ thisOS = system()
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
 name = os.environ["bot_name"]
-version = "0.1.7"
+version = "0.1.9"
 
 # list of available commands
 # Common commands
@@ -34,10 +34,10 @@ commands["get_cid"] = "Obten tu identificador único"
 commands["get_my_settings"] = "Obten las configuraciones que ada tiene sobre tí"
 
 # Crypto commands
-commands["crypto_set_market"] = "Asigna el mercado actual con el cuál trabajar"
+commands["crypto_set_market"] = "Asigna el mercado actual para realizar las operaciones"
 commands["crypto_get_stats"] = "Estadísticas actuales del mercado seleccionado"
-commands["mxn_btc"] = "Convierte pesos mexicanos a BTC"
-commands["btc_mxn"] = "Convierte BTC a pesos mexicanos"
+commands["crypto_convert_second_to_first"] = "Convierte de acuerdo a tus configuraciones"
+commands["crypto_convert_first_to_second"] = "Convierte de acuerdo a tus configuraciones"
 commands["operation"] = "Realiza los cálculos para una operación en este momento"
 commands["simulation"] = "Simula una operación con un monto de inversión y un precio futuro del mercado"
 commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"

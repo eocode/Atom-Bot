@@ -1,6 +1,6 @@
 from bot.bot import bot, knownUsers
-from trader_pro.btc import show_btc_stats
-from data.models.settings import get_settings
+from modules.crypto.btc import show_btc_stats
+from bot.brain.models.settings import get_settings
 
 
 @bot.message_handler(commands=["crypto_get_stats"])

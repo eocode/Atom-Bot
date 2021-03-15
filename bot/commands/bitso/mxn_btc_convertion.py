@@ -1,20 +1,21 @@
-from utils.bitso_fn import current_stats, print_values, trade_btc
+from modules.crypto.exchange_fn import current_stats, print_values, trade_btc
 from bot.bot import bot
 from bot.data.trade import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
+from bot.brain.models.settings import get_settings
 
 
-@bot.message_handler(commands=["mxn_btc"])
-def mxn_btc(message):
+@bot.message_handler(commands=["crypto_convert_second_to_first"])
+def crypto_convert_second_to_first(message):
     msg = bot.reply_to(
         message,
         "¿Cuál es la cantidad en pesos MXN a convertir?",
     )
-    bot.register_next_step_handler(msg, mxn_btc_ask_mxn_amount)
+    bot.register_next_step_handler(msg, cypto_convert_second_to_first_amount)
 
 
-def mxn_btc_ask_mxn_amount(message):
+def cypto_convert_second_to_first_amount(message):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")
@@ -32,7 +33,7 @@ def mxn_btc_ask_mxn_amount(message):
                 "¿Cómo quieres calcular la conversión de BTC?",
                 reply_markup=markup,
             )
-            bot.register_next_step_handler(msg, mxn_btc_process)
+            bot.register_next_step_handler(msg, cypto_convert_second_to_first_process)
         else:
             bot.send_message(
                 cid,
@@ -43,12 +44,13 @@ def mxn_btc_ask_mxn_amount(message):
         bot.reply_to(message, "Algo salio mal al convertir")
 
 
-def mxn_btc_process(message, market):
+def cypto_convert_second_to_first_process(message):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")
         response = message.text
         if response == "Valor actual":
+            market = get_settings(cid).current_market
             current_price = Decimal(current_stats(market)["ask"])
             convertion = convertion_dict[cid]
             convertion.price = current_price
@@ -59,13 +61,13 @@ def mxn_btc_process(message, market):
             msg = bot.reply_to(
                 message, "¿Cuál es el valor de BTC con el que quieres hacer el cálculo?"
             )
-            bot.register_next_step_handler(msg, mxn_btc_ask_btc_price)
+            bot.register_next_step_handler(msg, cypto_convert_second_to_first_price)
     except Exception as e:
         print(e)
         bot.reply_to(message, "Algo salio mal al obtener los valores")
 
 
-def mxn_btc_ask_btc_price(message):
+def cypto_convert_second_to_first_price(message):
     try:
         cid = message.chat.id
         bot.send_chat_action(cid, "typing")

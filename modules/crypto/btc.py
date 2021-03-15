@@ -1,6 +1,6 @@
 from decimal import Decimal
-from utils.bitso_fn import (
-    current_stats, trade_btc,
+from modules.crypto.exchange_fn import (
+    trade_btc,
     trade_mxn,
     print_values,
     show_help_message,
