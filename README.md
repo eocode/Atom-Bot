@@ -1,6 +1,6 @@
 <div align="center">
   <div align="center">
-      <img width="100px" src="img/bot.png" 
+      <img width="100px" src="https://github.com/eocode/Ada-Bot/raw/main/img/bot.png" 
       alt="ADA"/>
   </div>
   <h3 align="center">ADA (Home Bot)</h3>
@@ -42,7 +42,7 @@
 ## Architecture
 
 <div align="center">
-    <img src="img/architecture5.png" 
+    <img src="https://github.com/eocode/Ada-Bot/raw/main/img/architecture5.png" 
     alt="ada architecture"/>
 </div>
 

@@ -5,13 +5,13 @@ from modules.core.model.settings import update_settings
 import unidecode
 
 
-@bot.message_handler(commands=["get_cid"])
+@bot.message_handler(commands=["mi_identificador"])
 def command_start(m):
     cid = m.chat.id
-    bot.send_message(cid, "Tú CID es: " + str(cid))
+    bot.send_message(cid, "Tú identificador es: " + str(cid))
 
 
-@bot.message_handler(commands=["info"])
+@bot.message_handler(commands=["acerca_de_tu_bot"])
 def command_start(m):
     cid = m.chat.id
     text = (
@@ -21,6 +21,7 @@ def command_start(m):
             + name
             + " y actualmente me encuentro en la versión "
             + version
+            + " ¿En qué puedo ayudarte?, para conocer mis funcionalidades solo escribe /ayuda"
     )
     bot.send_message(
         cid,
@@ -41,7 +42,7 @@ def command_start(m):
             text = (
                     "Genial! "
                     + m.chat.first_name
-                    + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
+                    + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /ayuda."
             )
         else:
             text = (
@@ -68,7 +69,7 @@ def command_start(m):
         )
 
 
-@bot.message_handler(commands=["help"])
+@bot.message_handler(commands=["ayuda"])
 def command_help(m):
     cid = m.chat.id
     help_text = "Puedo realizar las siguientes tareas: \n"
