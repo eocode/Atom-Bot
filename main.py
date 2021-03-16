@@ -2,10 +2,10 @@
 from bot.brain.db import Base, engine
 
 # Load arthur
-from bot.bot import bot, init, say_hello
+from bot.bot import init, say_hello
 
-# Load all available commands
-from bot.commands import *
+# Load all available commands with modules
+from bot import *
 
 # Load time
 import time

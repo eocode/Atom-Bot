@@ -15,12 +15,12 @@ def command_start(m):
 def command_start(m):
     cid = m.chat.id
     text = (
-        "Hola "
-        + m.chat.first_name
-        + " mi nombre es: "
-        + name
-        + " y actualmente me encuentro en la versión "
-        + version
+            "Hola "
+            + m.chat.first_name
+            + " mi nombre es: "
+            + name
+            + " y actualmente me encuentro en la versión "
+            + version
     )
     bot.send_message(
         cid,
@@ -39,15 +39,15 @@ def command_start(m):
         if verified:
             knownUsers.append(cid)
             text = (
-                "Genial! "
-                + m.chat.first_name
-                + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
+                    "Genial! "
+                    + m.chat.first_name
+                    + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /help."
             )
         else:
             text = (
-                "Lo sentimos! "
-                + m.chat.first_name
-                + ", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
+                    "Lo sentimos! "
+                    + m.chat.first_name
+                    + ", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
             )
 
         bot.send_message(

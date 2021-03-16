@@ -1,5 +1,5 @@
 from decimal import Decimal
-from modules.crypto.exchange_fn import (
+from modules.financing.crypto.exchange_fn import (
     trade_btc,
     trade_mxn,
     print_values,
@@ -8,7 +8,7 @@ from modules.crypto.exchange_fn import (
 )
 
 
-def show_btc_stats(market):
+def get_stats(market):
     current_btc_price = current_stats(market)
     result = "Valor actual: " + f"{Decimal(current_btc_price['ask']):,}" + "\n"
     result = result + "Min: " + f"{Decimal(current_btc_price['low']):,}" + "\n"
@@ -17,7 +17,7 @@ def show_btc_stats(market):
     return result
 
 
-def btc_escentials(current_btc_price, amount, market):
+def get_escential_data(current_btc_price, amount, market):
     amount = Decimal(amount)
 
     if current_btc_price == 0:

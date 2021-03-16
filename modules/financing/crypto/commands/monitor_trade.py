@@ -1,4 +1,4 @@
-from modules.crypto.exchange_fn import current_stats
+from modules.financing.crypto.exchange_fn import current_stats
 from bot.bot import bot, send_voice
 from decimal import Decimal
 import time

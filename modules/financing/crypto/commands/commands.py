@@ -1,5 +1,5 @@
 from bot.brain.models.trade import get_last_trade, save_current_price
-from modules.crypto.btc import show_btc_stats, btc_escentials, current_stats
+from modules.financing.crypto.operations import get_stats, get_escential_data, current_stats
 from bot.bot import bot
 from bot.data.trade import Trade, trade_dict
 from sqlalchemy.sql.expression import null
@@ -24,7 +24,7 @@ def process_amount_step(message):
         response = message.text
         if response.isdigit():
             bot.send_message(cid, "Calculando para " + response)
-            result = btc_escentials(0, response)
+            result = get_escential_data(0, response)
             bot.reply_to(message, result)
         else:
             bot.send_message(
@@ -68,7 +68,7 @@ def process_price_future_step(message):
         trade = trade_dict[cid]
         trade.price = price
         if trade.price.isdigit():
-            result = btc_escentials(trade.price, trade.amount)
+            result = get_escential_data(trade.price, trade.amount)
             bot.send_message(cid, result)
     except Exception as e:
         bot.reply_to(message, "Algo salio mal")
@@ -95,7 +95,7 @@ def process_btc_monitor_step(message, market):
 
         while elapsed_time < 300:
             elapsed_time = int(time.time() - starting_point)
-            message = show_btc_stats()
+            message = get_stats()
 
             current_price = Decimal(current_stats(market)["ask"])
             percent = (current_price * 100 / monitor_price) - 100

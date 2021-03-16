@@ -1,4 +1,4 @@
-from modules.crypto.exchange_fn import current_stats, print_values, trade_btc
+from modules.financing.crypto.operations import current_stats, print_values, trade_btc
 from bot.bot import bot
 from bot.data.trade import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton

@@ -1,5 +1,5 @@
 from bot.bot import bot, knownUsers
-from modules.crypto.btc import show_btc_stats
+from modules.financing.crypto.operations import get_stats
 from bot.brain.models.settings import get_settings
 
 
@@ -10,7 +10,7 @@ def command_start(m):
         if str(cid) in knownUsers:
             bot.send_chat_action(cid, "typing")
             market = get_settings(cid).current_market
-            message = show_btc_stats(market)
+            message = get_stats(market)
             bot.send_message(cid, message)
         else:
             bot.send_message(cid, "Lo siento, no tienes permisos para realizar está acción")
