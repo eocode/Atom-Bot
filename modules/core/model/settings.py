@@ -27,7 +27,7 @@ class Settings(Base):
             text = text + "* Tu cuenta está verificada \n\n"
         else:
             text = text + "* No se ha verificado tu cuenta \n\n"
-        text = text + "* Tienes configurado " + self.current_market_name + " en la plataforma " + self.current_platform + " todas las operaciones se realizarán con esta configuración"
+        text = text + "* Tienes configurado " + self.current_market_name + " (" + self.current_market + ") " + " en la plataforma " + self.current_platform + " todas las operaciones se realizarán con esta configuración"
 
         return text
 
