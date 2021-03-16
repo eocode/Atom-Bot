@@ -1,9 +1,9 @@
 from modules.financing.crypto.operations import current_stats, print_values, trade_btc
 from bot.bot import bot
-from bot.data.trade import Convertion, convertion_dict
+from modules.financing.data.trade import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
-from bot.brain.models.settings import get_settings
+from modules.core.model.settings import get_settings
 
 
 @bot.message_handler(commands=["crypto_convert_second_to_first"])

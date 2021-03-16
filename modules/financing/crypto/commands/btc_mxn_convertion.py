@@ -1,6 +1,6 @@
 from modules.financing.crypto.exchange_fn import current_stats, print_values, trade_mxn_btc
 from bot.bot import bot
-from bot.data.trade import Convertion, convertion_dict
+from modules.financing.data.trade import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
 

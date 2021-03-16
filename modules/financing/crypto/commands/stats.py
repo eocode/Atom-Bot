@@ -1,6 +1,6 @@
 from bot.bot import bot, knownUsers
 from modules.financing.crypto.operations import get_stats
-from bot.brain.models.settings import get_settings
+from modules.core.model.settings import get_settings
 
 
 @bot.message_handler(commands=["crypto_get_stats"])

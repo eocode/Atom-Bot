@@ -1,7 +1,7 @@
-from bot.brain.models.trade import get_last_trade, save_current_price
+from modules.financing.model.trade import get_last_trade, save_current_price
 from modules.financing.crypto.operations import get_stats, get_escential_data, current_stats
 from bot.bot import bot
-from bot.data.trade import Trade, trade_dict
+from modules.financing.data.trade import Trade, trade_dict
 from sqlalchemy.sql.expression import null
 from decimal import Decimal
 from datetime import datetime

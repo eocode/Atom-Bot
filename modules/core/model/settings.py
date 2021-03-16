@@ -1,7 +1,7 @@
 from sqlalchemy.sql.expression import null
-from sqlalchemy.sql.sqltypes import BIGINT, Boolean, Date, DateTime, Numeric
-from bot.brain.db import Base, session
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy.sql.sqltypes import BIGINT, Boolean, DateTime
+from bot.brain import Base, session
+from sqlalchemy import Column, String
 from datetime import datetime
 
 

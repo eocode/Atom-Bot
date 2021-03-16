@@ -1,5 +1,5 @@
 from bot.bot import bot
-from bot.brain.models.settings import get_settings, update_market
+from modules.core.model.settings import get_settings, update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
