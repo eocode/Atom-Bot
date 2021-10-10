@@ -11,18 +11,18 @@ from bot import *
 import time
 
 if __name__ == "__main__":
-    # DB init
-    Base.metadata.create_all(engine)
-    # Init Bot
-    init(bot)
-
-    # Bot settings
-    bot.enable_save_next_step_handlers(delay=2)
-    bot.load_next_step_handlers()
-
-    say_hello()
 
     while 1:
+        # DB init
+        Base.metadata.create_all(engine)
+        # Init Bot
+        init(bot)
+
+        # Bot settings
+        bot.enable_save_next_step_handlers(delay=2)
+        bot.load_next_step_handlers()
+
+        say_hello()
         try:
             # Show user message
             print("Server started")
@@ -30,5 +30,5 @@ if __name__ == "__main__":
             bot.polling()
             # Sleep 5
             time.sleep(5)
-        except:
-            print("Error")
+        except Exception as e:
+            print("Error:", e)
