@@ -25,15 +25,15 @@ def command_start(m):
     text = (
             "Hola "
             + m.chat.first_name
-            + " mi nombre es: "
+            + " soy "
             + name
-            + " y actualmente me encuentro en la versión "
+            + " versión "
             + version
-            + " ¿En qué puedo ayudarte?, para conocer mis funcionalidades solo escribe /ayuda"
+            + " ¿En qué puedo ayudarte?"
     )
     bot.send_message(
         cid,
-        text,
+        text + ", para conocer mis funcionalidades solo escribe /ayuda",
     )
     if str(cid) in knownUsers:
         send_voice(text)

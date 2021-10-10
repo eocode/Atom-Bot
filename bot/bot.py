@@ -1,7 +1,6 @@
 # Load Telebot
 import telebot
 from platform import system
-import os
 import hashlib
 from bot.constants import version
 
@@ -71,5 +70,8 @@ def send_voice(text):
     os.remove(file)
 
 
-def say_hello():
-    send_voice("Iniciando ... " + name + " " + version)
+def say_hello(init_type="init"):
+    if init_type == "init":
+        send_voice("Iniciando ... " + name + " " + version)
+    if init_type == "update":
+        send_voice(name + " " + version)

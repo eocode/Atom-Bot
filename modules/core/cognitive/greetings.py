@@ -7,13 +7,12 @@ def get_hour():
 
 
 def get_greeting(user):
-
-    words = ["¡Hola!","¡Quihubole!"]
+    words = ["¡Hola!", "¡Quihubole!"]
 
     hour = get_hour()
 
-    if hour >= 0  and hour < 5:
-       words.append("¡Hola " + user + ", deberías de estár durmiendo a estas horas!")
+    if hour >= 0 and hour < 5:
+        words.append("¡Hola " + user + ", deberías de estár durmiendo a estas horas!")
 
     if hour >= 5 and hour < 12:
         words.append("¡Hola " + user + ", que tengas un buen día!")
@@ -25,7 +24,7 @@ def get_greeting(user):
     if hour >= 12 and hour < 19:
         words.append("Hola " + user)
         words.append("Buenas tardes " + user)
-        words.append("Qué tal " + user)        
+        words.append("Qué tal " + user)
         words.append("Hola, buen día")
 
     if hour >= 19 and hour < 22:
