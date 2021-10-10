@@ -65,9 +65,24 @@ telegram_token_bot = 'your token'
 bot_name = 'bot_name'
 ```
 
+In root, rename alembic_conf.ini and update sqlalchemy.url
+
+``change to alembic.ini``
+
 Install dependencies
 
 ``pip install -r requirements.txt``
+
+For ubuntu requiere
+``sudo apt-get update``
+
+``sudo apt-get install mpg123``
+
+Migrations
+
+``alembic revision --autogenerate -m "first migration"``
+
+``alembic upgrade head``
 
 Run program
 

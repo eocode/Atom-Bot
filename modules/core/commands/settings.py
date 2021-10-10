@@ -1,5 +1,5 @@
 from bot.bot import bot
-from modules.core.model.settings import get_settings, update_market
+from modules.core.model.account import get_settings, update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from modules.financing.crypto.dictionary import bitso_order_books, binance_order_books
 from modules.core.data.user import User, user_data

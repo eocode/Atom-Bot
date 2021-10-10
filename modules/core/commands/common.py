@@ -1,6 +1,6 @@
 from bot.bot import bot, knownUsers, commands, send_voice, name, version
 from modules.core.cognitive.greetings import get_greeting
-from modules.core.model.settings import update_settings
+from modules.core.model.account import update_settings
 
 import unidecode
 
@@ -9,6 +9,13 @@ import unidecode
 def command_start(m):
     cid = m.chat.id
     bot.send_message(cid, "Tú identificador es: " + str(cid))
+
+
+@bot.message_handler(commands=["foto"])
+def sed_photo(m):
+    cid = m.chat.id
+    bot.send_message(cid, "Te enviare los datos de BTC: ")
+    bot.send_photo(cid, photo=open('btcusdt.png', 'rb'))
 
 
 @bot.message_handler(commands=["acerca_de_tu_bot"])
@@ -79,19 +86,23 @@ def command_help(m):
     bot.send_message(cid, help_text)
 
 
-@bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    cid = message.chat.id
+@bot.message_handler(func=lambda m: True)
+def echo_message(m):
+    cid = m.chat.id
     bot.send_chat_action(cid, "typing")
-    text = unidecode.unidecode(message.text)
+    text = unidecode.unidecode(m.text)
     if text.lower() == "hola":
-        reply = get_greeting(message.chat.first_name)
-        bot.reply_to(message, reply)
+        reply = get_greeting(m.chat.first_name)
+        bot.reply_to(m, reply)
         send_voice(reply)
     else:
         if text.lower() == "di":
-            msg = bot.reply_to(message, "¿Qué quieres que diga en el altavoz?")
+            msg = bot.reply_to(m, "¿Qué quieres que diga en el altavoz?")
             bot.register_next_step_handler(msg, say_something)
+        else:
+            if text.lower() == "ayuda":
+                command_help(m)
+                send_voice("Te acabo de enviar la lista de comandos")
 
 
 def say_something(message):

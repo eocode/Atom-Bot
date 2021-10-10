@@ -20,16 +20,16 @@ def clear_console():
     clear()
 
 
-def current_btc_orders():
-    response = requests.get("https://api.bitso.com/v3/order_book/?book=btc_mxn")
-    json_response = response.json()
-    return json_response["payload"]
+# def current_btc_orders():
+#     response = requests.get("https://api.bitso.com/v3/order_book/?book=btc_mxn")
+#     json_response = response.json()
+#     return json_response["payload"]
 
 
-def current_btc_trades():
-    response = requests.get("https://api.bitso.com/v3/trades/?book=btc_mxn")
-    json_response = response.json()
-    return json_response["payload"]
+# def current_btc_trades():
+#     response = requests.get("https://api.bitso.com/v3/trades/?book=btc_mxn")
+#     json_response = response.json()
+#     return json_response["payload"]
 
 
 def current_stats(market):

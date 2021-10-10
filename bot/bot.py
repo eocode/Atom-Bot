@@ -19,7 +19,7 @@ thisOS = system()
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
 name = os.environ["bot_name"]
-version = "0.1.13"
+version = "0.1.15"
 
 # list of available commands
 # Common commands
@@ -32,6 +32,7 @@ commands = {
 # Personal commands
 commands["mi_identificador"] = "Obten tu identificador único"
 commands["mi_configuracion"] = "Obten las configuraciones que ada tiene sobre tí"
+commands["foto"] = "Prueba de envio de foto"
 
 # Crypto commands
 commands["configurar_mercado"] = "Asigna el mercado actual para realizar las operaciones"
@@ -43,6 +44,7 @@ commands["simulation"] = "Simula una operación con un monto de inversión y un 
 commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"
 commands["monitor_trade"] = "Alerta de valor minimo"
 commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
+
 
 # Bot listener
 def listener(messages):
