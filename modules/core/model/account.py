@@ -33,9 +33,9 @@ class Account(Base):
                 text = text + "* Tu cuenta está verificada \n\n"
             else:
                 text = text + "* No se ha verificado tu cuenta \n\n"
-            text = text + "* Tienes configurado " + self.current_market_name + " (" + self.current_market + ") " + " en la plataforma " + self.current_platform + " todas las operaciones se realizarán con esta configuración /n/n"
+            text = text + "* Tienes configurado " + self.current_market_name + " (" + self.current_market + ") " + " en la plataforma " + self.current_platform + " todas las operaciones se realizarán con esta configuración \n\n"
             if self.speak:
-                text = text + "Tienes activadas las funciones de reproducción"
+                text = text + "* Tienes activadas las funciones de reproducción"
         else:
             text = "Lo sentimos, primero debe configurar su cuenta mediante el comando \n /configurar_mercado"
         return text
