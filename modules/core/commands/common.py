@@ -29,7 +29,7 @@ def command_start(m):
             + name
             + " versión "
             + version
-            + " ¿En qué puedo ayudarte?"
+            + ", ¿En qué puedo ayudarte?"
     )
     bot.send_message(
         cid,
