@@ -1,4 +1,5 @@
-from bot.bot import bot, knownUsers, commands, send_voice, name, version
+from bot.bot import bot, knownUsers, commands, send_voice, name
+from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
 
