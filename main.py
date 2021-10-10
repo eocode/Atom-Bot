@@ -1,5 +1,6 @@
 # Load DB configuration
 from bot.brain import Base, engine
+import sys
 
 # Load arthur
 from bot.bot import init, say_hello
