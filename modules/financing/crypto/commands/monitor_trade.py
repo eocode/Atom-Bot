@@ -1,7 +1,10 @@
 from modules.financing.crypto.exchange_fn import current_stats
-from bot.bot import bot, send_voice
+from bot.bot import bot
+from connect.communication import send_voice
 from decimal import Decimal
 import time
+from connect.communication import send_message
+
 
 
 @bot.message_handler(commands=["monitor_trade"])
@@ -20,7 +23,7 @@ def monitor_trade_process(message, market):
         # Get price values
         monitor_price = Decimal(message.text)
         price = Decimal(current_stats(market)["ask"])
-        bot.send_message(cid, "Ok. Te notificaré en cuanto algo suceda")
+        send_message(cid, "Ok. Te notificaré en cuanto algo suceda")
         # Indicators
         max_price = price
         max_price_percent = (price * 100 / max_price) - 100
@@ -92,14 +95,14 @@ def monitor_trade_process(message, market):
                 )
                 send_voice(text)
                 send_voice(text2)
-                bot.send_message(
+                send_message(
                     cid,
                     text + "\n" + text2 + "\n" + text3,
                 )
 
             if price == monitor_price:
                 text = "Valor de compra " + f"{Decimal(price):,.0f}"
-                bot.send_message(
+                send_message(
                     cid,
                     text,
                 )
@@ -120,7 +123,7 @@ def monitor_trade_process(message, market):
                     + f"{Decimal(distance):,.0f}"
                     + "\n"
                 )
-                bot.send_message(
+                send_message(
                     cid,
                     text + "\n" + text2 + "\n" + text3,
                 )

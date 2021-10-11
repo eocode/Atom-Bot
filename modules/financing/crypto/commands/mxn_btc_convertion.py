@@ -4,6 +4,7 @@ from modules.financing.data.user import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
 from modules.core.model.account import get_settings
+from connect.communication import send_message
 
 
 @bot.message_handler(commands=["crypto_convert_second_to_first"])
@@ -23,7 +24,7 @@ def cypto_convert_second_to_first_amount(message):
         if response.replace(".", "").isdigit():
             convert = Convertion(Decimal(response))
             convertion_dict[cid] = convert
-            bot.send_message(cid, "Calculando para $" + response + " MXN")
+            send_message(cid, "Calculando para $" + response + " MXN")
             markup = ReplyKeyboardMarkup(row_width=2)
             markup.add(
                 KeyboardButton("Valor actual"), KeyboardButton("Valor personalizado")
@@ -35,7 +36,7 @@ def cypto_convert_second_to_first_amount(message):
             )
             bot.register_next_step_handler(msg, cypto_convert_second_to_first_process)
         else:
-            bot.send_message(
+            send_message(
                 cid,
                 "Debe ser un valor númerico, intente otra vez ejecutando el comando",
             )
@@ -55,8 +56,8 @@ def cypto_convert_second_to_first_process(message):
             convertion = convertion_dict[cid]
             convertion.price = current_price
             value = print_values(trade_btc(convertion.amount, convertion.price))
-            bot.send_message(cid, "Tu resultado está listo:")
-            bot.send_message(cid, value)
+            send_message(cid, "Tu resultado está listo:")
+            send_message(cid, value)
         else:
             msg = bot.reply_to(
                 message, "¿Cuál es el valor de BTC con el que quieres hacer el cálculo?"
@@ -76,10 +77,10 @@ def cypto_convert_second_to_first_price(message):
             convertion = convertion_dict[cid]
             convertion.price = Decimal(response)
             value = print_values(trade_btc(convertion.amount, convertion.price))
-            bot.send_message(cid, "Tu resultado está listo:")
-            bot.send_message(cid, value)
+            send_message(cid, "Tu resultado está listo:")
+            send_message(cid, value)
         else:
-            bot.send_message(
+            send_message(
                 cid,
                 "Debe ser un valor númerico, intente otra vez ejecutando el comando",
             )

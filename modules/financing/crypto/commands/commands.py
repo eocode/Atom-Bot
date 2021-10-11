@@ -6,6 +6,8 @@ from sqlalchemy.sql.expression import null
 from decimal import Decimal
 from datetime import datetime
 import time
+from connect.communication import send_message
+
 
 
 @bot.message_handler(commands=["operation"])
@@ -23,11 +25,11 @@ def process_amount_step(message):
         bot.send_chat_action(cid, "typing")
         response = message.text
         if response.isdigit():
-            bot.send_message(cid, "Calculando para " + response)
+            send_message(cid, "Calculando para " + response)
             result = get_escential_data(0, response)
             bot.reply_to(message, result)
         else:
-            bot.send_message(
+            send_message(
                 cid,
                 "Debe ser un valor númerico, intente otra vez ejecutando el comando",
             )
@@ -69,7 +71,7 @@ def process_price_future_step(message):
         trade.price = price
         if trade.price.isdigit():
             result = get_escential_data(trade.price, trade.amount)
-            bot.send_message(cid, result)
+            send_message(cid, result)
     except Exception as e:
         bot.reply_to(message, "Algo salio mal")
 
@@ -103,7 +105,7 @@ def process_btc_monitor_step(message, market):
             if percent > max_percent:
                 max_percent = percent
 
-            bot.send_message(
+            send_message(
                 cid,
                 str(current_price)
                 + " |     "
@@ -134,7 +136,7 @@ def command_start(message, market):
         except:
             print("Query error")
 
-        bot.send_message(cid, "Te notificaré en cuanto algo interesante suceda")
+        send_message(cid, "Te notificaré en cuanto algo interesante suceda")
 
         while 1:
 
@@ -176,7 +178,7 @@ def command_start(message, market):
                     )
 
             if max_percent_diference < -1:
-                bot.send_message(
+                send_message(
                     cid,
                     "ATENCIÓN baja en el precio"
                     + " | "
@@ -186,7 +188,7 @@ def command_start(message, market):
                 )
 
             if min_percent_diference > 1:
-                bot.send_message(
+                send_message(
                     cid,
                     "ATENCIÓN alta en el precio"
                     + " | "

@@ -3,7 +3,8 @@ from bot.brain import Base, engine
 import sys
 
 # Load arthur
-from bot.bot import init, say_hello
+from bot.bot import init
+from connect.communication import say_hello
 
 # Load all available commands with modules
 from bot import *
@@ -14,7 +15,6 @@ import time
 if __name__ == "__main__":
     args = sys.argv
     args.pop(0)
-    print(args, type(args), len(args))
 
     say = "init"
 

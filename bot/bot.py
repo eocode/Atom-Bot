@@ -1,24 +1,17 @@
 # Load Telebot
 import telebot
-from platform import system
-import hashlib
-from bot.constants import version
+import os
+
 
 # Load environment variables
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from gtts import gTTS
-from playsound import playsound
-
-thisOS = system()
-
 # Init Arthur
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 knownUsers = os.environ["telegram_users"].split(",")
-name = os.environ["bot_name"]
+
 
 # list of available commands
 # Common commands
@@ -31,7 +24,6 @@ commands = {
 # Personal commands
 commands["mi_identificador"] = "Obten tu identificador único"
 commands["mi_configuracion"] = "Obten las configuraciones que ada tiene sobre tí"
-commands["foto"] = "Prueba de envio de foto"
 
 # Crypto commands
 commands["configurar_mercado"] = "Asigna el mercado actual para realizar las operaciones"
@@ -55,23 +47,3 @@ def listener(messages):
 # Init bot listener
 def init(instance):
     instance.set_update_listener(listener)
-
-
-def send_voice(text):
-    file = hashlib.md5(text.encode()).hexdigest() + ".mp3"
-    if thisOS == "Linux":
-        tts = gTTS(text, lang="es", tld="com.mx")
-        tts.save(file)
-        os.system("mpg123 " + file)
-    if thisOS == "Windows":
-        tts = gTTS(text, lang="es", tld="com.mx")
-        tts.save(file)
-        playsound(file)
-    os.remove(file)
-
-
-def say_hello(init_type="init"):
-    if init_type == "init":
-        send_voice("Iniciando ... " + name + " " + version)
-    if init_type == "update":
-        send_voice(name + " " + version)

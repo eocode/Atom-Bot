@@ -56,6 +56,7 @@ def update_settings(cid, name, current_market, verified):
 
 def get_settings(cid):
     try:
+        session.expire_all()
         return session.query(Account).filter(Account.id == cid).one()
     except Exception as e:
         session.rollback()

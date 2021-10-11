@@ -3,6 +3,7 @@ from modules.core.model.account import get_settings, update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from modules.financing.crypto.dictionary import bitso_order_books, binance_order_books
 from modules.core.data.user import User, user_data
+from connect.communication import send_message
 
 
 @bot.message_handler(commands=["configurar_mercado"])
@@ -32,7 +33,7 @@ def set_market(m):
             for book in binance_order_books:
                 markup.add(KeyboardButton(book))
         else:
-            bot.send_message(cid, "Valor invalido")
+            send_message(cid, "Valor invalido")
     msg = bot.reply_to(
         m,
         "¿Cuál es el libro con el que quieres operar?",
@@ -52,7 +53,7 @@ def set_current_market_option(m):
             if user.platform == 'Binance':
                 user.market = binance_order_books[m.text]
         update_market(cid, user.market, m.text, user.platform)
-        bot.send_message(cid, "Valor actualizado a " + m.text)
+        send_message(cid, "Valor actualizado a " + m.text)
     except Exception as e:
         print(e)
         bot.reply_to(m, "Algo salio mal al obtener los valores")
@@ -64,7 +65,7 @@ def my_settings(m):
         cid = m.chat.id
         bot.send_chat_action(cid, "typing")
         settings = get_settings(cid)
-        bot.send_message(cid, settings)
+        send_message(cid, settings)
     except Exception as e:
         print(e)
         bot.reply_to(m, "Algo salio mal al obtener tus datos")

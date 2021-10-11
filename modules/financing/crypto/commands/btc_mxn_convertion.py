@@ -1,5 +1,6 @@
 from modules.financing.crypto.exchange_fn import current_stats, print_values, trade_mxn_btc
 from bot.bot import bot
+from connect.communication import send_message
 from modules.financing.data.user import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
@@ -22,7 +23,7 @@ def btc_mxn_ask_mxn_amount(message):
         if response.replace(".", "").isdigit():
             convert = Convertion(Decimal(response))
             convertion_dict[cid] = convert
-            bot.send_message(cid, "Calculando para " + response + " BTC")
+            send_message(cid, "Calculando para " + response + " BTC")
             markup = ReplyKeyboardMarkup(row_width=2)
             markup.add(
                 KeyboardButton("Valor actual"), KeyboardButton("Valor personalizado")
@@ -34,7 +35,7 @@ def btc_mxn_ask_mxn_amount(message):
             )
             bot.register_next_step_handler(msg, btc_mxn_process)
         else:
-            bot.send_message(
+            send_message(
                 cid,
                 "Debe ser un valor númerico, intente otra vez ejecutando el comando",
             )
@@ -53,8 +54,8 @@ def btc_mxn_process(message, market):
             convertion = convertion_dict[cid]
             convertion.price = current_price
             value = print_values(trade_mxn_btc(convertion.amount, convertion.price))
-            bot.send_message(cid, "Tu resultado está listo:")
-            bot.send_message(cid, value)
+            send_message(cid, "Tu resultado está listo:")
+            send_message(cid, value)
         else:
             msg = bot.reply_to(
                 message, "¿Cuál es el valor de BTC con el que quieres hacer el cálculo?"
@@ -74,10 +75,10 @@ def btc_mxn_ask_btc_price(message):
             convertion = convertion_dict[cid]
             convertion.price = Decimal(response)
             value = print_values(trade_mxn_btc(convertion.amount, convertion.price))
-            bot.send_message(cid, "Tu resultado está listo:")
-            bot.send_message(cid, value)
+            send_message(cid, "Tu resultado está listo:")
+            send_message(cid, value)
         else:
-            bot.send_message(
+            send_message(
                 cid,
                 "Debe ser un valor númerico, intente otra vez ejecutando el comando",
             )
