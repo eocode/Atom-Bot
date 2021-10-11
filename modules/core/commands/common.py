@@ -75,7 +75,7 @@ def command_help(m):
     for key in commands:
         help_text += "/" + key + ": "
         help_text += commands[key] + "\n"
-    send_message(cid, help_text)
+    send_message(cid, help_text, play=False)
 
 
 @bot.message_handler(func=lambda m: True)
@@ -103,7 +103,7 @@ def say_something(message):
         response = message.text
         if str(cid) in knownUsers:
             text = "Reproduciendo"
-            send_message(cid, text)
+            send_message(cid, text, play=False)
             send_voice(response)
         else:
             text = "Tú usuario no puede realizar está acción"

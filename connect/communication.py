@@ -19,14 +19,14 @@ def send_voice(text):
     os.remove(file)
 
 
-def send_message(cid, text):
+def send_message(cid, text, play=True):
     speak = get_settings(cid).speak
     bot.send_chat_action(cid, "typing")
     bot.send_message(
         cid,
         text,
     )
-    if speak:
+    if speak and play:
         send_voice(text)
 
 
