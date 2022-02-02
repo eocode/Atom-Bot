@@ -12,4 +12,5 @@ binance_order_books = {
     "IOTA": 'iotausdt',
     "Polcadot": 'dotusdt',
     "Chain Link": 'linkusdt',
+    "Shiba Inu": 'shibusdt',
 }

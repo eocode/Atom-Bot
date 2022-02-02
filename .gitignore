@@ -4,6 +4,13 @@ __pycache__/
 *$py.class
 .idea/
 
+# Project Resources
+datasets/
+images/
+
+# Test files
+simulate.py
+
 # C extensions
 *.so
 *.mp3

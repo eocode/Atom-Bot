@@ -1,4 +1,3 @@
-from sqlalchemy.sql.expression import null
 from sqlalchemy.sql.sqltypes import BIGINT, Boolean, DateTime
 from bot.brain import Base, session
 from sqlalchemy import Column, String
@@ -60,9 +59,9 @@ def get_settings(cid):
         return session.query(Account).filter(Account.id == cid).one()
     except Exception as e:
         session.rollback()
-        print("Error al consultar datos")
+        print("Error al consultar datos de la cuenta")
         print(e)
-    return null()
+    return None
 
 
 def update_market(cid, market, market_name, platform):

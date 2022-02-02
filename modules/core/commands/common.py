@@ -1,10 +1,11 @@
-from bot.bot import bot, knownUsers, commands
-from connect.communication import send_voice, name, send_message, send_photo
+from bot.bot import bot, commands
+from connect.communication import send_voice, name, send_message, valid_user
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
 
 import unidecode
+from modules.financing.connector.binance.trader import CryptoBot
 
 
 @bot.message_handler(commands=["mi_identificador"])
@@ -29,7 +30,7 @@ def command_start(m):
         cid,
         text + ", para conocer mis funcionalidades solo escribe /ayuda",
     )
-    if str(cid) in knownUsers:
+    if valid_user(cid):
         send_voice(text)
 
 
@@ -37,10 +38,8 @@ def command_start(m):
 def command_start(m):
     cid = m.chat.id
     try:
-        verified = str(cid) in knownUsers
-        print(verified)
+        verified = valid_user(cid)
         if verified:
-            knownUsers.append(cid)
             text = (
                     "Genial! "
                     + m.chat.first_name
@@ -48,9 +47,9 @@ def command_start(m):
             )
         else:
             text = (
-                    "Lo sentimos! "
+                    "Se ha creado tu cuenta! "
                     + m.chat.first_name
-                    + ", se ha creado tu cuenta, pero actualmente tienes funciones limitadas, solicita al administrador que te agregue como usuario verificado en el grupo del hogar"
+                    + ", pero, necesitas tener una cuenta verificada para acceder a las funcionaliades completas"
             )
 
         send_message(cid, text)
@@ -58,7 +57,7 @@ def command_start(m):
             cid=cid, name=m.chat.first_name, current_market="btc_mxn", verified=verified
         )
         send_voice(
-            "Se agregó la cuenta de: " + m.chat.first_name + " al grupo del hogar"
+            "Se agregó la cuenta de: " + m.chat.first_name
         )
     except Exception as e:
         print(e)
@@ -101,7 +100,7 @@ def say_something(message):
     try:
         cid = message.chat.id
         response = message.text
-        if str(cid) in knownUsers:
+        if valid_user(cid):
             text = "Reproduciendo"
             send_message(cid, text, play=False)
             send_voice(response)

@@ -1,3 +1,5 @@
+from modules.core.data.user import user_data
+from modules.financing.connector.binance.trader import CryptoBot
 from modules.financing.model.trade import get_last_trade, save_current_price
 from modules.financing.crypto.operations import get_stats, get_escential_data, current_stats
 from bot.bot import bot
@@ -7,7 +9,7 @@ from decimal import Decimal
 from datetime import datetime
 import time
 from connect.communication import send_message
-
+from bot.brain import binance_client
 
 
 @bot.message_handler(commands=["operation"])
@@ -44,6 +46,28 @@ def command_operation(m):
         "Simularemos una operación a futuro. Escribe la cantidad a invertir en pesos mexicanos:",
     )
     bot.register_next_step_handler(msg, process_amount_future_step)
+
+
+@bot.message_handler(commands=["preparar_operativa"])
+def command_operation(message):
+    cid = message.chat.id
+    user_data[cid].operatives['ETHUSDT'] = CryptoBot(binance_client=binance_client, crypto='ETH', ref='USDT',
+                                                     exchange='BINANCE')
+    send_message(cid, "Se ha preparado ETHUSDT")
+
+
+@bot.message_handler(commands=["ver_graficos"])
+def command_operation(message):
+    cid = message.chat.id
+    user_data[cid].operatives['ETHUSDT'].get_market_graphs(bot, cid)
+
+
+@bot.message_handler(commands=["trade"])
+def command_operation(message):
+    cid = message.chat.id
+    trader = CryptoBot(binance_client=binance_client, crypto='ETH', ref='USDT',
+                       exchange='BINANCE')
+    trader.start(cid)
 
 
 def process_amount_future_step(message):

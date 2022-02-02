@@ -1,14 +1,14 @@
-from bot.bot import bot, knownUsers
+from bot.bot import bot
 from modules.financing.crypto.operations import get_stats
 from modules.core.model.account import get_settings
-from connect.communication import send_message
+from connect.communication import send_message, valid_user
 
 
 @bot.message_handler(commands=["crypto_get_stats"])
 def command_start(m):
     cid = m.chat.id
     try:
-        if str(cid) in knownUsers:
+        if valid_user(cid):
             bot.send_chat_action(cid, "typing")
             market = get_settings(cid).current_market
             message = get_stats(market)

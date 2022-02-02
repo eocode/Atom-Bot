@@ -10,6 +10,14 @@ name = os.environ["bot_name"]
 thisOS = system()
 
 
+def valid_user(cid):
+    usr = get_settings(cid)
+    if usr is None:
+        return False
+    else:
+        return usr.is_verified
+
+
 def send_voice(text):
     file = hashlib.md5(text.encode()).hexdigest() + ".mp3"
     if thisOS == "Linux":
@@ -20,14 +28,15 @@ def send_voice(text):
 
 
 def send_message(cid, text, play=True):
-    speak = get_settings(cid).speak
+    usr = get_settings(cid)
     bot.send_chat_action(cid, "typing")
     bot.send_message(
         cid,
         text,
     )
-    if speak and play:
-        send_voice(text)
+    if usr is not None:
+        if usr.speak and play:
+            send_voice(text)
 
 
 def send_photo(cid, photo):

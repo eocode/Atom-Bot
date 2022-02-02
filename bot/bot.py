@@ -2,16 +2,13 @@
 import telebot
 import os
 
-
 # Load environment variables
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Init Arthur
+# Init
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
-knownUsers = os.environ["telegram_users"].split(",")
-
 
 # list of available commands
 # Common commands
@@ -25,7 +22,7 @@ commands = {
 commands["mi_identificador"] = "Obten tu identificador único"
 commands["mi_configuracion"] = "Obten las configuraciones que ada tiene sobre tí"
 
-# Crypto commands
+# # Crypto commands
 commands["configurar_mercado"] = "Asigna el mercado actual para realizar las operaciones"
 commands["crypto_get_stats"] = "Estadísticas actuales del mercado seleccionado"
 commands["crypto_convert_second_to_first"] = "Convierte de acuerdo a tus configuraciones"
@@ -35,6 +32,9 @@ commands["simulation"] = "Simula una operación con un monto de inversión y un 
 commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"
 commands["monitor_trade"] = "Alerta de valor minimo"
 commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
+commands["ver_graficos"] = "Obten los gráficos de una crypto para tomar decisiones"
+commands["trade"] = "Realiza trades con recomendaciones del bot"
+commands["preparar_operativa"] = "Prepara la operativa a realizar"
 
 
 # Bot listener
