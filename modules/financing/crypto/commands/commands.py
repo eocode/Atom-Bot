@@ -1,5 +1,6 @@
-from modules.core.data.user import user_data
+from modules.core.data.user import user_data, User
 from modules.financing.connector.binance.trader import CryptoBot
+from modules.financing.data.trader import operatives, TraderOPS
 from modules.financing.model.trade import get_last_trade, save_current_price
 from modules.financing.crypto.operations import get_stats, get_escential_data, current_stats
 from bot.bot import bot
@@ -51,23 +52,51 @@ def command_operation(m):
 @bot.message_handler(commands=["preparar_operativa"])
 def command_operation(message):
     cid = message.chat.id
-    user_data[cid].operatives['ETHUSDT'] = CryptoBot(binance_client=binance_client, crypto='ETH', ref='USDT',
-                                                     exchange='BINANCE')
-    send_message(cid, "Se ha preparado ETHUSDT")
+    print(cid)
+    try:
+        if 'ETHUSDT' in operatives:
+            trader = operatives['ETHUSDT']
+        else:
+            trader = TraderOPS()
+            trader.monitor = CryptoBot(binance_client=binance_client, crypto='ETH', ref='USDT',
+                                       exchange='BINANCE')
+            operatives['ETHUSDT'] = trader
+            send_message(cid, "Se ha preparado ETHUSDT")
+    except Exception as e:
+        send_message(cid, "Error al preparar la operativa")
 
 
 @bot.message_handler(commands=["ver_graficos"])
 def command_operation(message):
     cid = message.chat.id
-    user_data[cid].operatives['ETHUSDT'].get_market_graphs(bot, cid)
+    if 'ETHUSDT' in operatives:
+        operatives['ETHUSDT'].monitor.get_market_graphs(bot, cid)
+    else:
+        send_message(cid, 'Necesita preparar la operativa antes')
 
 
 @bot.message_handler(commands=["trade"])
 def command_operation(message):
     cid = message.chat.id
-    trader = CryptoBot(binance_client=binance_client, crypto='ETH', ref='USDT',
-                       exchange='BINANCE')
-    trader.start(cid)
+    if 'ETHUSDT' in operatives:
+        operatives['ETHUSDT'].monitor.start(cid)
+
+
+@bot.message_handler(commands=["ver_analisis"])
+def command_operation(message):
+    cid = message.chat.id
+    if 'ETHUSDT' in operatives:
+        operatives['ETHUSDT'].monitor.get_trades(cid)
+
+
+@bot.message_handler(commands=["ver_resumen"])
+def command_operation(message):
+    cid = message.chat.id
+    if 'ETHUSDT' in operatives:
+        operatives['ETHUSDT'].monitor.get_resume('large', '1w', '1d', cid)
+        operatives['ETHUSDT'].monitor.get_resume('medium', '4h', '1h', cid)
+        operatives['ETHUSDT'].monitor.get_resume('short', '30m', '15m', cid)
+        operatives['ETHUSDT'].monitor.get_resume('micro', '5m', '1m', cid)
 
 
 def process_amount_future_step(message):

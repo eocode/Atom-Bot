@@ -1,147 +1,147 @@
 trades = {
-    '1w': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
+    'large': {
+        '1w': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
         },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
+        '1d': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
+        },
     },
-    '1d': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
+    'medium': {
+        '4h': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
         },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
+        '1h': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
+        },
     },
-    '4h': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
+    'short': {
+        '30m': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
         },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
+        '15m': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
+        },
     },
-    '1h': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
+    'micro': {
+        '5m': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
         },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
-    },
-    '30m': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
-        },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
-    },
-    '15m': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
-        },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
-    },
-    '5m': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
-        },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
-    },
-    '1m': {
-        'trade': {
-            'high': 0,
-            'low': 0,
-            'close': 0,
-            'RSI': False,
-            'Momentum': False
-        },
-        'trend': False,
-        'fingerprint': 0,
-        'status': '',
-        'buy': False,
-        'sell': False,
-        'buy_confirmation': False,
-        'sell_confirmation': False,
-        'support': [],
-        'resistance': [],
+        '1m': {
+            'trade': {
+                'high': 0,
+                'low': 0,
+                'close': 0,
+                'RSI': False,
+                'Momentum': False
+            },
+            'trend': False,
+            'fingerprint': 0,
+            'buy': False,
+            'sell': False,
+            'buy_confirmation': False,
+            'sell_confirmation': False,
+            'support': [],
+            'resistance': [],
+        }
     }
 }
 

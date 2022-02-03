@@ -1,11 +1,9 @@
-import datetime as dt
 import os
 import pandas as pd
 from dateutil import parser
 from datetime import datetime, timedelta
 import dateparser
 import pytz
-from pandas.core.arrays import interval
 
 from bot.brain import binance_client, binsizes
 import math

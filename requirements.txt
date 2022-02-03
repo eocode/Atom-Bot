@@ -16,3 +16,4 @@ python-dotenv
 pandas_datareader
 matplotlib
 requests
+scipy

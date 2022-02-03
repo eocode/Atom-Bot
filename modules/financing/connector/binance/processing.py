@@ -130,6 +130,13 @@ def analysis(df, ma_f, ma_s, mas, time):
     df['ema_s_ups'] = df.groupby((df['mean_s_diff_res'] != df['mean_s_diff_res'].shift(1)).cumsum()).cumcount() + 1
     df['ema_f_ups'] = df.groupby((df['mean_f_diff_res'] != df['mean_f_diff_res'].shift(1)).cumsum()).cumcount() + 1
 
+    df = simple_moving_average(5, df, 'close')
+    df['mean_close_5_rv'] = df['mean_close_5'].shift(1)
+    df['mean_5_diff'] = df['mean_close_5'] - df['mean_close_5_rv']
+    df['mean_5_diff_res'] = df['mean_5_diff'] >= 0
+
+    df['ema_5_ups'] = df.groupby((df['mean_5_diff_res'] != df['mean_5_diff_res'].shift(1)).cumsum()).cumcount() + 1
+
     df['diff'] = df.close - df.open
     df['diffh'] = df.high - df.open
     df['diffl'] = df.low - df.open
@@ -187,12 +194,27 @@ def analysis(df, ma_f, ma_s, mas, time):
 
     df['trend'] = df['positive_momentum'] & df['positive_RSI']
 
-    df['buy_trend'] = (df['mean_f_diff_res'] & df['sell_ema']) | (df['mean_f_diff_res'] & df['buy_ema'])
-    df['sell_trend'] = (df['mean_f_diff_res'] == False & df['buy_ema']) | (
-            df['mean_f_diff_res'] == False & df['sell_ema'])
+    if time in ('1w'):
+        df['buy_trend'] = df['positive_momentum']
+        df['sell_trend'] = (df['positive_momentum'] == False)
 
-    df['buy_confirmation'] = (df['buy_ema_change'] & df['trend']) | (df['prev_buy_ema_change'] & df['trend'])
-    df['sell_confirmation'] = (df['sell_ema_change'] & (df['trend'] == False)) | (
+        df['buy_confirmation'] = df['mean_5_diff_res']
+        df['sell_confirmation'] = (df['mean_5_diff_res'] == False)
+
+    if time in ('1d'):
+        df['buy_trend'] = (df['positive_momentum'] & df['mean_5_diff_res'])
+        df['sell_trend'] = (df['positive_momentum'] == False) & (df['mean_5_diff_res'] == False)
+
+        df['buy_confirmation'] = (df['buy_ema'])
+        df['sell_confirmation'] = (df['sell_ema'])
+
+    if time in ('4h', '1h', '30m', '15m', '5m', '1m'):
+        df['buy_trend'] = (df['mean_f_diff_res'] & df['sell_ema']) | (df['mean_f_diff_res'] & df['buy_ema'])
+        df['sell_trend'] = (df['mean_f_diff_res'] == False & df['buy_ema']) | (
+                df['mean_f_diff_res'] == False & df['sell_ema'])
+
+        df['buy_confirmation'] = (df['buy_ema_change'] & df['trend']) | (df['prev_buy_ema_change'] & df['trend'])
+        df['sell_confirmation'] = (df['sell_ema_change'] & (df['trend'] == False)) | (
                 df['prev_sell_ema_change'] & (df['trend'] == False))
 
     # df['buy_trade'] = (df['buy_ema'] == True) & (df['mean_f_diff_res'] == True) & (df['mean_s_diff_res'] == True) & (df['positive_momentum'] == True)
@@ -249,10 +271,10 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         plt.bar(df.index.values, df['diffl'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'k', False: 'y'}))
         plt.scatter(df[(df.buy_trend == True)].index.values,
                     df[(df.buy_trend == True)]['close'].tolist(),
-                    marker=markers.TICKUP, color='g', s=22**2)
+                    marker=markers.TICKUP, color='g', s=22 ** 2)
         plt.scatter(df[(df.sell_trend == True)].index.values,
                     df[(df.sell_trend == True)]['close'].tolist(),
-                    marker=markers.TICKDOWN, color='r', s=22**2)
+                    marker=markers.TICKDOWN, color='r', s=22 ** 2)
 
         for sup in support:
             plt.axhline(y=sup, linewidth='1.0', color='red')

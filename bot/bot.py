@@ -35,6 +35,8 @@ commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notif
 commands["ver_graficos"] = "Obten los gráficos de una crypto para tomar decisiones"
 commands["trade"] = "Realiza trades con recomendaciones del bot"
 commands["preparar_operativa"] = "Prepara la operativa a realizar"
+commands["ver_analisis"] = "Revisa el analisis completo de tus cryptos"
+commands["ver_resumen"] = "Resumen para operativa rápida"
 
 
 # Bot listener
