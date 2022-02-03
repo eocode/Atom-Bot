@@ -1,10 +1,10 @@
 <div align="center">
   <div align="center">
       <img width="100px" src="https://github.com/eocode/Ada-Bot/raw/main/img/bot.png" 
-      alt="ADA"/>
+      alt="Atom"/>
   </div>
-  <h3 align="center">ADA (Home Bot)</h3>
-  <p>A simple bot with a crypto module in bitso</p>
+  <h3 align="center">Atom (Home Bot)</h3>
+  <p>A simple bot with a finance module</p>
   <p align="center">
     <a href="https://github.com/eocode/Queens/blob/master/LICENSE" target="__blank">
       	<img src="https://img.shields.io/badge/License-GPLV3-blue.svg"  alt="license badge"/>
@@ -12,13 +12,14 @@
     <a href="https://github.com/ambv/black" target="__blank">
         <img src="https://img.shields.io/badge/code%20style-black-000000.svg" />
     </a>
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/eocode/Ada-Bot">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/eocode/Atom-Bot">
   </p>
 </div>
 
 ## Features
 * Bitso API (MXN) / Binance (USDT)
   * Smart alerts
+  * Graphs
   * Commission calculation
   * Simulations
   * Monitors
@@ -44,6 +45,13 @@
 <div align="center">
     <img src="https://github.com/eocode/Ada-Bot/raw/main/img/architecture5.png" 
     alt="ada architecture"/>
+</div>
+
+## Prediction by temporalities
+
+<div align="center">
+    <img src="https://github.com/eocode/Ada-Bot/raw/main/img/predictive.png" 
+    alt="predictions"/>
 </div>
 
 ### Install and run
