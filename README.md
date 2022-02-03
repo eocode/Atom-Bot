@@ -30,7 +30,8 @@
 ### Require
 
 * Python 3.7 +
-* RaspberryPi 3 +
+* RaspberryPi 3 + - TriggerCMD for automated tasks and syncs
+* MySQL Server
 * Alexa
 * Telegram Bot
 * Static IP and Router configuration
