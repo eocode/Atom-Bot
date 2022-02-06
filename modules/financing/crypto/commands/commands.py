@@ -1,4 +1,3 @@
-from modules.core.data.user import user_data, User
 from modules.financing.connector.binance.trader import CryptoBot
 from modules.financing.data.trader import operatives, TraderOPS
 from modules.financing.model.trade import get_last_trade, save_current_price
@@ -9,7 +8,7 @@ from sqlalchemy.sql.expression import null
 from decimal import Decimal
 from datetime import datetime
 import time
-from connect.communication import send_message
+from bot.connect.communication import send_message
 from bot.brain import binance_client
 
 

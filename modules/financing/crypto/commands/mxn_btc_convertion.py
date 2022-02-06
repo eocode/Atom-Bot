@@ -4,7 +4,7 @@ from modules.financing.data.user import Convertion, convertion_dict
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from decimal import Decimal
 from modules.core.model.account import get_settings
-from connect.communication import send_message
+from bot.connect.communication import send_message
 
 
 @bot.message_handler(commands=["crypto_convert_second_to_first"])

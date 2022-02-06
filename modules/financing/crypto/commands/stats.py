@@ -1,7 +1,7 @@
 from bot.bot import bot
 from modules.financing.crypto.operations import get_stats
 from modules.core.model.account import get_settings
-from connect.communication import send_message, valid_user
+from bot.connect.communication import send_message, valid_user
 
 
 @bot.message_handler(commands=["crypto_get_stats"])

@@ -1,11 +1,10 @@
 from bot.bot import bot, commands
-from connect.communication import send_voice, name, send_message, valid_user
+from bot.connect.communication import send_voice, name, send_message, valid_user
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
 
 import unidecode
-from modules.financing.connector.binance.trader import CryptoBot
 
 
 @bot.message_handler(commands=["mi_identificador"])

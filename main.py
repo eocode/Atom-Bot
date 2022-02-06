@@ -4,7 +4,6 @@ import sys
 
 # Load arthur
 from bot.bot import init
-from connect.communication import say_hello
 
 # Load all available commands with modules
 from bot import *

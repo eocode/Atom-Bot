@@ -1,9 +1,9 @@
 from modules.financing.crypto.exchange_fn import current_stats
 from bot.bot import bot
-from connect.communication import send_voice
+from bot.connect.communication import send_voice
 from decimal import Decimal
 import time
-from connect.communication import send_message
+from bot.connect.communication import send_message
 
 
 

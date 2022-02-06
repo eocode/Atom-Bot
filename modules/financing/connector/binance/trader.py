@@ -1,9 +1,6 @@
-import math
-
-import pandas as pd
 from binance.exceptions import BinanceAPIException
 
-from connect.communication import send_message
+from bot.connect.communication import send_message
 from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
     get_file_name
 from modules.financing.connector.binance.order_management import create_order
