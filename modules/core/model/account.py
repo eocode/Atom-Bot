@@ -10,6 +10,8 @@ class Account(Base):
     id = Column(BIGINT, primary_key=True)  # CID user
 
     name = Column(String(300), nullable=False)
+    current_crypto = Column(String(5), nullable=True)
+    current_pair = Column(String(5), nullable=True)
     current_market = Column(String(10), nullable=True)
     current_market_name = Column(String(30), nullable=True)
     current_platform = Column(String(20), nullable=True)
@@ -64,8 +66,10 @@ def get_settings(cid):
     return None
 
 
-def update_market(cid, market, market_name, platform):
+def update_market(cid, crypto, pair, market, market_name, platform):
     account = get_settings(cid)
+    account.current_crypto = crypto
+    account.current_pair = pair
     account.current_market = market
     account.current_market_name = market_name
     account.current_platform = platform

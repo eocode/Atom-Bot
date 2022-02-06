@@ -51,8 +51,10 @@ def set_current_market_option(m):
             user.market = bitso_order_books[m.text]
         else:
             if user.platform == 'Binance':
-                user.market = binance_order_books[m.text]
-        update_market(cid, user.market, m.text, user.platform)
+                user.market = binance_order_books[m.text]['symbol']
+                user.crypto = binance_order_books[m.text]['crypto']
+                user.pair = binance_order_books[m.text]['pair']
+        update_market(cid, user.crypto, user.pair, user.market, m.text, user.platform)
         send_message(cid, "Valor actualizado a " + m.text)
     except Exception as e:
         print(e)

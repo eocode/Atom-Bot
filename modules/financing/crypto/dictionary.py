@@ -5,12 +5,44 @@ bitso_order_books = {
 }
 
 binance_order_books = {
-    "Bitcoin": 'btcusdt',
-    "Etherium": 'ethusdt',
-    "Chiliz": 'chzusdt',
-    "Cardano": 'adausdt',
-    "IOTA": 'iotausdt',
-    "Polcadot": 'dotusdt',
-    "Chain Link": 'linkusdt',
-    "Shiba Inu": 'shibusdt',
+    "Bitcoin": {
+        'crypto': 'BTC',
+        'pair': 'USDT',
+        'symbol': 'BTCUSDT'
+    },
+    "Etherium": {
+        'crypto': 'ETH',
+        'pair': 'USDT',
+        'symbol': 'ETHUSDT'
+    },
+    "Chiliz": {
+        'crypto': 'CHZ',
+        'pair': 'USDT',
+        'symbol': 'CHZUSDT'
+    },
+    "Cardano": {
+        'crypto': 'ADA',
+        'pair': 'USDT',
+        'symbol': 'ADAUSDT'
+    },
+    "IOTA": {
+        'crypto': 'IOTA',
+        'pair': 'USDT',
+        'symbol': 'IOTAUSDT'
+    },
+    "Polcadot": {
+        'crypto': 'DOT',
+        'pair': 'USDT',
+        'symbol': 'DOTUSDT'
+    },
+    "Chain Link": {
+        'crypto': 'LINK',
+        'pair': 'USDT',
+        'symbol': 'LINKUSDT'
+    },
+    "Shiba Inu": {
+        'crypto': 'SHIB',
+        'pair': 'USDT',
+        'symbol': 'SHIBUSDT'
+    },
 }
