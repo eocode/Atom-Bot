@@ -1,6 +1,6 @@
 <div align="center">
   <div align="center">
-      <img width="100px" src="https://github.com/eocode/Atom-Bot/raw/main/img/atom.png" 
+      <img width="100px" src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/atom.png" 
       alt="Atom"/>
   </div>
   <h3 align="center">Atom (Home Bot)</h3>
@@ -44,14 +44,14 @@
 ## Architecture
 
 <div align="center">
-    <img src="https://github.com/eocode/Atom-Bot/raw/main/img/architecture5.png" 
+    <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/architecture5.png" 
     alt="ada architecture"/>
 </div>
 
 ## Prediction by temporalities
 
 <div align="center">
-    <img src="https://github.com/eocode/Atom-Bot/raw/main/img/predictive.png" 
+    <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/predictive.png" 
     alt="predictions"/>
 </div>
 
