@@ -38,7 +38,6 @@
 
 ## Support
 
-* Windows
 * Linux
 
 ## Architecture
@@ -112,4 +111,4 @@ GNU GENERAL PUBLIC LICENSE
 
 Version 3, 29 June 2007
 
-https://github.com/eocode/Ada-Bot/blob/main/LICENSE
+https://github.com/eocode/Atom-Bot/blob/main/LICENSE
