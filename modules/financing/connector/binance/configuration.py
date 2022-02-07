@@ -171,7 +171,7 @@ configuration = {
         'smas': [10, 55],
         'sma_s': 55,
         'sma_f': 10,
-        'days': 3,
+        'days': 30,
         'plot': 90
     },
     '30m': {

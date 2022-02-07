@@ -12,6 +12,7 @@ from bot import *
 # Load time
 import time
 
+from modules.core.data.user import load_validate_users
 from modules.financing.data.trader import initialize_operatives
 
 if __name__ == "__main__":
@@ -36,7 +37,10 @@ if __name__ == "__main__":
 
     while 1:
         try:
+            # Configure initial data
             initialize_operatives()
+            load_validate_users()
+
             # Show user message
             print("Server started")
             # Run the bot

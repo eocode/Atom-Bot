@@ -35,9 +35,9 @@ commands["elegir_mercado"] = "Para tus operaciones"
 # commands["monitor_trade"] = "Alerta de valor minimo"
 # commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
 commands["ver_graficos"] = "Indicadores de trade"
-commands["trade"] = "Realiza trades con recomendaciones del bot"
-commands["ver_analisis"] = "Revisa el analisis completo de tus cryptos"
-commands["ver_resumen"] = "Resumen para operativa rápida"
+commands["trade"] = "Recibe recomendaciones"
+commands["ver_analisis"] = "Ver analisis general"
+commands["ver_resumen"] = "Resumen del analisis"
 
 
 # Bot listener

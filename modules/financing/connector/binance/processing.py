@@ -201,14 +201,21 @@ def analysis(df, ma_f, ma_s, mas, time):
         df['buy_confirmation'] = df['mean_5_diff_res']
         df['sell_confirmation'] = (df['mean_5_diff_res'] == False)
 
-    if time in ('1d'):
+    if time in ('1d', '4h'):
         df['buy_trend'] = (df['positive_momentum'] & df['mean_5_diff_res'])
         df['sell_trend'] = (df['positive_momentum'] == False) & (df['mean_5_diff_res'] == False)
 
         df['buy_confirmation'] = (df['buy_ema'])
         df['sell_confirmation'] = (df['sell_ema'])
 
-    if time in ('4h', '1h', '30m', '15m', '5m', '1m'):
+    if time in ('1h'):
+        df['buy_trend'] = (df['positive_momentum'] & df['mean_f_diff_res'])
+        df['sell_trend'] = (df['positive_momentum'] == False) & (df['mean_f_diff_res'] == False)
+
+        df['buy_confirmation'] = (df['buy_ema'])
+        df['sell_confirmation'] = (df['sell_ema'])
+
+    if time in ('30m', '15m', '5m', '1m'):
         df['buy_trend'] = (df['mean_f_diff_res'] & df['sell_ema']) | (df['mean_f_diff_res'] & df['buy_ema'])
         df['sell_trend'] = (df['mean_f_diff_res'] == False & df['buy_ema']) | (
                 df['mean_f_diff_res'] == False & df['sell_ema'])
@@ -268,9 +275,9 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         plt.title('Momentum')
 
         plt.subplot(grid[3, :])
-        plt.bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True: 'k', False: 'y'}))
-        plt.bar(df.index.values, df['diffh'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'k', False: 'y'}))
-        plt.bar(df.index.values, df['diffl'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'k', False: 'y'}))
+        plt.bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
+        plt.bar(df.index.values, df['diffh'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
+        plt.bar(df.index.values, df['diffl'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
         plt.scatter(df[(df.buy_trend == True)].index.values,
                     df[(df.buy_trend == True)]['close'].tolist(),
                     marker=markers.TICKUP, color='g', s=22 ** 2)

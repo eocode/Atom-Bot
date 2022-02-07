@@ -55,6 +55,17 @@ def update_settings(cid, name, current_market, verified):
         print(e)
 
 
+def get_accounts():
+    try:
+        session.expire_all()
+        return session.query(Account).filter(Account.is_verified == 1).all()
+    except Exception as e:
+        session.rollback()
+        print("Error al consultar datos de la cuenta")
+        print(e)
+    return None
+
+
 def get_settings(cid):
     try:
         session.expire_all()
