@@ -1,10 +1,13 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib import markers
+import matplotlib
 from datetime import datetime
 from modules.financing.connector.binance.extractor import get_file_name, convert_columns_to_float
 import math
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib import markers
 
 
 def simple_moving_average(num, df, column):

@@ -56,6 +56,6 @@ def send_photo(cid, photo):
 
 def say_hello(init_type="init"):
     if init_type == "init":
-        send_voice("Iniciando ... " + name + " " + version)
+        send_voice("Iniciando ... " + name)
     if init_type == "update":
         send_voice(name + " " + version)
