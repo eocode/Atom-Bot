@@ -2,11 +2,9 @@ from bot.bot import bot
 from modules.core.model.account import get_settings, update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
-from modules.financing.connector.binance.trader import CryptoBot
 from modules.financing.data.dictionary import bitso_order_books, binance_order_books
 from modules.core.data.user import User, user_data, get_user_info, save_user_info
 from bot.connect.communication import send_message
-from modules.financing.data.trader import operatives, TraderOPS
 
 
 @bot.message_handler(commands=["elegir_mercado"])

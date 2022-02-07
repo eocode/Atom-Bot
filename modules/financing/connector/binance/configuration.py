@@ -178,28 +178,28 @@ configuration = {
         'smas': [10, 55],
         'sma_s': 55,
         'sma_f': 10,
-        'days': 2,
+        'days': 3,
         'plot': 90
     },
     '15m': {
         'smas': [10, 55],
         'sma_s': 55,
         'sma_f': 10,
-        'days': 1,
+        'days': 3,
         'plot': 90
     },
     '5m': {
         'smas': [10, 55],
         'sma_s': 55,
         'sma_f': 10,
-        'days': 1,
+        'days': 3,
         'plot': 90
     },
     '1m': {
         'smas': [10, 55],
         'sma_s': 55,
         'sma_f': 10,
-        'days': 1,
+        'days': 3,
         'plot': 90
     },
 }

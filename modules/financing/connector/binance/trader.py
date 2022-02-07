@@ -39,25 +39,28 @@ class CryptoBot:
                 print(time)
                 data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
                                                save=True, sma=options['days'])
+                print(len(data.index))
                 # Analyse
                 options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
                                            mas=options['smas'], time=time)
+                print(len(options['data'].index))
+                save_extracted_data(symbol=self.symbol, df=options['data'], form='sma-%s' % options['days'], size=time)
+                print('Analized')
                 # options['min_max'] = get_stats(df=self.data)
                 df = options['data'].tail(120)
-                options['support'], options['resistance'] = supres(df['close'].to_numpy(), 30)
-                save_extracted_data(symbol=self.symbol, df=options['data'], form='sma-%s' % options['days'], size=time)
-                print('Plotting')
-                # Visualize data
+                if len(df.index) > options['plot']:
+                    options['support'], options['resistance'] = supres(df['close'].to_numpy(), options['plot'])
+                    print('Plotting')
+                    # Visualize data
+                    plot_df(values=options['plot'], size=time, form='sma-%s' % options['days'],
+                            symbol=self.symbol, support=options['support'], resistence=options['resistance'],
+                            smas=options['smas'])
 
-                plot_df(values=options['plot'], size=time, form='sma-%s' % options['days'],
-                        symbol=self.symbol, support=options['support'], resistence=options['resistance'],
-                        smas=options['smas'])
-
-                # Send results
-                photo = open(get_file_name(self.symbol, time, 'sma-%s' % options['days'], 'png'), 'rb')
-                if bot is not None:
-                    send_message(cid, time, play=False)
-                    bot.send_photo(cid, photo)
+                    # Send results
+                    photo = open(get_file_name(self.symbol, time, 'sma-%s' % options['days'], 'png'), 'rb')
+                    if bot is not None:
+                        send_message(cid, time, play=False)
+                        bot.send_photo(cid, photo)
             except Exception as e:
                 print('Error PLOT: ', e)
 
@@ -148,10 +151,13 @@ class CryptoBot:
             if short:
                 message += '\nVENTA\n'
             message += 'High: ' + str(self.trades[type][mayor]['trade']['high']) + ' Low: ' + \
-                       str(self.trades[type][mayor]['trade']['low']) + ' Close: ' + str(self.trades[type][mayor]['trade'][
-                           'close']) + '\n'
-            message += 'RSI: ' + str(self.trades[type][mayor]['trade']['RSI']) + ' ' + str(self.trades[type][mayor]['trade']['RSIs']) + ' Momentum: ' + \
-                       str(self.trades[type][mayor]['trade']['Momentum']) + ' ' + str(self.trades[type][mayor]['trade']['Momentums']) + '\n'
+                       str(self.trades[type][mayor]['trade']['low']) + ' Close: ' + str(
+                self.trades[type][mayor]['trade'][
+                    'close']) + '\n'
+            message += 'RSI: ' + str(self.trades[type][mayor]['trade']['RSI']) + ' ' + str(
+                self.trades[type][mayor]['trade']['RSIs']) + ' Momentum: ' + \
+                       str(self.trades[type][mayor]['trade']['Momentum']) + ' ' + str(
+                self.trades[type][mayor]['trade']['Momentums']) + '\n'
             send_message(cid, message)
 
         return long, short
