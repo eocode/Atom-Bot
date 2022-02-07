@@ -5,6 +5,8 @@ import os
 # Load environment variables
 from dotenv import load_dotenv
 
+# from modules.financing.data.trader import initialize_operatives
+
 load_dotenv()
 
 # Init
@@ -32,7 +34,7 @@ commands["elegir_mercado"] = "Para tus operaciones"
 # commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"
 # commands["monitor_trade"] = "Alerta de valor minimo"
 # commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
-commands["ver_graficos"] = "Obten los gráficos de una crypto para tomar decisiones"
+commands["ver_graficos"] = "Indicadores de trade"
 commands["trade"] = "Realiza trades con recomendaciones del bot"
 commands["ver_analisis"] = "Revisa el analisis completo de tus cryptos"
 commands["ver_resumen"] = "Resumen para operativa rápida"

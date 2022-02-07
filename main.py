@@ -12,6 +12,8 @@ from bot import *
 # Load time
 import time
 
+from modules.financing.data.trader import initialize_operatives
+
 if __name__ == "__main__":
     args = sys.argv
     args.pop(0)
@@ -34,6 +36,7 @@ if __name__ == "__main__":
 
     while 1:
         try:
+            initialize_operatives()
             # Show user message
             print("Server started")
             # Run the bot
