@@ -30,7 +30,7 @@ if __name__ == "__main__":
     bot.enable_save_next_step_handlers(delay=2)
     bot.load_next_step_handlers()
 
-    say_hello(say)
+    # say_hello(say)
 
     while 1:
         try:

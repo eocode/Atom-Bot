@@ -45,4 +45,14 @@ binance_order_books = {
         'pair': 'USDT',
         'symbol': 'SHIBUSDT'
     },
+    "Mana": {
+        'crypto': 'MANA',
+        'pair': 'USDT',
+        'symbol': 'MANAUSDT'
+    },
+    "Sol": {
+        'crypto': 'SOL',
+        'pair': 'USDT',
+        'symbol': 'SOLUSDT'
+    },
 }

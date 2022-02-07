@@ -1,5 +1,6 @@
 from binance.exceptions import BinanceAPIException
 
+from bot.brain import binance_client
 from bot.connect.communication import send_message
 from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
     get_file_name
@@ -13,7 +14,7 @@ import numpy as np
 
 class CryptoBot:
 
-    def __init__(self, binance_client, crypto, ref, exchange='BINANCE'):
+    def __init__(self, crypto, ref, exchange='BINANCE'):
         self.client = binance_client
         self.symbol = crypto + ref
         self.crypto = crypto

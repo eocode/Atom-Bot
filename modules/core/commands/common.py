@@ -7,13 +7,13 @@ from modules.core.model.account import update_settings
 import unidecode
 
 
-@bot.message_handler(commands=["mi_identificador"])
+@bot.message_handler(commands=["mi_id"])
 def command_start(m):
     cid = m.chat.id
     send_message(cid, "Tú identificador es: " + str(cid))
 
 
-@bot.message_handler(commands=["acerca_de_tu_bot"])
+@bot.message_handler(commands=["acerca"])
 def command_start(m):
     cid = m.chat.id
     text = (

@@ -245,6 +245,8 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
 
         fig = plt.figure(figsize=(24, 12))
 
+        fig.suptitle(symbol, fontsize=24)
+
         grid = plt.GridSpec(4, 2, wspace=.25, hspace=.5)
 
         plt.subplot(grid[2, :])

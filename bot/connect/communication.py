@@ -2,6 +2,9 @@ from gtts import gTTS
 import hashlib
 from platform import system
 import os
+
+from telebot.types import ReplyKeyboardRemove
+
 from bot.constants import version
 from bot.bot import bot
 from modules.core.model.account import get_settings
@@ -27,13 +30,20 @@ def send_voice(text):
     os.remove(file)
 
 
-def send_message(cid, text, play=True):
+def send_message(cid, text, play=True, close_markup=False):
     usr = get_settings(cid)
     bot.send_chat_action(cid, "typing")
-    bot.send_message(
-        cid,
-        text,
-    )
+    if close_markup:
+        bot.send_message(
+            cid,
+            text,
+            reply_markup=ReplyKeyboardRemove(),
+        )
+    else:
+        bot.send_message(
+            cid,
+            text
+        )
     if usr is not None:
         if usr.speak and play:
             send_voice(text)
