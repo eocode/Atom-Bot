@@ -94,12 +94,16 @@ class CryptoBot:
 
     def take_decision(self, cid, play=False):
         # Micro Trade
-        if self.trades['micro']['1m']['trade']['Momentum'] == True and self.trades['micro']['1m']['trade'][
+        # Long
+        if self.trades['micro']['1m']['trade']['Momentum'] == True and self.trades['short']['15m']['trade'][
+            'Momentum'] == True and self.trades['micro']['1m']['trade'][
             'time'] == False and self.trades['micro']['5m']['trade']['Momentum'] == True and \
                 self.trades['micro']['5m']['trade']['time'] == False:
             self.show_message(message='Micro Long', cid=cid, play=play)
             self.get_resume('micro', '5m', '1m', cid)
-        if self.trades['micro']['1m']['trade']['Momentum'] == False and self.trades['micro']['1m']['trade'][
+        # Short
+        if self.trades['micro']['1m']['trade']['Momentum'] == False and self.trades['short']['15m']['trade'][
+            'Momentum'] == False and self.trades['micro']['1m']['trade'][
             'time'] == True and self.trades['micro']['5m']['trade']['Momentum'] == False and \
                 self.trades['micro']['5m']['trade']['time'] == True:
             self.show_message(message='Micro Short', cid=cid, play=play)
