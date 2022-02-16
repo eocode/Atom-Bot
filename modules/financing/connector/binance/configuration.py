@@ -6,7 +6,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -23,7 +24,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -42,7 +44,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -59,7 +62,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -78,7 +82,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -95,7 +100,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -114,7 +120,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -131,7 +138,8 @@ trades = {
                 'low': 0,
                 'close': 0,
                 'RSI': False,
-                'Momentum': False
+                'Momentum': False,
+                'ema': False
             },
             'trend': False,
             'fingerprint': 0,
@@ -151,6 +159,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 1095,
+        'days_s': 1095,
         'plot': 90
     },
     '1d': {
@@ -158,6 +167,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 270,
+        'days_s': 90,
         'plot': 90
     },
     '4h': {
@@ -165,6 +175,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 60,
+        'days_s': 30,
         'plot': 90
     },
     '1h': {
@@ -172,6 +183,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 30,
+        'days_s': 30,
         'plot': 90
     },
     '30m': {
@@ -179,6 +191,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 3,
+        'days_s': 2,
         'plot': 90
     },
     '15m': {
@@ -186,6 +199,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 3,
+        'days_s': 2,
         'plot': 90
     },
     '5m': {
@@ -193,6 +207,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 3,
+        'days_s': 2,
         'plot': 90
     },
     '1m': {
@@ -200,6 +215,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 10,
         'days': 3,
+        'days_s': 1,
         'plot': 90
     },
 }

@@ -35,17 +35,14 @@ if __name__ == "__main__":
 
     say_hello(say)
 
-    while 1:
-        try:
-            # Configure initial data
-            initialize_operatives()
-            load_validate_users()
+    try:
+        # Configure initial data
+        initialize_operatives()
+        load_validate_users()
 
-            # Show user message
-            print("Server started")
-            # Run the bot
-            bot.polling()
-            # Sleep 5
-            time.sleep(5)
-        except Exception as e:
-            print("Error:", e)
+        # Show user message
+        print("Server started")
+        # Run the bot
+        bot.infinity_polling()
+    except Exception as e:
+        print("Error:", e)

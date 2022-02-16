@@ -51,7 +51,6 @@ def command_operation(m):
 def command_operation(message):
     cid = message.chat.id
     user = get_user_info(cid)
-    print(user.market)
     if user.market in operatives:
         operatives[user.market].monitor.get_market_graphs(bot, cid)
     else:
@@ -61,25 +60,25 @@ def command_operation(message):
 @bot.message_handler(commands=["trade"])
 def command_operation(message):
     cid = message.chat.id
-    if 'ETHUSDT' in operatives:
+    user = get_user_info(cid)
+    if user.market in operatives:
         operatives['ETHUSDT'].monitor.start(cid)
 
 
 @bot.message_handler(commands=["ver_analisis"])
 def command_operation(message):
     cid = message.chat.id
-    if 'ETHUSDT' in operatives:
-        operatives['ETHUSDT'].monitor.get_trades(cid)
+    user = get_user_info(cid)
+    if user.market in operatives:
+        operatives[user.market].monitor.get_trades(cid)
 
 
 @bot.message_handler(commands=["ver_resumen"])
 def command_operation(message):
     cid = message.chat.id
-    if 'ETHUSDT' in operatives:
-        operatives['ETHUSDT'].monitor.get_resume('large', '1w', '1d', cid)
-        operatives['ETHUSDT'].monitor.get_resume('medium', '4h', '1h', cid)
-        operatives['ETHUSDT'].monitor.get_resume('short', '30m', '15m', cid)
-        operatives['ETHUSDT'].monitor.get_resume('micro', '5m', '1m', cid)
+    user = get_user_info(cid)
+    if user.market in operatives:
+        operatives[user.market].monitor.get_full_resumes(cid)
 
 
 def process_amount_future_step(message):

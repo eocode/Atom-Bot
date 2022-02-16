@@ -201,31 +201,21 @@ def analysis(df, ma_f, ma_s, mas, time):
         df['buy_trend'] = df['positive_momentum']
         df['sell_trend'] = (df['positive_momentum'] == False)
 
-        df['buy_confirmation'] = df['mean_5_diff_res']
-        df['sell_confirmation'] = (df['mean_5_diff_res'] == False)
-
     if time in ('1d', '4h'):
         df['buy_trend'] = (df['positive_momentum'] & df['mean_5_diff_res'])
         df['sell_trend'] = (df['positive_momentum'] == False) & (df['mean_5_diff_res'] == False)
 
-        df['buy_confirmation'] = (df['buy_ema'])
-        df['sell_confirmation'] = (df['sell_ema'])
-
     if time in ('1h'):
         df['buy_trend'] = (df['positive_momentum'] & df['mean_f_diff_res'])
         df['sell_trend'] = (df['positive_momentum'] == False) & (df['mean_f_diff_res'] == False)
-
-        df['buy_confirmation'] = (df['buy_ema'])
-        df['sell_confirmation'] = (df['sell_ema'])
 
     if time in ('30m', '15m', '5m', '1m'):
         df['buy_trend'] = (df['mean_f_diff_res'] & df['sell_ema']) | (df['mean_f_diff_res'] & df['buy_ema'])
         df['sell_trend'] = (df['mean_f_diff_res'] == False & df['buy_ema']) | (
                 df['mean_f_diff_res'] == False & df['sell_ema'])
 
-        df['buy_confirmation'] = (df['buy_ema_change'] & df['trend']) | (df['prev_buy_ema_change'] & df['trend'])
-        df['sell_confirmation'] = (df['sell_ema_change'] & (df['trend'] == False)) | (
-                df['prev_sell_ema_change'] & (df['trend'] == False))
+    df['buy_confirmation'] = (df['buy_ema'])
+    df['sell_confirmation'] = (df['sell_ema'])
 
     # df['buy_trade'] = (df['buy_ema'] == True) & (df['mean_f_diff_res'] == True) & (df['mean_s_diff_res'] == True) & (df['positive_momentum'] == True)
     # df['sell_trade'] = (df['sell_ema'] == True) & (df['mean_f_diff_res'] == False) & (df['mean_s_diff_res'] == False) & (df['positive_momentum'] == False)

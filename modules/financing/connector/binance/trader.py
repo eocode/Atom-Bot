@@ -74,7 +74,7 @@ class CryptoBot:
                     for time, options in self.configuration.items():
                         # Get Data
                         data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
-                                                       save=False, sma=options['days'])
+                                                       save=False, sma=options['days_s'])
                         # Analyse
                         options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
                                                    mas=options['smas'], time=time)
@@ -82,82 +82,122 @@ class CryptoBot:
                         options['support'], options['resistance'] = supres(df['close'].to_numpy(), 30)
 
                         last_row = df.iloc[-1, :]
-                        self.take_decision(last_row, cid, time, options['support'], options['resistance'], False)
-                        sleep(2.5)
+                        self.market_sentiment(last_row, time, options['support'], options['resistance'])
+                        sleep(2)
                     self.first_iteration = True
+                    self.take_decision(cid, False)
                 except Exception as e:
                     print('Error: ', e)
         else:
             send_message(cid, "Monitoreo iniciado", play=True)
             print('Ya se ha iniciado el proceso')
 
+    def take_decision(self, cid, play=False):
+        # Micro Trade
+        if self.trades['micro']['1m']['trade']['Momentum'] == True and self.trades['micro']['1m']['trade'][
+            'time'] == False and self.trades['micro']['5m']['trade']['Momentum'] == True and \
+                self.trades['micro']['5m']['trade']['time'] == False:
+            self.show_message(message='Micro Long', cid=cid, play=play)
+            self.get_resume('micro', '5m', '1m', cid)
+        if self.trades['micro']['1m']['trade']['Momentum'] == False and self.trades['micro']['1m']['trade'][
+            'time'] == True and self.trades['micro']['5m']['trade']['Momentum'] == False and \
+                self.trades['micro']['5m']['trade']['time'] == True:
+            self.show_message(message='Micro Short', cid=cid, play=play)
+            self.get_resume('micro', '5m', '1m', cid)
+
+    def get_full_resumes(self, cid):
+        if self.process_is_started and self.first_iteration:
+            self.get_resume('large', '1w', '1d', cid)
+            self.get_resume('medium', '4h', '1h', cid)
+            self.get_resume('short', '30m', '15m', cid)
+            self.get_resume('micro', '5m', '1m', cid)
+        else:
+            send_message(cid, "El reporte aún no está listo")
+
     def get_resume(self, type, mayor, menor, cid=None):
+
         long = False
         short = False
         message = ''
-        message += type.upper() + " \n"
 
         if self.trades[type][mayor]['sell']:
-            message += "Mercado a la baja "
+            message += mayor.upper() + " 🔴 "
             if self.trades[type][mayor]['sell_confirmation']:
-                message += "confirmado\n"
+                message += "🔱 "
             else:
-                message += "sin confirmar\n"
-
+                message += "📛 "
             if self.trades[type][menor]['buy']:
                 long = True
                 # Venta y compra -> Rebote
-                message += "Con Rebote alcista "
+                message += menor.upper() + " 🟢 Rebote alcista "
                 if self.trades[type][menor]['buy_confirmation']:
-                    message += "confirmado\n"
+                    message += "🔱 "
                 else:
-                    message += "sin confirmar\n"
+                    message += "📛 "
             else:
                 short = True
                 # Venta y Venta -> Fuerza a la baja
-                message += "Fuerza bajista "
+                message += menor.upper() + " 🔴 Fuerza bajista "
                 if self.trades[type][menor]['sell_confirmation'] and self.trades[type][mayor]['sell_confirmation']:
-                    message += "confirmado\n"
+                    message += "🔱 "
                 else:
-                    message += "sin confirmar\n"
+                    message += "📛 "
 
         if self.trades[type][mayor]['buy']:
-            message += "Mercado a la alza "
+            message += mayor.upper() + " 🟢 Alza "
             if self.trades[type][mayor]['buy_confirmation']:
-                message += "confirmado\n"
+                message += "🔱 "
             else:
-                message += "sin confirmar\n"
+                message += "📛 "
 
             if self.trades[type][menor]['buy']:
                 long = True
                 # Compra y Compra -> Fuerza al alza
-                message += "Tendencia fuerte al alza "
-                if self.trades[menor][menor]['buy_confirmation']:
-                    message += "confirmado\n"
+                message += menor.upper() + " 🟢 Fuerza alcista "
+                if self.trades[type][menor]['buy_confirmation']:
+                    message += "🔱 "
                 else:
-                    message += "sin confirmar\n"
+                    message += "📛 "
             else:
                 short = True
                 # Compra y Venta -> Corrección
-                message += "Corrección "
+                message += menor.upper() + " 🔴 Corrección "
                 if self.trades[type][menor]['sell_confirmation']:
-                    message += "confirmado\n"
+                    message += "🔱 "
                 else:
-                    message += "sin confirmar\n"
+                    message += "📛 "
+
+        message += '\n'
 
         if cid is not None:
             if long:
-                message += '\nCOMPRA\n'
+                message += '\n🟢 '
             if short:
-                message += '\nVENTA\n'
-            message += 'High: ' + str(self.trades[type][mayor]['trade']['high']) + ' Low: ' + \
-                       str(self.trades[type][mayor]['trade']['low']) + ' Close: ' + str(
+                message += '\n🔴 '
+            message += '🔼 ' + str(self.trades[type][mayor]['trade']['high']) + ' 🔽 ' + \
+                       str(self.trades[type][mayor]['trade']['low']) + ' ⏺️ ' + str(
                 self.trades[type][mayor]['trade'][
                     'close']) + '\n'
-            message += 'RSI: ' + str(self.trades[type][mayor]['trade']['RSI']) + ' ' + str(
-                self.trades[type][mayor]['trade']['RSIs']) + ' Momentum: ' + \
-                       str(self.trades[type][mayor]['trade']['Momentum']) + ' ' + str(
+            message += mayor.upper() + ' RSI: ' + (
+                '🟢' if self.trades[type][mayor]['trade']['RSI'] else '🔴') + ' ' + str(
+                self.trades[type][mayor]['trade']['RSIs'])
+            message += ' Momentum: ' + (
+                '🟢' if self.trades[type][mayor]['trade']['Momentum'] else '🔴') + ' ' + (
+                           '🔼' if self.trades[type][mayor]['trade']['time'] else '🔽') + ' ' + str(
                 self.trades[type][mayor]['trade']['Momentums']) + '\n'
+            message += menor.upper() + ' RSI: ' + (
+                '🟢' if self.trades[type][menor]['trade']['RSI'] else '🔴') + ' ' + str(
+                self.trades[type][menor]['trade']['RSIs'])
+            message += ' Momentum: ' + (
+                '🟢' if self.trades[type][menor]['trade']['Momentum'] else '🔴') + ' ' + (
+                           '🔼' if self.trades[type][menor]['trade']['time'] else '🔽') + ' ' + str(
+                self.trades[type][menor]['trade']['Momentums']) + '\n'
+            message += 'Ema Sup: ' + (
+                '🟢 ' if self.trades[type][mayor]['trade']['ema'] else '🔴 ') + str(
+                round(self.trades[type][mayor]['trade']['ema_value'], 2)) + ' \n'
+            message += 'Ema Inf: ' + (
+                '🟢 ' if self.trades[type][menor]['trade']['ema'] else '🔴 ') + str(
+                round(self.trades[type][menor]['trade']['ema_value'], 2)) + '\n'
             send_message(cid, message)
 
         return long, short
@@ -167,12 +207,6 @@ class CryptoBot:
         self.show_dict(self.trades['medium'], cid, False)
         self.show_dict(self.trades['short'], cid, False)
         self.show_dict(self.trades['micro'], cid, False)
-
-    def take_decision(self, last_row, cid, time, support, resistance, play):
-        trade = self.market_sentiment(last_row, time, support, resistance)
-        # if trade and self.first_iteration:
-        #     self.show_message(time, cid, False)
-        #     self.show_dict(self.trades[self.get_type_trade(time)][time], cid, False)
 
     def filter_operative(self, time):
         if time in ('1w'):
@@ -231,10 +265,13 @@ class CryptoBot:
             self.trades[type][time]['trade']['high'] = last_row['high']
             self.trades[type][time]['trade']['low'] = last_row['low']
             self.trades[type][time]['trade']['close'] = last_row['close']
-            self.trades[type][time]['trade']['RSI'] = last_row['positive_momentum']
+            self.trades[type][time]['trade']['RSI'] = last_row['positive_RSI']
             self.trades[type][time]['trade']['RSIs'] = last_row['RSI_ups']
-            self.trades[type][time]['trade']['Momentum'] = last_row['positive_RSI']
+            self.trades[type][time]['trade']['Momentum'] = last_row['positive_momentum']
             self.trades[type][time]['trade']['Momentums'] = last_row['momentum_ups']
+            self.trades[type][time]['trade']['time'] = last_row['mom_t']
+            self.trades[type][time]['trade']['ema'] = last_row['buy_ema']
+            self.trades[type][time]['trade']['ema_value'] = last_row['mean_close_55']
             return True
 
     def show_message(self, message, cid, play):

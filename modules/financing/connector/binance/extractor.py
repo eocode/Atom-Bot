@@ -123,7 +123,7 @@ def get_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
         new_date = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
                                   unit='ms').strftime("%d %b %Y %H:%M:%S")
 
-    print(old_date, new_date)
+    # print(old_date, new_date)
 
     return binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
                                                 start_str=old_date,
@@ -142,7 +142,7 @@ def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_incre
             oldest_point = (datetime.now() - timedelta(days=sma)).strftime("%d %b %Y %H:%M:%S")
             newest_point = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
                                           unit='ms').strftime("%d %b %Y %H:%M:%S")
-            print(oldest_point, newest_point)
+            # print(oldest_point, newest_point)
             klines = binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
                                                           start_str=oldest_point,
                                                           end_str=newest_point)
@@ -152,7 +152,7 @@ def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_incre
     data = pd.DataFrame(klines,
                         columns=['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_av',
                                  'trades', 'tb_base_av', 'tb_quote_av', 'ignore'])
-    print(len(data.index))
+    # print(len(data.index))
 
     data.drop(['close_time', 'ignore', 'tb_base_av', 'quote_av', 'tb_quote_av'], axis='columns', inplace=True)
 
