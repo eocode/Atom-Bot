@@ -73,6 +73,22 @@ def command_operation(message):
         operatives[user.market].monitor.get_trades(cid)
 
 
+@bot.message_handler(commands=["datos_prueba"])
+def command_operation(message):
+    cid = message.chat.id
+    user = get_user_info(cid)
+    if user.market in operatives:
+        operatives[user.market].monitor.download_test_data(cid)
+
+
+@bot.message_handler(commands=["simular_trades"])
+def command_operation(message):
+    cid = message.chat.id
+    user = get_user_info(cid)
+    if user.market in operatives:
+        operatives[user.market].monitor.make_simulation(cid)
+
+
 @bot.message_handler(commands=["ver_resumen"])
 def command_operation(message):
     cid = message.chat.id

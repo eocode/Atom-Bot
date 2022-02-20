@@ -118,6 +118,8 @@ def analysis(df, ma_f, ma_s, mas, time):
     df['mean_s_diff_res'] = df['mean_s_diff'] >= 0
     df['mean_f_diff_res'] = df['mean_f_diff'] >= 0
 
+    df['ema_f_ups'] = df.groupby((df['mean_f_diff_res'] != df['mean_f_diff_res'].shift(1)).cumsum()).cumcount() + 1
+
     df['buy_ema'] = df['mean_close_%s' % ma_f] > df['mean_close_%s' % ma_s]
     df['sell_ema'] = df['mean_close_%s' % ma_f] <= df['mean_close_%s' % ma_s]
 

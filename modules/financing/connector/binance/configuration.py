@@ -160,6 +160,7 @@ configuration = {
         'sma_f': 10,
         'days': 1095,
         'days_s': 1095,
+        'days_t': 1095,
         'plot': 90
     },
     '1d': {
@@ -168,6 +169,7 @@ configuration = {
         'sma_f': 10,
         'days': 270,
         'days_s': 90,
+        'days_t': 90,
         'plot': 90
     },
     '4h': {
@@ -176,6 +178,7 @@ configuration = {
         'sma_f': 10,
         'days': 60,
         'days_s': 30,
+        'days_t': 60,
         'plot': 90
     },
     '1h': {
@@ -184,6 +187,7 @@ configuration = {
         'sma_f': 10,
         'days': 30,
         'days_s': 30,
+        'days_t': 60,
         'plot': 90
     },
     '30m': {
@@ -192,6 +196,7 @@ configuration = {
         'sma_f': 10,
         'days': 3,
         'days_s': 2,
+        'days_t': 30,
         'plot': 90
     },
     '15m': {
@@ -200,6 +205,7 @@ configuration = {
         'sma_f': 10,
         'days': 3,
         'days_s': 2,
+        'days_t': 30,
         'plot': 90
     },
     '5m': {
@@ -208,6 +214,7 @@ configuration = {
         'sma_f': 10,
         'days': 3,
         'days_s': 2,
+        'days_t': 30,
         'plot': 90
     },
     '1m': {
@@ -216,6 +223,7 @@ configuration = {
         'sma_f': 10,
         'days': 3,
         'days_s': 1,
+        'days_t': 15,
         'plot': 90
     },
 }

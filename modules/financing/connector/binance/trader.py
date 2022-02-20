@@ -1,3 +1,4 @@
+import pandas as pd
 from binance.exceptions import BinanceAPIException
 
 from bot.brain import binance_client
@@ -30,6 +31,15 @@ class CryptoBot:
         self.trades = trades
         self.process_is_started = False
         self.first_iteration = False
+        self.trade_type = 'micro'
+        self.operative = False
+        self.trade = {
+            'temp': None,
+            'operative': None,
+            'value': 0,
+            'keep': None
+        }
+        self.testing = []
 
     def get_market_graphs(self, bot=None, cid=None):
 
@@ -83,7 +93,7 @@ class CryptoBot:
 
                         last_row = df.iloc[-1, :]
                         self.market_sentiment(last_row, time, options['support'], options['resistance'])
-                        sleep(2)
+                        sleep(1)
                     self.first_iteration = True
                     self.take_decision(cid, False)
                 except Exception as e:
@@ -92,24 +102,162 @@ class CryptoBot:
             send_message(cid, "Monitoreo iniciado", play=True)
             print('Ya se ha iniciado el proceso')
 
-    def take_decision(self, cid, play=False):
-        # Micro Trade
-        # Long
-        if self.trades['micro']['1m']['trade']['Momentum'] == True and self.trades['short']['15m']['trade'][
-            'Momentum'] == True and self.trades['micro']['1m']['trade'][
-            'time'] == False and self.trades['micro']['5m']['trade']['Momentum'] == True and \
-                self.trades['micro']['5m']['trade']['time'] == False:
-            self.show_message(message='Micro Long', cid=cid, play=play)
-            self.get_resume('micro', '5m', '1m', cid)
-        # Short
-        if self.trades['micro']['1m']['trade']['Momentum'] == False and self.trades['short']['15m']['trade'][
-            'Momentum'] == False and self.trades['micro']['1m']['trade'][
-            'time'] == True and self.trades['micro']['5m']['trade']['Momentum'] == False and \
-                self.trades['micro']['5m']['trade']['time'] == True:
-            self.show_message(message='Micro Short', cid=cid, play=play)
-            self.get_resume('micro', '5m', '1m', cid)
+    def download_test_data(self, cid):
+        try:
+            self.show_message('Descargando datos de prueba', cid, False)
 
-    def get_full_resumes(self, cid):
+            for time, options in self.configuration.items():
+                # Get Data
+                data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
+                                               save=True, sma=options['days_t'])
+                # Analyse
+                options['data'] = analysis(df=data, ma_f=options['sma_f'],
+                                           ma_s=options['sma_s'],
+                                           mas=options['smas'], time=time)
+                save_extracted_data(symbol=self.symbol, df=options['data'], form='sma-%s' % options['days_t'],
+                                    size=time)
+        except Exception as e:
+            print('Error: ', e)
+        df = pd.read_csv(get_file_name(self.symbol, '1m',
+                                       'sma-%s' % '15'))
+        new = df[
+            ['timestamp', 'mean_f_diff_res', 'ema_f_ups', 'positive_momentum', 'momentum', 'momentum_ups', 'buy_ema',
+             'RSI', 'positive_RSI', 'RSI_ups',
+             'close', 'open']].copy()
+        new.to_csv('test.csv', index=False)
+
+        self.show_message('Datos descargados', cid, False)
+
+    def load_test_data(self, cid):
+        self.show_message('Cargando datos', cid, False)
+        for time, options in self.configuration.items():
+            self.trades[self.get_type_trade(time)][time]['data'] = pd.read_csv(get_file_name(self.symbol, time,
+                                                                                             'sma-%s' % options[
+                                                                                                 'days_t']))
+        self.show_message('Los datos se cargaron', cid, False)
+
+    def make_simulation(self, cid):
+        try:
+            # Get Test Data
+            self.load_test_data(cid)
+
+            main = self.trades[self.get_type_trade('1m')]['1m']['data']
+            main = main[main['timestamp'] > '2022-02-06']
+            self.process_is_started = True
+            self.first_iteration = True
+
+            self.show_message('Realizando backtesting', cid, False)
+            for index, row in main.iterrows():
+                self.market_sentiment(row, '1m', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('5m', row['timestamp']), '5m', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('15m', row['timestamp']), '15m', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('30m', row['timestamp']), '30m', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('1h', row['timestamp']), '1h', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('4h', row['timestamp']), '4h', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('1d', row['timestamp']), '1d', [], [])
+                self.market_sentiment(self.get_last_row_dataframe_by_time('1w', row['timestamp']), '1w', [], [])
+                self.take_decision(cid=cid, play=False, testing=True)
+
+            df = pd.DataFrame(self.testing,
+                              columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Ema', 'Profit', 'Win'])
+
+            df.to_csv('processing.csv', index=False)
+
+            self.show_message('Proceso concluído', cid, False)
+
+        except Exception as e:
+            print('Error: ', e)
+
+    def get_last_row_dataframe_by_time(self, time, limiter):
+        data = self.trades[self.get_type_trade(time)][time]['data']
+        return data[data['timestamp'] <= limiter].iloc[-1, :]
+
+    def save_operative(self, temp, time, close, operative):
+        self.trade['temp'] = temp
+        self.trade['operative'] = operative
+        self.trade['time'] = time
+        self.trade['value'] = close
+
+    def show_results(self, cid, play, time_sup, time_inf, temp, operative, message, testing):
+        self.operative = True
+        self.save_operative(temp, time_inf, self.trades[temp][time_inf]['trade']['close'], operative)
+        if not testing:
+            self.show_message(message=message, cid=cid, play=play)
+            self.get_resume(temp, time_sup, time_inf, cid)
+        else:
+            row = [self.trades[temp][time_inf]['fingerprint'], 'Open', temp, operative,
+                   self.trades[temp][time_inf]['trade']['close'],
+                   self.trades[temp][time_inf]['trade']['ema_value'], 0, None]
+            self.testing.append(row)
+
+    def evaluate_operative(self, testing):
+        type = None
+        close = False
+        if self.trade['temp'] == 'micro':
+            if self.trade['operative'] == 'long':
+                if (not self.trades['micro']['1m']['trade']['mean_f']) and (
+                not self.trades['micro']['1m']['trade']['ema']) or (
+                        (self.trades['micro']['5m']['trade']['RSI_value'] > 70) and (not self.trades['micro']['5m']['trade']['RSI'])):
+                    type = 'Long'
+                    close = True
+            else:
+                if self.trades['micro']['1m']['trade']['mean_f'] and (self.trades['micro']['1m']['trade']['ema']) or (
+                        (self.trades['micro']['5m']['trade']['RSI_value'] < 25) and (self.trades['micro']['5m']['trade']['RSI'])):
+                    type = 'Short'
+                    close = True
+        if close:
+            self.operative = False
+            if not testing:
+                self.show_message(message='Cerrar %s en %s' % (type, self.trades['micro']['1m']['trade']['close']))
+            else:
+                if self.trade['operative'] == 'long':
+                    diff = float(self.trades[self.trade['temp']]['1m']['trade']['close']) - (float(self.trade['value']))
+                else:
+                    diff = (float(self.trade['value'])) - float(self.trades[self.trade['temp']]['1m']['trade']['close'])
+                win = True if diff > 0 else False
+                row = [self.trades[self.trade['temp']]['1m']['fingerprint'], 'Close', self.trade['temp'],
+                       self.trade['operative'],
+                       self.trades[self.trade['temp']]['1m']['trade']['close'],
+                       round(self.trades[self.trade['temp']]['1m']['trade']['ema_value'], 2), round(diff, 2), win
+                       ]
+                self.testing.append(row)
+
+    def take_decision(self, cid, play=False, testing=False):
+        # Micro Trade
+        if not self.operative:
+            if self.trade_type == 'micro':
+                # Long
+                if (self.trades['micro']['1m']['trade']['mean_f']) and (
+                        self.trades['micro']['1m']['trade']['Momentum']) and (
+                        not self.trades['micro']['1m']['trade']['time']) and (
+                        self.trades['medium']['1h']['trade']['Momentum']) and (
+                        self.trades['medium']['4h']['trade']['Momentum']) and (
+                        self.trades['micro']['5m']['trade']['Momentum']) and (
+                        self.trades['short']['15m']['trade']['Momentum']) and (
+                        self.trades['medium']['1h']['trade']['RSI']):
+                    if not self.trades['short']['15m']['trade']['Momentum']:
+                        m = 'Riesgo alto'
+                    else:
+                        m = 'Riesgo bajo'
+                    self.show_results(cid, play, '5m', '1m', 'micro', 'long', 'Micro Long - %s' % m, testing)
+                # Short
+                if (not self.trades['micro']['1m']['trade']['mean_f']) and (
+                        not self.trades['micro']['1m']['trade']['Momentum']) and (
+                        self.trades['micro']['1m']['trade']['time']) and (
+                        not self.trades['medium']['1h']['trade']['Momentum']) and (
+                        not self.trades['medium']['4h']['trade']['Momentum']) and (
+                        not self.trades['micro']['5m']['trade']['Momentum']) and (
+                        not self.trades['short']['15m']['trade']['Momentum']) and (
+                        not self.trades['medium']['1h']['trade']['RSI']):
+                    if self.trades['short']['15m']['trade']['Momentum']:
+                        m = 'Riesgo alto'
+                    else:
+                        m = 'Riesgo bajo'
+                    self.show_results(cid, play, '5m', '1m', 'micro', 'short', 'Micro Short - %s' % m, testing)
+        else:
+            self.evaluate_operative(testing)
+
+    def get_full_resumes(self, cid=None):
         if self.process_is_started and self.first_iteration:
             self.get_resume('large', '1w', '1d', cid)
             self.get_resume('medium', '4h', '1h', cid)
@@ -173,36 +321,39 @@ class CryptoBot:
 
         message += '\n'
 
+        if long:
+            message += '\n🟢 '
+        if short:
+            message += '\n🔴 '
+        message += '🔼 ' + str(self.trades[type][mayor]['trade']['high']) + ' 🔽 ' + \
+                   str(self.trades[type][mayor]['trade']['low']) + ' ⏺️ ' + str(
+            self.trades[type][mayor]['trade'][
+                'close']) + '\n'
+        message += mayor.upper() + ' RSI: ' + (
+            '🟢' if self.trades[type][mayor]['trade']['RSI'] else '🔴') + ' ' + str(
+            self.trades[type][mayor]['trade']['RSIs'])
+        message += ' Momentum: ' + (
+            '🟢' if self.trades[type][mayor]['trade']['Momentum'] else '🔴') + ' ' + (
+                       '🔼' if self.trades[type][mayor]['trade']['time'] else '🔽') + ' ' + str(
+            self.trades[type][mayor]['trade']['Momentums']) + '\n'
+        message += menor.upper() + ' RSI: ' + (
+            '🟢' if self.trades[type][menor]['trade']['RSI'] else '🔴') + ' ' + str(
+            self.trades[type][menor]['trade']['RSIs'])
+        message += ' Momentum: ' + (
+            '🟢' if self.trades[type][menor]['trade']['Momentum'] else '🔴') + ' ' + (
+                       '🔼' if self.trades[type][menor]['trade']['time'] else '🔽') + ' ' + str(
+            self.trades[type][menor]['trade']['Momentums']) + '\n'
+        message += 'Ema Sup: ' + (
+            '🟢 ' if self.trades[type][mayor]['trade']['ema'] else '🔴 ') + str(
+            round(self.trades[type][mayor]['trade']['ema_value'], 2)) + ' \n'
+        message += 'Ema Inf: ' + (
+            '🟢 ' if self.trades[type][menor]['trade']['ema'] else '🔴 ') + str(
+            round(self.trades[type][menor]['trade']['ema_value'], 2)) + '\n'
+
         if cid is not None:
-            if long:
-                message += '\n🟢 '
-            if short:
-                message += '\n🔴 '
-            message += '🔼 ' + str(self.trades[type][mayor]['trade']['high']) + ' 🔽 ' + \
-                       str(self.trades[type][mayor]['trade']['low']) + ' ⏺️ ' + str(
-                self.trades[type][mayor]['trade'][
-                    'close']) + '\n'
-            message += mayor.upper() + ' RSI: ' + (
-                '🟢' if self.trades[type][mayor]['trade']['RSI'] else '🔴') + ' ' + str(
-                self.trades[type][mayor]['trade']['RSIs'])
-            message += ' Momentum: ' + (
-                '🟢' if self.trades[type][mayor]['trade']['Momentum'] else '🔴') + ' ' + (
-                           '🔼' if self.trades[type][mayor]['trade']['time'] else '🔽') + ' ' + str(
-                self.trades[type][mayor]['trade']['Momentums']) + '\n'
-            message += menor.upper() + ' RSI: ' + (
-                '🟢' if self.trades[type][menor]['trade']['RSI'] else '🔴') + ' ' + str(
-                self.trades[type][menor]['trade']['RSIs'])
-            message += ' Momentum: ' + (
-                '🟢' if self.trades[type][menor]['trade']['Momentum'] else '🔴') + ' ' + (
-                           '🔼' if self.trades[type][menor]['trade']['time'] else '🔽') + ' ' + str(
-                self.trades[type][menor]['trade']['Momentums']) + '\n'
-            message += 'Ema Sup: ' + (
-                '🟢 ' if self.trades[type][mayor]['trade']['ema'] else '🔴 ') + str(
-                round(self.trades[type][mayor]['trade']['ema_value'], 2)) + ' \n'
-            message += 'Ema Inf: ' + (
-                '🟢 ' if self.trades[type][menor]['trade']['ema'] else '🔴 ') + str(
-                round(self.trades[type][menor]['trade']['ema_value'], 2)) + '\n'
             send_message(cid, message)
+        else:
+            print(message)
 
         return long, short
 
@@ -254,10 +405,8 @@ class CryptoBot:
         type = self.get_type_trade(time)
 
         if self.trades[type][time]['fingerprint'] == fingerprint and trade:
-            print('Es igual')
             return False
         else:
-            print('No es igual')
             self.trades[type][time]['fingerprint'] = last_row['time']
             self.trades[type][time]['trend'] = last_row['trend']
             self.trades[type][time]['buy'] = last_row['buy_trend']
@@ -270,7 +419,9 @@ class CryptoBot:
             self.trades[type][time]['trade']['low'] = last_row['low']
             self.trades[type][time]['trade']['close'] = last_row['close']
             self.trades[type][time]['trade']['RSI'] = last_row['positive_RSI']
+            self.trades[type][time]['trade']['RSI_value'] = last_row['RSI']
             self.trades[type][time]['trade']['RSIs'] = last_row['RSI_ups']
+            self.trades[type][time]['trade']['mean_f'] = last_row['mean_f_diff_res']
             self.trades[type][time]['trade']['Momentum'] = last_row['positive_momentum']
             self.trades[type][time]['trade']['Momentums'] = last_row['momentum_ups']
             self.trades[type][time]['trade']['time'] = last_row['mom_t']
