@@ -142,7 +142,7 @@ class CryptoBot:
             self.load_test_data(cid)
 
             main = self.trades[self.get_type_trade('1m')]['1m']['data']
-            main = main[main['timestamp'] > '2022-02-06']
+            main = main[main['timestamp'] > '2022-02-08']
             self.process_is_started = True
             self.first_iteration = True
 
@@ -159,9 +159,15 @@ class CryptoBot:
                 self.take_decision(cid=cid, play=False, testing=True)
 
             df = pd.DataFrame(self.testing,
-                              columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Ema', 'Profit', 'Win'])
+                              columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Ema', 'Profit', 'Result'])
 
             df.to_csv('processing.csv', index=False)
+            df = df[df['Result'] != 'Iniciado']
+            df_new = df.groupby('Result')['Profit'].agg(['sum', 'count']).reset_index(drop=False)
+            total = df_new['count'].sum()
+            df_new['%'] = (df_new['count'] * 100) / total
+            df_new.round(2)
+            df_new.to_csv('result.csv', index=False)
 
             self.show_message('Proceso concluído', cid, False)
 
@@ -187,7 +193,7 @@ class CryptoBot:
         else:
             row = [self.trades[temp][time_inf]['fingerprint'], 'Open', temp, operative,
                    self.trades[temp][time_inf]['trade']['close'],
-                   self.trades[temp][time_inf]['trade']['ema_value'], 0, None]
+                   self.trades[temp][time_inf]['trade']['ema_value'], 0, 'Iniciado']
             self.testing.append(row)
 
     def evaluate_operative(self, testing, cid, play):
@@ -196,25 +202,28 @@ class CryptoBot:
         if self.trade['temp'] == 'micro':
             if self.trade['operative'] == 'long':
                 if (not self.trades['micro']['1m']['trade']['mean_f']) and (
-                not self.trades['micro']['1m']['trade']['ema']) or (
-                        (self.trades['micro']['5m']['trade']['RSI_value'] > 70) and (not self.trades['micro']['5m']['trade']['RSI'])):
+                        not self.trades['micro']['1m']['trade']['ema']) or (
+                        (self.trades['micro']['5m']['trade']['RSI_value'] > 77) and (
+                        not self.trades['micro']['5m']['trade']['RSI'])):
                     type = 'Long'
                     close = True
             else:
                 if self.trades['micro']['1m']['trade']['mean_f'] and (self.trades['micro']['1m']['trade']['ema']) or (
-                        (self.trades['micro']['5m']['trade']['RSI_value'] < 25) and (self.trades['micro']['5m']['trade']['RSI'])):
+                        (self.trades['micro']['5m']['trade']['RSI_value'] < 23) and (
+                        self.trades['micro']['5m']['trade']['RSI'])):
                     type = 'Short'
                     close = True
         if close:
             self.operative = False
             if not testing:
-                self.show_message(message='Cerrar %s en %s' % (type, self.trades['micro']['1m']['trade']['close']), cid=cid, play=play)
+                self.show_message(message='Cerrar %s en %s' % (type, self.trades['micro']['1m']['trade']['close']),
+                                  cid=cid, play=play)
             else:
                 if self.trade['operative'] == 'long':
                     diff = float(self.trades[self.trade['temp']]['1m']['trade']['close']) - (float(self.trade['value']))
                 else:
                     diff = (float(self.trade['value'])) - float(self.trades[self.trade['temp']]['1m']['trade']['close'])
-                win = True if diff > 0 else False
+                win = 'Ganado' if diff > 0 else 'Perdido'
                 row = [self.trades[self.trade['temp']]['1m']['fingerprint'], 'Close', self.trade['temp'],
                        self.trade['operative'],
                        self.trades[self.trade['temp']]['1m']['trade']['close'],
@@ -233,7 +242,6 @@ class CryptoBot:
                         self.trades['medium']['1h']['trade']['Momentum']) and (
                         self.trades['medium']['4h']['trade']['Momentum']) and (
                         self.trades['micro']['5m']['trade']['Momentum']) and (
-                        self.trades['short']['15m']['trade']['Momentum']) and (
                         self.trades['medium']['1h']['trade']['RSI']):
                     if not self.trades['short']['15m']['trade']['Momentum']:
                         m = 'Riesgo alto'
@@ -247,7 +255,6 @@ class CryptoBot:
                         not self.trades['medium']['1h']['trade']['Momentum']) and (
                         not self.trades['medium']['4h']['trade']['Momentum']) and (
                         not self.trades['micro']['5m']['trade']['Momentum']) and (
-                        not self.trades['short']['15m']['trade']['Momentum']) and (
                         not self.trades['medium']['1h']['trade']['RSI']):
                     if self.trades['short']['15m']['trade']['Momentum']:
                         m = 'Riesgo alto'
