@@ -166,7 +166,7 @@ class CryptoBot:
             df_new = df.groupby('Result')['Profit'].agg(['sum', 'count']).reset_index(drop=False)
             total = df_new['count'].sum()
             df_new['%'] = (df_new['count'] * 100) / total
-            df_new.round(2)
+            df_new = df_new.round(2)
             df_new.to_csv('result.csv', index=False)
 
             self.show_message('Proceso concluído', cid, False)
@@ -201,14 +201,14 @@ class CryptoBot:
         close = False
         if self.trade['temp'] == 'micro':
             if self.trade['operative'] == 'long':
-                if (not self.trades['micro']['1m']['trade']['mean_f']) and (
-                        not self.trades['micro']['1m']['trade']['ema']) or (
+                if ((not self.trades['micro']['1m']['trade']['mean_f']) and (
+                        not self.trades['micro']['5m']['trade']['RSI'])) or (
                         (self.trades['micro']['5m']['trade']['RSI_value'] > 77) and (
                         not self.trades['micro']['5m']['trade']['RSI'])):
                     type = 'Long'
                     close = True
             else:
-                if self.trades['micro']['1m']['trade']['mean_f'] and (self.trades['micro']['1m']['trade']['ema']) or (
+                if (self.trades['micro']['1m']['trade']['mean_f'] and (self.trades['micro']['5m']['trade']['RSI'])) or (
                         (self.trades['micro']['5m']['trade']['RSI_value'] < 23) and (
                         self.trades['micro']['5m']['trade']['RSI'])):
                     type = 'Short'
@@ -239,7 +239,7 @@ class CryptoBot:
                 if (self.trades['micro']['1m']['trade']['mean_f']) and (
                         self.trades['micro']['1m']['trade']['Momentum']) and (
                         not self.trades['micro']['1m']['trade']['time']) and (
-                        self.trades['medium']['1h']['trade']['Momentum']) and (
+                        self.trades['medium']['1h']['trade']['mean_f']) and (
                         self.trades['medium']['4h']['trade']['Momentum']) and (
                         self.trades['micro']['5m']['trade']['Momentum']) and (
                         self.trades['medium']['1h']['trade']['RSI']):
@@ -252,7 +252,7 @@ class CryptoBot:
                 if (not self.trades['micro']['1m']['trade']['mean_f']) and (
                         not self.trades['micro']['1m']['trade']['Momentum']) and (
                         self.trades['micro']['1m']['trade']['time']) and (
-                        not self.trades['medium']['1h']['trade']['Momentum']) and (
+                        not self.trades['medium']['1h']['trade']['mean_f']) and (
                         not self.trades['medium']['4h']['trade']['Momentum']) and (
                         not self.trades['micro']['5m']['trade']['Momentum']) and (
                         not self.trades['medium']['1h']['trade']['RSI']):
