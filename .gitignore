@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 .idea/
 
-
+test.csv
+result.csv
+processing.csv
 
 # Project Resources
 datasets/
