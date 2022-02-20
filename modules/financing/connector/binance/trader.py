@@ -190,7 +190,7 @@ class CryptoBot:
                    self.trades[temp][time_inf]['trade']['ema_value'], 0, None]
             self.testing.append(row)
 
-    def evaluate_operative(self, testing):
+    def evaluate_operative(self, testing, cid, play):
         type = None
         close = False
         if self.trade['temp'] == 'micro':
@@ -208,7 +208,7 @@ class CryptoBot:
         if close:
             self.operative = False
             if not testing:
-                self.show_message(message='Cerrar %s en %s' % (type, self.trades['micro']['1m']['trade']['close']))
+                self.show_message(message='Cerrar %s en %s' % (type, self.trades['micro']['1m']['trade']['close']), cid=cid, play=play)
             else:
                 if self.trade['operative'] == 'long':
                     diff = float(self.trades[self.trade['temp']]['1m']['trade']['close']) - (float(self.trade['value']))
@@ -222,7 +222,7 @@ class CryptoBot:
                        ]
                 self.testing.append(row)
 
-    def take_decision(self, cid, play=False, testing=False):
+    def take_decision(self, cid=None, play=False, testing=False):
         # Micro Trade
         if not self.operative:
             if self.trade_type == 'micro':
@@ -255,7 +255,7 @@ class CryptoBot:
                         m = 'Riesgo bajo'
                     self.show_results(cid, play, '5m', '1m', 'micro', 'short', 'Micro Short - %s' % m, testing)
         else:
-            self.evaluate_operative(testing)
+            self.evaluate_operative(testing, cid, play)
 
     def get_full_resumes(self, cid=None):
         if self.process_is_started and self.first_iteration:
