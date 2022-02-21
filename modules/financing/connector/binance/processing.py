@@ -106,6 +106,9 @@ def get_stats(df):
 
 
 def analysis(df, ma_f, ma_s, mas, time):
+    df['last_close'] = df['close'].shift(1)
+    df['close_variation'] = df['close'] - df['last_close']
+
     for ma in mas:
         df = simple_moving_average(ma, df, 'close')
 

@@ -121,9 +121,10 @@ class CryptoBot:
         df = pd.read_csv(get_file_name(self.symbol, '1m',
                                        'sma-%s' % '15'))
         new = df[
-            ['timestamp', 'mean_f_diff_res', 'ema_f_ups', 'positive_momentum', 'momentum', 'momentum_ups', 'buy_ema',
+            ['timestamp', 'mean_f_diff_res', 'ema_f_ups', 'DIFF', 'ups', 'positive_momentum', 'momentum',
+             'momentum_ups', 'buy_ema',
              'RSI', 'positive_RSI', 'RSI_ups',
-             'close', 'open']].copy()
+             'close', 'open', 'last_close', 'close_variation']].copy()
         new.to_csv('test.csv', index=False)
 
         self.show_message('Datos descargados', cid, False)
@@ -242,7 +243,9 @@ class CryptoBot:
                         self.trades['medium']['1h']['trade']['mean_f']) and (
                         self.trades['medium']['4h']['trade']['Momentum']) and (
                         self.trades['micro']['5m']['trade']['Momentum']) and (
-                        self.trades['medium']['1h']['trade']['RSI']):
+                        self.trades['medium']['1h']['trade']['RSI']) and (
+                        self.trades['micro']['1m']['trade']['confirm_dir'] and
+                        self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1):
                     if not self.trades['short']['15m']['trade']['Momentum']:
                         m = 'Riesgo alto'
                     else:
@@ -255,7 +258,9 @@ class CryptoBot:
                         not self.trades['medium']['1h']['trade']['mean_f']) and (
                         not self.trades['medium']['4h']['trade']['Momentum']) and (
                         not self.trades['micro']['5m']['trade']['Momentum']) and (
-                        not self.trades['medium']['1h']['trade']['RSI']):
+                        not self.trades['medium']['1h']['trade']['RSI']) and (
+                        not self.trades['micro']['1m']['trade']['confirm_dir'] and
+                        self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1):
                     if self.trades['short']['15m']['trade']['Momentum']:
                         m = 'Riesgo alto'
                     else:
@@ -427,10 +432,14 @@ class CryptoBot:
             self.trades[type][time]['trade']['close'] = last_row['close']
             self.trades[type][time]['trade']['RSI'] = last_row['positive_RSI']
             self.trades[type][time]['trade']['RSI_value'] = last_row['RSI']
+            self.trades[type][time]['trade']['last_RSI_value'] = last_row['RSI_rv']
             self.trades[type][time]['trade']['RSIs'] = last_row['RSI_ups']
             self.trades[type][time]['trade']['mean_f'] = last_row['mean_f_diff_res']
             self.trades[type][time]['trade']['Momentum'] = last_row['positive_momentum']
             self.trades[type][time]['trade']['Momentums'] = last_row['momentum_ups']
+            self.trades[type][time]['trade']['confirm_dir'] = last_row['DIFF']
+            self.trades[type][time]['trade']['confirm_dir_ups'] = last_row['ups']
+            self.trades[type][time]['trade']['variation'] = last_row['close_variation']
             self.trades[type][time]['trade']['time'] = last_row['mom_t']
             self.trades[type][time]['trade']['ema'] = last_row['buy_ema']
             self.trades[type][time]['trade']['ema_value'] = last_row['mean_close_55']
