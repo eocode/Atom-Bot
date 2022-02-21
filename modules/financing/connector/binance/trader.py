@@ -93,7 +93,7 @@ class CryptoBot:
 
                         last_row = df.iloc[-1, :]
                         self.market_sentiment(last_row, time, options['support'], options['resistance'])
-                        sleep(1)
+                        sleep(2)
                     self.first_iteration = True
                     self.take_decision(cid, False)
                 except Exception as e:
