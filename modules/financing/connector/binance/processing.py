@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib
 from datetime import datetime
-from modules.financing.connector.binance.extractor import get_file_name, convert_columns_to_float
+from modules.financing.connector.binance.extractor import get_file_name, convert_columns_to_float, \
+    get_binance_symbol_data, save_extracted_data, save_clean_result, get_type_trade
 import math
 
 matplotlib.use('Agg')
@@ -303,3 +304,27 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         plt.savefig(get_file_name(symbol=symbol, form=form, size=size, data_type='png'))
     except Exception as e:
         print(e)
+
+
+def download_test_data(symbol, items):
+    try:
+        for time, options in items:
+            # Get Data
+            data = get_binance_symbol_data(symbol=symbol, kline_size=time, auto_increment=False,
+                                           save=True, sma=options['days_t'])
+            # Analyse
+            options['data'] = analysis(df=data, ma_f=options['sma_f'],
+                                       ma_s=options['sma_s'],
+                                       mas=options['smas'], time=time)
+            save_extracted_data(symbol=symbol, df=options['data'], form='sma-%s' % options['days_t'],
+                                size=time)
+            save_clean_result(symbol, time, options['days_t'])
+    except Exception as e:
+        print('Error: ', e)
+
+
+def load_test_data(items, trades, symbol):
+    for time, options in items:
+        trades[get_type_trade(time, trades)][time]['data'] = pd.read_csv(get_file_name(symbol, time,
+                                                                               'sma-%s' % options[
+                                                                                   'days_t']))

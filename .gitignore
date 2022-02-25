@@ -11,6 +11,7 @@ processing.csv
 # Project Resources
 datasets/
 images/
+backtesting/
 
 # Test files
 simulate.py

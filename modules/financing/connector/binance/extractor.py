@@ -53,6 +53,7 @@ def minutes_of_new_data(symbol, kline_size, data, source):
 
 
 folder_path = 'datasets'
+processing_files = 'backtesting'
 image_path = 'images'
 
 
@@ -69,11 +70,60 @@ def get_file_name(symbol, size, form='all', data_type='csv'):
         return ''
 
 
+def get_processing_file_name(symbol, size, form='result'):
+    if not os.path.exists(processing_files):
+        os.mkdir(processing_files)
+    return processing_files + '/' + '%s-%s-%s.csv' % (symbol, size, form)
+
+
 def save_extracted_data(symbol, size, df, form='all'):
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
 
     df.to_csv(get_file_name(symbol, size, form))
+
+
+def save_clean_result(symbol, time, days):
+    df = pd.read_csv(get_file_name(symbol, time,
+                                   'sma-%s' % days))
+    new_df = df[
+        ['timestamp', 'mean_f_diff_res', 'ema_f_ups', 'DIFF', 'ups', 'positive_momentum', 'momentum',
+         'momentum_ups', 'buy_ema',
+         'RSI', 'positive_RSI', 'RSI_ups',
+         'close', 'open', 'last_close', 'close_variation']].copy()
+
+    new_df.to_csv(get_processing_file_name(symbol, time), index=False)
+
+
+def get_type_trade(time, trades):
+    type = ''
+    if time in trades['large']:
+        type = 'large'
+    if time in trades['medium']:
+        type = 'medium'
+    if time in trades['short']:
+        type = 'short'
+    if time in trades['micro']:
+        type = 'micro'
+
+    return type
+
+
+def get_last_row_dataframe_by_time(trades, time, limiter):
+    data = trades[get_type_trade(time, trades)][time]['data']
+    return data[data['timestamp'] <= limiter].iloc[-1, :]
+
+
+def listToString(s):
+    # initialize an empty string
+    str1 = ""
+
+    # traverse in the string
+    for ele in s:
+        str1 += str(ele) + ", "
+
+        # return string
+    return str1[:-2]
 
 
 def merge_df(df_first, df_second, auto_increment=True):

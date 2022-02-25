@@ -38,8 +38,9 @@ commands["ver_graficos"] = "Indicadores de trade"
 commands["trade"] = "Recibe recomendaciones"
 commands["ver_analisis"] = "Ver analisis general"
 commands["ver_resumen"] = "Resumen del analisis"
-commands["datos_prueba"] = "Prepara el backtest"
 commands["simular_trades"] = "Realiza un backtest"
+commands["trade_actual"] = "Revisa la última operativa marcada"
+
 
 
 # Bot listener

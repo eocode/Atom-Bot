@@ -155,72 +155,72 @@ trades = {
 
 configuration = {
     "1w": {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 1095,
         'days_s': 1095,
         'days_t': 1095,
         'plot': 90
     },
     '1d': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 270,
         'days_s': 90,
         'days_t': 90,
         'plot': 90
     },
     '4h': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 60,
         'days_s': 30,
         'days_t': 60,
         'plot': 90
     },
     '1h': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 30,
         'days_s': 30,
         'days_t': 60,
         'plot': 90
     },
     '30m': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 3,
         'days_s': 2,
         'days_t': 30,
         'plot': 90
     },
     '15m': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 3,
         'days_s': 2,
         'days_t': 30,
         'plot': 90
     },
     '5m': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 3,
         'days_s': 2,
         'days_t': 30,
         'plot': 90
     },
     '1m': {
-        'smas': [10, 55],
+        'smas': [9, 55],
         'sma_s': 55,
-        'sma_f': 10,
+        'sma_f': 9,
         'days': 3,
         'days_s': 1,
         'days_t': 15,

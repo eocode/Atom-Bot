@@ -1,5 +1,7 @@
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from modules.core.data.user import get_user_info
-from modules.financing.data.trader import operatives, TraderOPS
+from modules.financing.data.trader import operatives
 from modules.financing.model.trade import get_last_trade, save_current_price
 from modules.financing.crypto.operations import get_stats, get_escential_data, current_stats
 from bot.bot import bot
@@ -47,6 +49,16 @@ def command_operation(m):
     bot.register_next_step_handler(msg, process_amount_future_step)
 
 
+@bot.message_handler(commands=["trade_actual"])
+def command_operation(message):
+    cid = message.chat.id
+    user = get_user_info(cid)
+    if user.market in operatives:
+        operatives[user.market].monitor.show_operative(cid, False)
+    else:
+        send_message(cid, 'Necesita preparar la operativa antes')
+
+
 @bot.message_handler(commands=["ver_graficos"])
 def command_operation(message):
     cid = message.chat.id
@@ -70,23 +82,48 @@ def command_operation(message):
     cid = message.chat.id
     user = get_user_info(cid)
     if user.market in operatives:
-        operatives[user.market].monitor.get_trades(cid)
+        operatives[user.market].monitor.get_trades(cid, 1)
 
 
-@bot.message_handler(commands=["datos_prueba"])
-def command_operation(message):
+@bot.message_handler(func=lambda message: True, commands=["simular_trades"])
+def message_handler(message):
     cid = message.chat.id
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.add(InlineKeyboardButton("Si", callback_data="yes"),
+               InlineKeyboardButton("No", callback_data="no"))
+    bot.send_message(cid, "¿Quieres descargar nuevos datos de prueba?", reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    cid = call.message.chat.id
+    print(cid)
+    download = False
+    if call.data == "yes":
+        bot.answer_callback_query(call.id, "Descargando datos de prueba")
+        download = True
+    elif call.data == "no":
+        bot.answer_callback_query(call.id, "Se usara la base de datos existente")
+        download = False
+
+    bot.send_chat_action(cid, "typing")
     user = get_user_info(cid)
     if user.market in operatives:
-        operatives[user.market].monitor.download_test_data(cid)
+        operatives[user.market].monitor.make_simulation(cid=cid, download=download)
 
 
-@bot.message_handler(commands=["simular_trades"])
-def command_operation(message):
-    cid = message.chat.id
-    user = get_user_info(cid)
-    if user.market in operatives:
-        operatives[user.market].monitor.make_simulation(cid)
+def trade_steps(message):
+    try:
+        cid = message.chat.id
+        bot.send_chat_action(cid, "typing")
+        response = message.text
+        cid = message.chat.id
+        user = get_user_info(cid)
+        if user.market in operatives:
+            operatives[user.market].monitor.make_simulation(cid)
+    except Exception as e:
+        bot.reply_to(message, "Algo salio mal")
 
 
 @bot.message_handler(commands=["ver_resumen"])
