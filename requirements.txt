@@ -8,7 +8,6 @@ pyTelegramBotAPI
 python-binance
 pytz
 regex
-requestsx
 SQLAlchemy
 Unidecode
 urllib3

@@ -326,5 +326,5 @@ def download_test_data(symbol, items):
 def load_test_data(items, trades, symbol):
     for time, options in items:
         trades[get_type_trade(time, trades)][time]['data'] = pd.read_csv(get_file_name(symbol, time,
-                                                                               'sma-%s' % options[
-                                                                                   'days_t']))
+                                                                                       'sma-%s' % options[
+                                                                                           'days_t']))
