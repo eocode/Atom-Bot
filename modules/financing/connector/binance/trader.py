@@ -65,6 +65,7 @@ class CryptoBot:
                         sleep(2)
                     self.first_iteration = True
                     self.take_decision(cid, False)
+                    print(self.trades['micro', '1m']['fingerprint'])
                 except Exception as e:
                     print('Error: ', e)
         else:
