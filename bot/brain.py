@@ -7,7 +7,7 @@ import os
 
 load_dotenv()
 
-url = 'mysql+mysqlconnector://' + os.environ['DB_USER'] + ':' + os.environ['DB_PASS'] + '@' + os.environ[
+url = 'mysql+pymysql://' + os.environ['DB_USER'] + ':' + os.environ['DB_PASS'] + '@' + os.environ[
     'DB_HOST'] + ':3306/' + os.environ['DB_NAME']
 engine = create_engine(url, echo=False, pool_pre_ping=True, pool_recycle=3600)
 conn = engine.connect()

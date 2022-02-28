@@ -16,3 +16,4 @@ pandas_datareader
 matplotlib
 requests
 scipy
+pymysql
