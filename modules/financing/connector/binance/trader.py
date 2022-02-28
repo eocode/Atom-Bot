@@ -98,6 +98,7 @@ class CryptoBot:
                 self.market_sentiment(get_last_row_dataframe_by_time(trades, '1d', row['timestamp']), '1d', [], [])
                 self.market_sentiment(get_last_row_dataframe_by_time(trades, '1w', row['timestamp']), '1w', [], [])
                 self.take_decision(cid=cid, play=False, testing=True)
+                print(self.trades['micro', '1m']['fingerprint'])
 
             df = pd.DataFrame(self.testing,
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
