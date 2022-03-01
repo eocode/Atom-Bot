@@ -149,18 +149,20 @@ class CryptoBot:
             message += "Inicial: %s - Actual: %s \n" % (
                 self.trade['value'], self.trades['micro']['1m']['trade']['close'])
             message += "Resultado: %s\n" % (self.profit())
-            message += "Soportes: %s %s %s %s\n" % (
-                self.trades['medium']['4h']['support'], self.trades['medium']['1h']['support'],
-                '' if self.trade['last_time'] not in ('1m', '1h', '4h') else
-                self.trades[self.trade['last_temp']][self.trade['last_time']][
-                    'support'],
-                self.trades['micro']['1m']['support'])
-            message += "Resistencias: %s %s %s %s\n" % (
-                self.trades['medium']['4h']['resistance'], self.trades['medium']['1h']['resistance'],
-                ('' if self.trade['last_time'] not in ('1m', '1h', '4h') else
-                 self.trades[self.trade['last_temp']][self.trade['last_time']][
-                     'resistance']),
-                self.trades['micro']['1m']['resistance'])
+            support = set.union(set(self.trades['medium']['4h']['support']),
+                                set(self.trades['medium']['1h']['support']))
+            support = set.union(support, set(self.trades['large']['1d']['support']))
+            support = set.union(support, set(self.trades['short']['30m']['support']))
+            support = set.union(support, set(self.trades['short']['15m']['support']))
+            support = set.union(support, set(self.trades['micro']['1m']['support']))
+            message += "Soportes: %s \n" % list(support)
+            resistance = set.union(set(self.trades['medium']['4h']['resistance']),
+                                   set(self.trades['medium']['1h']['resistance']))
+            resistance = set.union(resistance, set(self.trades['large']['1d']['resistance']))
+            resistance = set.union(resistance, set(self.trades['short']['30m']['resistance']))
+            resistance = set.union(resistance, set(self.trades['short']['15m']['resistance']))
+            resistance = set.union(resistance, set(self.trades['micro']['1m']['resistance']))
+            message += "Resistencias: %s\n" % list(resistance)
         else:
             message = "Primero se debe iniciar el proceso de monitoreo"
         self.show_message(message=message, cid=cid, play=play)
