@@ -1,8 +1,7 @@
 import pandas as pd
 
-from bot import send_voice
 from bot.brain import binance_client
-from bot.connect.communication import send_message
+from bot.connect.communication import send_message, send_voice
 from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.connector.binance.processing import analysis, plot_df, supres, download_test_data, load_test_data
