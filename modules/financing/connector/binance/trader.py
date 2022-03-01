@@ -1,4 +1,6 @@
 import pandas as pd
+
+from bot import send_voice
 from bot.brain import binance_client
 from bot.connect.communication import send_message
 from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
@@ -253,6 +255,17 @@ class CryptoBot:
     def notify(self, testing, message, action, cid=None, play=False):
         if not testing:
             self.show_message(message=message, cid=cid, play=play)
+            self.show_message(message=message, cid=cid, play=play)
+            if action == 'Open':
+                message = "ALERTA de %s en %s" % (('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'),
+                                                  self.trades['micro']['1m']['trade']['close'])
+            if action == 'Update':
+                message = "ALERTA de actualización en %s" % (self.trades['micro']['1m']['trade']['close'])
+            if action == 'Close':
+                message = "ALERTA de cerrar en %s" % (self.trades['micro']['1m']['trade']['close'])
+            send_voice(message)
+            send_voice(message)
+            send_voice(message)
         else:
             win = ''
             if action != 'Close':
@@ -379,10 +392,6 @@ class CryptoBot:
                         not self.trades['micro']['1m']['trade']['Momentum'] and
                         not self.trades['micro']['5m']['trade']['Momentum'] and
                         not self.trades['short']['15m']['trade']['Momentum']):
-                    if not self.trades['short']['15m']['trade']['Momentum']:
-                        m = 'Riesgo alto'
-                    else:
-                        m = 'Riesgo bajo'
                     self.show_results(cid, play, 'Iniciado', testing, 'micro', '1m', 'long')
                 # Short
                 if ((not self.trades['micro']['1m']['trade']['mean_f']) and (
@@ -392,36 +401,7 @@ class CryptoBot:
                         self.trades['micro']['1m']['trade']['Momentum'] and
                         self.trades['micro']['5m']['trade']['Momentum'] and
                         self.trades['short']['15m']['trade']['Momentum']):
-                    if self.trades['short']['15m']['trade']['Momentum']:
-                        m = 'Riesgo alto'
-                    else:
-                        m = 'Riesgo bajo'
                     self.show_results(cid, play, 'Iniciado', testing, 'micro', '1m', 'short')
-        #     if self.trade_type == 'micro':
-        #         # Long
-        #         if (self.trades['micro']['1m']['trade']['mean_f']) and (
-        #                 self.trades['micro']['1m']['trade']['Momentum']) and (
-        #                 not self.trades['micro']['1m']['trade']['time']) and (
-        #                 self.trades['short']['30m']['trade']['RSI']) and (
-        #                 self.trades['micro']['5m']['trade']['RSI']) and (
-        #                 self.trades['micro']['1m']['trade']['confirm_dir'] and
-        #                 self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1):
-        #             if not self.trades['short']['15m']['trade']['Momentum']:
-        #                 m = 'Riesgo alto'
-        #             else:
-        #                 m = 'Riesgo bajo'
-        #             self.show_results(cid, play, '5m', '1m', 'micro', 'long', 'Micro Long - %s' % m, testing)
-        #         # Short
-        #         if (not self.trades['micro']['1m']['trade']['mean_f']) and (
-        #                 not self.trades['micro']['1m']['trade']['Momentum']) and (
-        #                 self.trades['micro']['1m']['trade']['time']) and (
-        #                 not self.trades['micro']['1m']['trade']['confirm_dir'] and
-        #                 self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1):
-        #             if self.trades['short']['15m']['trade']['Momentum']:
-        #                 m = 'Riesgo alto'
-        #             else:
-        #                 m = 'Riesgo bajo'
-        #             self.show_results(cid, play, '5m', '1m', 'micro', 'short', 'Micro Short - %s' % m, testing)
         else:
             self.evaluate_operative(testing, cid, play)
 
