@@ -7,6 +7,7 @@ from telebot.types import ReplyKeyboardRemove
 
 from bot.constants import version
 from bot.bot import bot
+from modules.core.data.user import get_user_info
 from modules.core.model.account import get_settings
 
 name = os.environ["bot_name"]
@@ -31,7 +32,7 @@ def send_voice(text):
 
 
 def send_message(cid, text, play=True, close_markup=False):
-    usr = get_settings(cid)
+    usr = get_user_info(cid)
     bot.send_chat_action(cid, "typing")
     if close_markup:
         bot.send_message(

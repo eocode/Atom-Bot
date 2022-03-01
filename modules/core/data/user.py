@@ -9,6 +9,7 @@ class User:
         self.crypto = None
         self.pair = None
         self.platform = None
+        self.speak = None
 
 
 def get_user_info(cid):
