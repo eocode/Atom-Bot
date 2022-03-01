@@ -1,7 +1,6 @@
 alembic
 dateparser
 gTTS
-mysql-connector-python
 numpy
 pandas
 pyTelegramBotAPI
