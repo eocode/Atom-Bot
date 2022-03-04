@@ -67,6 +67,7 @@ class CryptoBot:
                     self.first_iteration = True
                     self.take_decision(cid, False)
                     print(self.trades['micro']['1m']['fingerprint'])
+                    sleep(30)
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -292,7 +293,7 @@ class CryptoBot:
         if self.trade['operative'] == 'long':
             if self.trade['last_time'] == '1m':
                 if not self.trades['micro']['1m']['trade']['mean_f'] and (
-                        not self.trades['short']['30m']['trade']['Momentum']):
+                        not self.trades['short']['15m']['trade']['Momentum']):
                     temp = 'Long'
                     close = True
             if self.trade['last_time'] == '5m':
@@ -334,7 +335,7 @@ class CryptoBot:
         else:
             if self.trade['last_time'] == '1m':
                 if self.trades['micro']['1m']['trade']['mean_f'] and (
-                        self.trades['short']['30m']['trade']['Momentum']):
+                        self.trades['short']['15m']['trade']['Momentum']):
                     temp = 'Short'
                     close = True
             if self.trade['last_time'] == '5m':
