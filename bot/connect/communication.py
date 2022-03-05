@@ -28,6 +28,11 @@ def send_voice(text):
         tts = gTTS(text, lang="es", tld="com.mx")
         tts.save(file)
         os.system("mpg123 " + file)
+    else:
+        tts = gTTS(text, lang="es", tld="com.mx")
+        tts.save(file)
+        from playsound import playsound
+        playsound(file)
     os.remove(file)
 
 

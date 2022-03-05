@@ -16,4 +16,4 @@ session = Session()
 Base = declarative_base()
 
 binance_client = Client(api_key=os.environ['binance_api_key'], api_secret=os.environ['binance_api_secret'])
-binsizes = {"1m": 1, "5m": 5, "1h": 60, "4h": 240, "1d": 1440}
+bin_sizes = {"1m": 1, "5m": 5, "1h": 60, "4h": 240, "1d": 1440}

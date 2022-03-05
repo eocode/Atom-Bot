@@ -25,22 +25,13 @@ commands["mi_id"] = "Obten tu identificador único"
 commands["configuracion"] = "Tus ajustes actuales"
 
 # # Crypto commands
-commands["elegir_mercado"] = "Para tus operaciones"
-# commands["crypto_get_stats"] = "Estadísticas actuales del mercado seleccionado"
-# commands["crypto_convert_second_to_first"] = "Convierte de acuerdo a tus configuraciones"
-# commands["crypto_convert_first_to_second"] = "Convierte de acuerdo a tus configuraciones"
-# commands["operation"] = "Realiza los cálculos para una operación en este momento"
-# commands["simulation"] = "Simula una operación con un monto de inversión y un precio futuro del mercado"
-# commands["monitor"] = "Monitorea el precio del BTC por 5 min si tienes una operación abierta"
-# commands["monitor_trade"] = "Alerta de valor minimo"
-# commands["smart_alerts"] = "Ejecuta un monitor inteligente que te enviará notificaciones de forma automática (BETA)"
+commands["elegir_mercado"] = "Selecciona un mercado"
 commands["ver_graficos"] = "Indicadores de trade"
 commands["trade"] = "Recibe recomendaciones"
 commands["ver_analisis"] = "Ver analisis general"
 commands["ver_resumen"] = "Resumen del analisis"
 commands["simular_trades"] = "Realiza un backtest"
-commands["trade_actual"] = "Revisa la última operativa marcada"
-
+commands["trade_actual"] = "Revisa la última operativa"
 
 
 # Bot listener

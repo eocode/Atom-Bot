@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import dateparser
 import pytz
 
-from bot.brain import binance_client, binsizes
+from bot.brain import binance_client, bin_sizes
 import math
 
 
@@ -159,7 +159,7 @@ def convert_columns_to_float(df, columns):
 def get_klines(symbol, kline_size, data_df):
     oldest_point, newest_point = minutes_of_new_data(symbol, kline_size, data_df, source="binance")
     delta_min = (newest_point - oldest_point).total_seconds() / 60
-    available_data = math.ceil(delta_min / binsizes[kline_size])
+    available_data = math.ceil(delta_min / bin_sizes[kline_size])
     print(oldest_point, newest_point, available_data)
     return binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
                                                 start_str=oldest_point.strftime("%d %b %Y %H:%M:%S"),
