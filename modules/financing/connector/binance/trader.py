@@ -59,10 +59,9 @@ class CryptoBot:
                         options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
                                                    mas=options['smas'], time=time)
                         df = options['data'].tail(365)
-                        options['support'], options['resistance'] = supres(df['close'].to_numpy(), 30)
 
                         last_row = df.iloc[-1, :]
-                        self.market_sentiment(last_row, time, options['support'], options['resistance'])
+                        self.market_sentiment(last_row, time)
                         sleep(2)
                     self.first_iteration = True
                     self.take_decision(cid, False)
@@ -92,14 +91,14 @@ class CryptoBot:
 
             self.show_message('Analizando situación actual del mercado', cid, False)
             for index, row in main.iterrows():
-                self.market_sentiment(row, '1m', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '5m', row['timestamp']), '5m', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '15m', row['timestamp']), '15m', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '30m', row['timestamp']), '30m', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1h', row['timestamp']), '1h', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '4h', row['timestamp']), '4h', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1d', row['timestamp']), '1d', [], [])
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1w', row['timestamp']), '1w', [], [])
+                self.market_sentiment(row, '1m')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '5m', row['timestamp']), '5m')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '15m', row['timestamp']), '15m')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '30m', row['timestamp']), '30m')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1h', row['timestamp']), '1h')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '4h', row['timestamp']), '4h')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1d', row['timestamp']), '1d')
+                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1w', row['timestamp']), '1w')
                 self.take_decision(cid=cid, play=False, testing=True)
                 print(self.trades['micro']['1m']['fingerprint'])
 
@@ -107,7 +106,7 @@ class CryptoBot:
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
                                        'Time'])
 
-            df.to_csv('processing.csv', index=False)
+            df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
             df = df[df['Result'] != 'Iniciado']
             df = df[df['Result'] != 'Actualización']
             df_new = df.groupby(['Operative', 'Result'])['Profit'].agg(['sum', 'count']).reset_index(drop=False)
@@ -116,7 +115,7 @@ class CryptoBot:
             df_new['%_price'] = (df_new['count'] * 100) / total
             df_new['%_by_price'] = (df_new['sum'] * 100) / total_price
             df_new = df_new.round(2)
-            df_new.to_csv('result.csv', index=False)
+            df_new.to_csv('backtesting/result_%s.csv' % self.symbol, index=False)
 
             self.show_message('Análisis terminado', cid, False)
 
@@ -151,23 +150,8 @@ class CryptoBot:
                 message += "Inicial: %s - Actual: %s \n" % (
                     self.trade['value'], self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s\n" % (self.profit())
-                support = set.union(set(self.trades['medium']['4h']['support']),
-                                    set(self.trades['medium']['1h']['support']))
-                support = set.union(support, set(self.trades['large']['1d']['support']))
-                support = set.union(support, set(self.trades['short']['30m']['support']))
-                support = set.union(support, set(self.trades['short']['15m']['support']))
-                support = set.union(support, set(self.trades['micro']['1m']['support']))
-                message += "Soportes: %s \n" % list(support)
-                resistance = set.union(set(self.trades['medium']['4h']['resistance']),
-                                       set(self.trades['medium']['1h']['resistance']))
-                resistance = set.union(resistance, set(self.trades['large']['1d']['resistance']))
-                resistance = set.union(resistance, set(self.trades['short']['30m']['resistance']))
-                resistance = set.union(resistance, set(self.trades['short']['15m']['resistance']))
-                resistance = set.union(resistance, set(self.trades['micro']['1m']['resistance']))
-                message += "Resistencias: %s\n" % list(resistance)
             else:
                 message = "No hay ninguna operativa actualmente"
-                self.show_message(message=message, cid=cid, play=play)
         else:
             message = "Primero se debe iniciar el proceso de monitoreo"
         self.show_message(message=message, cid=cid, play=play)
@@ -517,7 +501,7 @@ class CryptoBot:
         self.show_dict(self.trades['short'], cid, False)
         self.show_dict(self.trades['micro'], cid, False)
 
-    def market_sentiment(self, last_row, time, support, resistance):
+    def market_sentiment(self, last_row, time):
         trade = False
         if last_row['buy_trend']:
             trade = True
@@ -531,11 +515,11 @@ class CryptoBot:
             if last_row['sell_confirmation'] and time not in ('1w'):
                 trade = True
 
-        trade = self.save_trade(time, last_row, trade, support, resistance)
+        trade = self.save_trade(time, last_row, trade)
 
         return trade
 
-    def save_trade(self, time, last_row, trade, support, resistance):
+    def save_trade(self, time, last_row, trade):
         # Fingerprint
         fingerprint = last_row['time']
 
@@ -550,8 +534,6 @@ class CryptoBot:
             self.trades[type][time]['sell'] = last_row['sell_trend']
             self.trades[type][time]['buy_confirmation'] = last_row['buy_confirmation']
             self.trades[type][time]['sell_confirmation'] = last_row['sell_confirmation']
-            self.trades[type][time]['support'] = support
-            self.trades[type][time]['resistance'] = resistance
             self.trades[type][time]['trade']['high'] = last_row['high']
             self.trades[type][time]['trade']['low'] = last_row['low']
             self.trades[type][time]['trade']['close'] = last_row['close']

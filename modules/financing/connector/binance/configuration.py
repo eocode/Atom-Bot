@@ -159,7 +159,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 1095,
-        'days_s': 1095,
+        'days_s': 365,
         'days_t': 1095,
         'plot': 90
     },
@@ -168,7 +168,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 270,
-        'days_s': 90,
+        'days_s': 45,
         'days_t': 90,
         'plot': 90
     },
@@ -177,7 +177,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 60,
-        'days_s': 30,
+        'days_s': 15,
         'days_t': 60,
         'plot': 90
     },
@@ -186,7 +186,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 30,
-        'days_s': 30,
+        'days_s': 15,
         'days_t': 60,
         'plot': 90
     },
@@ -195,7 +195,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 3,
-        'days_s': 2,
+        'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
@@ -204,7 +204,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 3,
-        'days_s': 2,
+        'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
@@ -213,7 +213,7 @@ configuration = {
         'sma_s': 55,
         'sma_f': 9,
         'days': 3,
-        'days_s': 2,
+        'days_s': 1,
         'days_t': 30,
         'plot': 90
     },

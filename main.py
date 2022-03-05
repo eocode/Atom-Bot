@@ -43,6 +43,6 @@ if __name__ == "__main__":
         # Show user message
         print("Server started")
         # Run the bot
-        bot.infinity_polling()
+        bot.infinity_polling(timeout=10, long_polling_timeout = 5)
     except Exception as e:
         print("Error:", e)
