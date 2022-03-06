@@ -11,7 +11,7 @@ from modules.financing.data.operative import start_operatives
 @bot.message_handler(commands=["acerca"])
 def command_start(m):
     user = get_chat_info(m)
-    if user.group['group']:
+    if not user.group['group']:
         text = (
                 "Hola "
                 + user.name
