@@ -95,8 +95,9 @@ def command_help(m):
                     "simular_trades", "elegir_mercado", "ver_graficos", "trade") or user.is_verified and not \
                     user.group['group']:
                 if key not in ("simular_trades", "trade") or user.is_admin and not user.group['group']:
-                    help_text += "/" + key + ": "
-                    help_text += commands[key] + "\n"
+                    if key not in ("alertas") or user.is_verified:
+                        help_text += "/" + key + ": "
+                        help_text += commands[key] + "\n"
     send_message(user.cid, help_text, play=False)
 
 
