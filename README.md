@@ -1,9 +1,9 @@
 <div align="center">
   <div align="center">
-      <img width="100px" src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/atom.png" 
+      <img width="100px" src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/logo.png" 
       alt="Atom"/>
   </div>
-  <h3 align="center">Atom (Home Bot)</h3>
+  <h3 align="center">Atom (Assistant)</h3>
   <p>A simple bot with a finance module</p>
   <p align="center">
     <a href="https://github.com/eocode/Queens/blob/master/LICENSE" target="__blank">
