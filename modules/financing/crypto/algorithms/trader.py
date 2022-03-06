@@ -382,7 +382,7 @@ class CryptoBot:
             else:
                 message = "No hay ninguna operativa actualmente"
         else:
-            message = "Primero se debe iniciar el proceso de monitoreo"
+            message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
         self.show_message(message=message, cid=cid, play=play)
 
     def show_results(self, cid, play, message, testing, temp, time, operative):
