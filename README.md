@@ -17,15 +17,14 @@
 </div>
 
 ## Features
-* Bitso API (MXN) / Binance (USDT)
-  * Smart alerts
+* Binance (USDT)
+  * Smart alerts and monitor
+  * Market Analyze
   * Graphs
-  * Commission calculation
-  * Simulations
-  * Monitors
-* Telegram messages by users
+  * Simulations and backtesting
+* Telegram messages by users and groups
 * Speak messages
-* RaspberryPI compatibility connected by bluetoth with Alexa
+* RaspberryPI compatibility connected by bluetooth with Alexa
 
 ### Require
 
