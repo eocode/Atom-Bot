@@ -29,7 +29,7 @@ def command_start(m):
                 + name
                 + " versión "
                 + version
-                + ", la última sync fue hace " + user.minutes
+                + ", la última sync fue hace " + str(user.minutes)
         )
     send_message(
         user.cid,
