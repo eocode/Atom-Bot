@@ -344,6 +344,8 @@ class CryptoBot:
         except Exception as e:
             print('Error: ', e)
 
+    @limit(1)
+    @async_fn
     def save_operative(self, temp, time, close, operative):
         self.trade['temp'] = temp
         self.trade['operative'] = operative
@@ -352,6 +354,8 @@ class CryptoBot:
         self.trade['value'] = close
         self.trade['risk'] = 100
 
+    @limit(1)
+    @async_fn
     def save_update(self):
         update = {
             'temp': self.trade['temp'],
@@ -363,6 +367,8 @@ class CryptoBot:
         }
         self.updates.append(update)
 
+    @limit(1)
+    @async_fn
     def show_operative(self, cid, play):
         if self.process_is_started:
             if self.operative:
@@ -618,15 +624,6 @@ class CryptoBot:
         else:
             self.evaluate_operative(testing, cid, play)
 
-    def get_full_resumes(self, cid=None):
-        if self.process_is_started and self.first_iteration:
-            self.get_resume('large', '1w', '1d', cid)
-            self.get_resume('medium', '4h', '1h', cid)
-            self.get_resume('short', '30m', '15m', cid)
-            self.get_resume('micro', '5m', '1m', cid)
-        else:
-            send_message(cid, "El reporte aún no está listo")
-
     def get_resume(self, type, mayor, menor, cid=None):
 
         long = False
@@ -717,12 +714,6 @@ class CryptoBot:
             print(message)
 
         return long, short
-
-    def get_trades(self, cid):
-        self.show_dict(self.trades['large'], cid, False)
-        self.show_dict(self.trades['medium'], cid, False)
-        self.show_dict(self.trades['short'], cid, False)
-        self.show_dict(self.trades['micro'], cid, False)
 
     def market_sentiment(self, last_row, time):
         trade = False

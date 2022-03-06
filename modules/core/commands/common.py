@@ -81,8 +81,9 @@ def command_help(m):
     help_text += "Te comparto los siguientes comandos: \n\n"
     for key in commands:
         if key not in ("ayuda", "start"):
-            if key not in ("simular_trades", "elegir_mercado", "ver_graficos", "ver_analisis", "ver_resumen", "trade",
-                           "trade_actual") or verified and not group['group']:
+            if key not in (
+                    "simular_trades", "elegir_mercado", "ver_graficos", "trade", "trade_actual") or verified and not \
+                    group['group']:
                 if key not in ("simular_trades", "trade") or admin and not group['group']:
                     help_text += "/" + key + ": "
                     help_text += commands[key] + "\n"

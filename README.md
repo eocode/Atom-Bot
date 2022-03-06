@@ -39,19 +39,13 @@
 ## Support
 
 * Linux
+* Windows
 
 ## Architecture
 
 <div align="center">
     <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/architecture.png" 
     alt="ada architecture"/>
-</div>
-
-## Prediction by temporalities
-
-<div align="center">
-    <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/predictive.png" 
-    alt="predictions"/>
 </div>
 
 ### Install and run

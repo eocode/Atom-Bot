@@ -21,8 +21,6 @@ commands = {"start": "Primeros pasos y bienvenida",
             "elegir_mercado": "Selecciona un mercado",
             "ver_graficos": "Indicadores de trade",
             "trade": "Recibe recomendaciones",
-            "ver_analisis": "Ver analisis general",
-            "ver_resumen": "Resumen del analisis",
             "simular_trades": "Realiza un backtest",
             "trade_actual": "Revisa la última operativa"}
 

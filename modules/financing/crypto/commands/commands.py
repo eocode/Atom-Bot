@@ -34,13 +34,6 @@ def command_operation(message):
         operatives['ETHUSDT'].monitor.start(cid)
 
 
-@bot.message_handler(commands=["ver_analisis"])
-def command_operation(message):
-    cid = message.chat.id
-    user = get_user_info(cid)
-    if user.market in operatives:
-        operatives[user.market].monitor.get_trades(cid, 1)
-
 
 @bot.message_handler(func=lambda message: True, commands=["simular_trades"])
 def message_handler(message):
@@ -68,11 +61,3 @@ def callback_query(call):
     user = get_user_info(cid)
     if user.market in operatives:
         operatives[user.market].monitor.make_simulation(cid=cid, download=download)
-
-
-@bot.message_handler(commands=["ver_resumen"])
-def command_operation(message):
-    cid = message.chat.id
-    user = get_user_info(cid)
-    if user.market in operatives:
-        operatives[user.market].monitor.get_full_resumes(cid)
