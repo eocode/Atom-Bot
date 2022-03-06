@@ -2,9 +2,9 @@ import pandas as pd
 from bot.connect.message_connector import send_message, send_voice
 from bot.connect.thread_connector import limit, async_fn
 from modules.core.data.bot_system import system
-from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
+from modules.financing.crypto.algorithms.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
-from modules.financing.connector.binance.processing import analysis, plot_df, supres, download_test_data, load_test_data
+from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
 from time import sleep
 import json
 import numpy as np
@@ -13,7 +13,7 @@ import numpy as np
 class CryptoBot:
 
     def __init__(self, crypto, ref, exchange='BINANCE'):
-        self.client = system('binance').client
+        self.client = system('algorithms').client
         self.symbol = crypto + ref
         self.crypto = crypto
         self.ref = ref
@@ -379,11 +379,15 @@ class CryptoBot:
                 message += "Inicial: %s - Actual: %s \n" % (
                     self.trade['value'], self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s\n" % (self.profit())
+                status = True
             else:
                 message = "No hay ninguna operativa actualmente"
+                status = False
         else:
             message = "Primero se debe iniciar el proceso de monitoreo"
+            status = False
         self.show_message(message=message, cid=cid, play=play)
+        return status
 
     def show_results(self, cid, play, message, testing, temp, time, operative):
         self.operative = True
@@ -473,15 +477,18 @@ class CryptoBot:
 
     def notify(self, testing, message, action, cid=None, play=False):
         if not testing:
-            self.show_message(message=message, cid=cid, play=play)
-            self.show_message(message=message, cid=cid, play=play)
+            self.show_message(message="%s de %s %s en %s" % (
+                self.trade['operative'], self.symbol, message, self.trades['micro']['1m']['trade']['close']), cid=cid,
+                              play=play)
             if action == 'Open':
-                message = "ALERTA de %s en %s" % (('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'),
-                                                  self.trades['micro']['1m']['trade']['close'])
+                message = "%s ALERTA de %s en %s" % (
+                    self.crypto, ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'),
+                    self.trades['micro']['1m']['trade']['close'])
             if action == 'Update':
-                message = "ALERTA de actualización en %s" % (self.trades['micro']['1m']['trade']['close'])
+                message = "%s ALERTA de actualización en %s" % (
+                    self.crypto, self.trades['micro']['1m']['trade']['close'])
             if action == 'Close':
-                message = "ALERTA de cerrar en %s" % (self.trades['micro']['1m']['trade']['close'])
+                message = "%s ALERTA de cerrar en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
             send_voice(message)
             send_voice(message)
             send_voice(message)
@@ -594,8 +601,9 @@ class CryptoBot:
         if close:
             self.operative = False
             if not testing:
-                self.show_message(message='Cerrar %s en %s' % (temp, self.trades['micro']['1m']['trade']['close']),
-                                  cid=cid, play=play)
+                self.show_message(
+                    message='Cerrar %s de %s en %s' % (temp, self.symbol, self.trades['micro']['1m']['trade']['close']),
+                    cid=cid, play=play)
             else:
                 self.notify(testing=testing, message='Cierre', action='Close')
 
@@ -623,97 +631,6 @@ class CryptoBot:
                     self.show_results(cid, play, 'Iniciado', testing, 'micro', '1m', 'short')
         else:
             self.evaluate_operative(testing, cid, play)
-
-    def get_resume(self, type, mayor, menor, cid=None):
-
-        long = False
-        short = False
-        message = ''
-
-        if self.trades[type][mayor]['sell']:
-            message += mayor.upper() + " 🔴 "
-            if self.trades[type][mayor]['sell_confirmation']:
-                message += "🔱 "
-            else:
-                message += "📛 "
-            if self.trades[type][menor]['buy']:
-                long = True
-                # Venta y compra -> Rebote
-                message += menor.upper() + " 🟢 Rebote alcista "
-                if self.trades[type][menor]['buy_confirmation']:
-                    message += "🔱 "
-                else:
-                    message += "📛 "
-            else:
-                short = True
-                # Venta y Venta -> Fuerza a la baja
-                message += menor.upper() + " 🔴 Fuerza bajista "
-                if self.trades[type][menor]['sell_confirmation'] and self.trades[type][mayor]['sell_confirmation']:
-                    message += "🔱 "
-                else:
-                    message += "📛 "
-
-        if self.trades[type][mayor]['buy']:
-            message += mayor.upper() + " 🟢 Alza "
-            if self.trades[type][mayor]['buy_confirmation']:
-                message += "🔱 "
-            else:
-                message += "📛 "
-
-            if self.trades[type][menor]['buy']:
-                long = True
-                # Compra y Compra -> Fuerza al alza
-                message += menor.upper() + " 🟢 Fuerza alcista "
-                if self.trades[type][menor]['buy_confirmation']:
-                    message += "🔱 "
-                else:
-                    message += "📛 "
-            else:
-                short = True
-                # Compra y Venta -> Corrección
-                message += menor.upper() + " 🔴 Corrección "
-                if self.trades[type][menor]['sell_confirmation']:
-                    message += "🔱 "
-                else:
-                    message += "📛 "
-
-        message += '\n'
-
-        if long:
-            message += '\n🟢 '
-        if short:
-            message += '\n🔴 '
-        message += '🔼 ' + str(self.trades[type][mayor]['trade']['high']) + ' 🔽 ' + \
-                   str(self.trades[type][mayor]['trade']['low']) + ' ⏺️ ' + str(
-            self.trades[type][mayor]['trade'][
-                'close']) + '\n'
-        message += mayor.upper() + ' RSI: ' + (
-            '🟢' if self.trades[type][mayor]['trade']['RSI'] else '🔴') + ' ' + str(
-            self.trades[type][mayor]['trade']['RSIs'])
-        message += ' Momentum: ' + (
-            '🟢' if self.trades[type][mayor]['trade']['Momentum'] else '🔴') + ' ' + (
-                       '🔼' if self.trades[type][mayor]['trade']['time'] else '🔽') + ' ' + str(
-            self.trades[type][mayor]['trade']['Momentums']) + '\n'
-        message += menor.upper() + ' RSI: ' + (
-            '🟢' if self.trades[type][menor]['trade']['RSI'] else '🔴') + ' ' + str(
-            self.trades[type][menor]['trade']['RSIs'])
-        message += ' Momentum: ' + (
-            '🟢' if self.trades[type][menor]['trade']['Momentum'] else '🔴') + ' ' + (
-                       '🔼' if self.trades[type][menor]['trade']['time'] else '🔽') + ' ' + str(
-            self.trades[type][menor]['trade']['Momentums']) + '\n'
-        message += 'Ema Sup: ' + (
-            '🟢 ' if self.trades[type][mayor]['trade']['ema'] else '🔴 ') + str(
-            round(self.trades[type][mayor]['trade']['ema_value'], 2)) + ' \n'
-        message += 'Ema Inf: ' + (
-            '🟢 ' if self.trades[type][menor]['trade']['ema'] else '🔴 ') + str(
-            round(self.trades[type][menor]['trade']['ema_value'], 2)) + '\n'
-
-        if cid is not None:
-            send_message(cid, message)
-        else:
-            print(message)
-
-        return long, short
 
     def market_sentiment(self, last_row, time):
         trade = False

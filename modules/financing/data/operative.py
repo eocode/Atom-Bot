@@ -1,4 +1,4 @@
-from modules.financing.connector.binance.trader import CryptoBot
+from modules.financing.crypto.algorithms.trader import CryptoBot
 from modules.financing.data.dictionary import binance_order_books
 
 operatives = {}

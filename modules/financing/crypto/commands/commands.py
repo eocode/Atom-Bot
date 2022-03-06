@@ -1,19 +1,26 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from modules.core.data.user import get_user_info
+from modules.financing.data.dictionary import binance_order_books
 from modules.financing.data.operative import operatives
 from bot.bot import bot
-from bot.connect.message_connector import send_message
+from bot.connect.message_connector import send_message, get_chat_info
 
 
-@bot.message_handler(commands=["trade_actual"])
-def command_operation(message):
-    cid = message.chat.id
-    user = get_user_info(cid)
-    if user.market in operatives:
-        operatives[user.market].monitor.show_operative(cid, False)
+@bot.message_handler(commands=["alertas"])
+def command_operation(m):
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+    if group['group']:
+        for key, value in binance_order_books.items():
+            status = operatives[value['crypto'] + value['pair']].monitor.show_operative(cid, False)
+            if not status:
+                break
     else:
-        send_message(cid, 'Necesita preparar la operativa antes')
+        user = get_user_info(cid)
+        if user.market in operatives:
+            operatives[user.market].monitor.show_operative(cid, False)
+        else:
+            send_message(cid, 'Necesita preparar la operativa antes')
 
 
 @bot.message_handler(commands=["ver_graficos"])
@@ -31,8 +38,7 @@ def command_operation(message):
     cid = message.chat.id
     user = get_user_info(cid)
     if user.market in operatives:
-        operatives['ETHUSDT'].monitor.start(cid)
-
+        operatives[user.market].monitor.start(cid)
 
 
 @bot.message_handler(func=lambda message: True, commands=["simular_trades"])

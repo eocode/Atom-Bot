@@ -1,7 +1,7 @@
 from binance.enums import SIDE_BUY, ORDER_TYPE_LIMIT, TIME_IN_FORCE_GTC, SIDE_SELL
 from binance.exceptions import BinanceAPIException
 
-from bot.brain import binance_client
+from modules.core.data.bot_system import system
 
 
 def create_order(symbol, quantity, price, operation='BUY'):
@@ -12,7 +12,7 @@ def create_order(symbol, quantity, price, operation='BUY'):
     if operation == 'SELL':
         side = SIDE_SELL
     try:
-        order = binance_client.create_order(
+        order = system('binance').client.create_order(
             symbol=symbol,
             side=side,
             type=ORDER_TYPE_LIMIT,
@@ -26,5 +26,5 @@ def create_order(symbol, quantity, price, operation='BUY'):
 
 def cancel_order(symbol, order):
     order_id = order.get('orderId')
-    cancel = binance_client.cancel_order(symbol=symbol, orderId=order_id)
+    cancel = system('binance').client.cancel_order(symbol=symbol, orderId=order_id)
     return cancel

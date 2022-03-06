@@ -82,7 +82,7 @@ def command_help(m):
     for key in commands:
         if key not in ("ayuda", "start"):
             if key not in (
-                    "simular_trades", "elegir_mercado", "ver_graficos", "trade", "trade_actual") or verified and not \
+                    "simular_trades", "elegir_mercado", "ver_graficos", "trade") or verified and not \
                     group['group']:
                 if key not in ("simular_trades", "trade") or admin and not group['group']:
                     help_text += "/" + key + ": "
@@ -110,14 +110,12 @@ def echo_message(m):
                 if text.lower() == "iniciar":
                     if group['group']:
                         if group['is_admin']:
-                            send_message(cid, "Analizando mercado con la version %s" % version)
+                            send_message(cid, "Analizando con la version %s" % version)
                             start_operatives(cid)
                         else:
                             send_message(cid, "No tiene permiso de ejecutar está opción")
                     else:
                         send_message(cid, "Solo se permite usar en grupos")
-                else:
-                    send_message(cid, "No entendí")
 
 
 def say_something(m):

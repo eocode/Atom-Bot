@@ -7,7 +7,7 @@ system_connectors = {}
 def init_system():
     print("Initializing")
     system_connectors['sql'] = SQLConnector()
-    system_connectors['binance'] = BinanceConnector()
+    system_connectors['algorithms'] = BinanceConnector()
     print("initialized")
 
 

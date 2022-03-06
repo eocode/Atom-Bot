@@ -22,7 +22,7 @@ commands = {"start": "Primeros pasos y bienvenida",
             "ver_graficos": "Indicadores de trade",
             "trade": "Recibe recomendaciones",
             "simular_trades": "Realiza un backtest",
-            "trade_actual": "Revisa la última operativa"}
+            "alertas": "Ver operativas"}
 
 
 # Personal commands
