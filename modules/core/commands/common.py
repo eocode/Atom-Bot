@@ -45,9 +45,9 @@ def command_start(m):
             if user.is_verified:
                 if user.group['group']:
                     text = (
-                            "Genial! "
+                            "Genial!, el grupo "
                             + user.name
-                            + ", el grupo está activado."
+                            + " está activado."
                     )
                 else:
                     text = (

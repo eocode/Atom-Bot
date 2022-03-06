@@ -30,7 +30,7 @@ class User:
             diff = (datetime.now() - self.fingerprint)
             self.minutes = round(diff.total_seconds() / 60, 2)
             print("Last user update: ", self.minutes, " by ", self.name, " of type ", self.type)
-            if self.minutes >= 180:
+            if self.minutes >= 1440:
                 return True
             else:
                 return False
