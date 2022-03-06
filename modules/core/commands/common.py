@@ -90,6 +90,20 @@ def command_help(m):
     send_message(cid, help_text, play=False)
 
 
+@bot.message_handler(commands=["iniciar"])
+def command_init(m):
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+
+    if group['group']:
+        if group['is_admin']:
+            send_message(cid, "Analizando con la version %s" % version)
+            start_operatives(cid)
+        else:
+            send_message(cid, "No tiene permiso de ejecutar está opción")
+    else:
+        send_message(cid, "Solo se permite usar en grupos")
+
+
 @bot.message_handler(func=lambda m: True)
 def echo_message(m):
     cid, verified, chat_name, group, admin, active = get_chat_info(m)
@@ -108,14 +122,7 @@ def echo_message(m):
                 command_help(m)
             else:
                 if text.lower() == "iniciar":
-                    if group['group']:
-                        if group['is_admin']:
-                            send_message(cid, "Analizando con la version %s" % version)
-                            start_operatives(cid)
-                        else:
-                            send_message(cid, "No tiene permiso de ejecutar está opción")
-                    else:
-                        send_message(cid, "Solo se permite usar en grupos")
+                    command_init(m)
 
 
 def say_something(m):
