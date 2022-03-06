@@ -4,20 +4,20 @@ from dateutil import parser
 from datetime import datetime, timedelta
 import dateparser
 import pytz
-
-from bot.brain import binance_client, bin_sizes
 import math
+
+from modules.core.data.bot_system import system
 
 
 def symbol_info(crypto, ref, exchange='BINANCE'):
     data = {}
     if exchange == 'BINANCE':
-        info = binance_client.get_symbol_info(crypto + ref)
+        info = system('binance').client.get_symbol_info(crypto + ref)
         data['min_quantity'] = float(info['filters'][2]['minQty'])
         data['max_quantity'] = float(info['filters'][2]['maxQty'])
         data['min_notional'] = float(info['filters'][3]['minNotional'])
-        data['crypto_quantity'] = binance_client.get_asset_balance(asset=crypto).get('free')
-        data['ref_quantity'] = binance_client.get_asset_balance(asset=ref).get('free')
+        data['crypto_quantity'] = system('binance').client.get_asset_balance(asset=crypto).get('free')
+        data['ref_quantity'] = system('binance').client.get_asset_balance(asset=ref).get('free')
     return data
 
 
@@ -47,7 +47,7 @@ def minutes_of_new_data(symbol, kline_size, data, source):
     elif source == "binance":
         old = datetime.strptime('1 Jan 2021', '%d %b %Y')
     if source == "binance":
-        new = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
+        new = pd.to_datetime(system('binance').client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
                              unit='ms')
     return old, new
 
@@ -159,25 +159,25 @@ def convert_columns_to_float(df, columns):
 def get_klines(symbol, kline_size, data_df):
     oldest_point, newest_point = minutes_of_new_data(symbol, kline_size, data_df, source="binance")
     delta_min = (newest_point - oldest_point).total_seconds() / 60
-    available_data = math.ceil(delta_min / bin_sizes[kline_size])
+    available_data = math.ceil(delta_min / system('binance').sizes[kline_size])
     print(oldest_point, newest_point, available_data)
-    return binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                start_str=oldest_point.strftime("%d %b %Y %H:%M:%S"),
-                                                end_str=newest_point.strftime("%d %b %Y %H:%M:%S"))
+    return system('binance').client.get_historical_klines(symbol=symbol, interval=kline_size,
+                                                          start_str=oldest_point.strftime("%d %b %Y %H:%M:%S"),
+                                                          end_str=newest_point.strftime("%d %b %Y %H:%M:%S"))
 
 
 def get_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
     if old_date is None or new_date is None:
         old_date = (pd.to_datetime(data.iloc[-1:].timestamp.item()) + timedelta(minutes=1)).strftime(
             "%d %b %Y %H:%M:%S")
-        new_date = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
+        new_date = pd.to_datetime(system('binance').client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
                                   unit='ms').strftime("%d %b %Y %H:%M:%S")
 
     # print(old_date, new_date)
 
-    return binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                start_str=old_date,
-                                                end_str=new_date)
+    return system('binance').client.get_historical_klines(symbol=symbol, interval=kline_size,
+                                                          start_str=old_date,
+                                                          end_str=new_date)
 
 
 def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_increment=True):
@@ -190,12 +190,13 @@ def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_incre
         data_df = get_data_frame(symbol, kline_size, form=form)
         if data_df.shape[0] < sma or auto_increment is False:
             oldest_point = (datetime.now() - timedelta(days=sma)).strftime("%d %b %Y %H:%M:%S")
-            newest_point = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
-                                          unit='ms').strftime("%d %b %Y %H:%M:%S")
+            newest_point = pd.to_datetime(
+                system('binance').client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
+                unit='ms').strftime("%d %b %Y %H:%M:%S")
             # print(oldest_point, newest_point)
-            klines = binance_client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                          start_str=oldest_point,
-                                                          end_str=newest_point)
+            klines = system('binance').client.get_historical_klines(symbol=symbol, interval=kline_size,
+                                                                    start_str=oldest_point,
+                                                                    end_str=newest_point)
         else:
             klines = get_klines_times(symbol, kline_size, data_df)
 

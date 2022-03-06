@@ -14,24 +14,22 @@ bot = telebot.TeleBot(os.environ["telegram_token_bot"])
 
 # list of available commands
 # Common commands
-commands = {
-    "start": "Primeros pasos y bienvenida",
-    "acerca": "Información acerca de " + os.environ["bot_name"],
-    "ayuda": "Lista de los comandos"
-}
+commands = {"start": "Primeros pasos y bienvenida",
+            "acerca": "Conoce a " + os.environ["bot_name"],
+            "ayuda": "Lista de los comandos",
+            "configuracion": "Tus ajustes actuales",
+            "elegir_mercado": "Selecciona un mercado",
+            "ver_graficos": "Indicadores de trade",
+            "trade": "Recibe recomendaciones",
+            "ver_analisis": "Ver analisis general",
+            "ver_resumen": "Resumen del analisis",
+            "simular_trades": "Realiza un backtest",
+            "trade_actual": "Revisa la última operativa"}
+
 
 # Personal commands
-commands["mi_id"] = "Obten tu identificador único"
-commands["configuracion"] = "Tus ajustes actuales"
 
 # # Crypto commands
-commands["elegir_mercado"] = "Selecciona un mercado"
-commands["ver_graficos"] = "Indicadores de trade"
-commands["trade"] = "Recibe recomendaciones"
-commands["ver_analisis"] = "Ver analisis general"
-commands["ver_resumen"] = "Resumen del analisis"
-commands["simular_trades"] = "Realiza un backtest"
-commands["trade_actual"] = "Revisa la última operativa"
 
 
 # Bot listener

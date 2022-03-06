@@ -1,11 +1,10 @@
 import pandas as pd
-
-from bot.brain import binance_client
-from bot.connect.communication import send_message, send_voice
+from bot.connect.message_connector import send_message, send_voice
+from bot.connect.thread_connector import limit, async_fn
+from modules.core.data.bot_system import system
 from modules.financing.connector.binance.extractor import get_binance_symbol_data, save_extracted_data, symbol_info, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.connector.binance.processing import analysis, plot_df, supres, download_test_data, load_test_data
-from modules.financing.connector.binance.configuration import configuration, trades
 from time import sleep
 import json
 import numpy as np
@@ -14,7 +13,7 @@ import numpy as np
 class CryptoBot:
 
     def __init__(self, crypto, ref, exchange='BINANCE'):
-        self.client = binance_client
+        self.client = system('binance').client
         self.symbol = crypto + ref
         self.crypto = crypto
         self.ref = ref
@@ -25,8 +24,6 @@ class CryptoBot:
         self.order = None
         self.symbol_info = None
         self.update_symbol_info()
-        self.configuration = configuration
-        self.trades = trades
         self.process_is_started = False
         self.first_iteration = False
         self.trade_type = 'micro'
@@ -39,14 +36,243 @@ class CryptoBot:
             'last_time': '',
             'risk': 0
         }
+        self.trades = {
+            'large': {
+                '1w': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+                '1d': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+            },
+            'medium': {
+                '4h': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+                '1h': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+            },
+            'short': {
+                '30m': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+                '15m': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+            },
+            'micro': {
+                '5m': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                },
+                '1m': {
+                    'trade': {
+                        'high': 0,
+                        'low': 0,
+                        'close': 0,
+                        'RSI': False,
+                        'Momentum': False,
+                        'ema': False
+                    },
+                    'trend': False,
+                    'fingerprint': 0,
+                    'buy': False,
+                    'sell': False,
+                    'buy_confirmation': False,
+                    'sell_confirmation': False,
+                    'support': [],
+                    'resistance': [],
+                }
+            }
+        }
+        self.configuration = {
+            "1w": {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 1095,
+                'days_s': 365,
+                'days_t': 1095,
+                'plot': 90
+            },
+            '1d': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 270,
+                'days_s': 45,
+                'days_t': 90,
+                'plot': 90
+            },
+            '4h': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 60,
+                'days_s': 15,
+                'days_t': 60,
+                'plot': 90
+            },
+            '1h': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 30,
+                'days_s': 15,
+                'days_t': 60,
+                'plot': 90
+            },
+            '30m': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 3,
+                'days_s': 1,
+                'days_t': 30,
+                'plot': 90
+            },
+            '15m': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 3,
+                'days_s': 1,
+                'days_t': 30,
+                'plot': 90
+            },
+            '5m': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 3,
+                'days_s': 1,
+                'days_t': 30,
+                'plot': 90
+            },
+            '1m': {
+                'smas': [9, 55],
+                'sma_s': 55,
+                'sma_f': 9,
+                'days': 3,
+                'days_s': 1,
+                'days_t': 15,
+                'plot': 90
+            },
+        }
         self.updates = []
         self.testing = []
 
+    @limit(1)
+    @async_fn
     def start(self, cid=None):
         if not self.process_is_started:
-            send_message(cid, "Preparando", play=True)
             self.make_simulation(cid, download=True)
-            send_message(cid, "Monitoreando", play=True)
+            send_message(cid, "Monitoreando %s " % self.symbol, play=True)
             self.process_is_started = True
             while (True):
                 # For all temps
@@ -65,19 +291,18 @@ class CryptoBot:
                         sleep(2)
                     self.first_iteration = True
                     self.take_decision(cid, False)
-                    print(self.trades['micro']['1m']['fingerprint'])
+                    print(self.trades['micro']['1m']['fingerprint'], self.symbol)
                     sleep(30)
                 except Exception as e:
                     print('Error: ', e)
         else:
-            send_message(cid, "Monitoreo iniciado", play=True)
-            print('Ya se ha iniciado el proceso')
+            send_message(cid, "Monitoreando %s" % self.symbol, play=True)
+            print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
 
     def make_simulation(self, cid, download=False):
         try:
 
             if download:
-                self.show_message('Obteniendo datos', cid, play=False)
                 download_test_data(self.symbol, self.configuration.items())
 
             # Get Test Data
@@ -89,18 +314,17 @@ class CryptoBot:
             self.process_is_started = True
             self.first_iteration = True
 
-            self.show_message('Analizando situación actual del mercado', cid, False)
             for index, row in main.iterrows():
                 self.market_sentiment(row, '1m')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '5m', row['timestamp']), '5m')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '15m', row['timestamp']), '15m')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '30m', row['timestamp']), '30m')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1h', row['timestamp']), '1h')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '4h', row['timestamp']), '4h')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1d', row['timestamp']), '1d')
-                self.market_sentiment(get_last_row_dataframe_by_time(trades, '1w', row['timestamp']), '1w')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '5m', row['timestamp']), '5m')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '15m', row['timestamp']), '15m')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '30m', row['timestamp']), '30m')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '1h', row['timestamp']), '1h')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '4h', row['timestamp']), '4h')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), '1d')
+                self.market_sentiment(get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), '1w')
                 self.take_decision(cid=cid, play=False, testing=True)
-                print(self.trades['micro']['1m']['fingerprint'])
+                # print(self.trades['micro']['1m']['fingerprint'])
 
             df = pd.DataFrame(self.testing,
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
@@ -116,8 +340,6 @@ class CryptoBot:
             df_new['%_by_price'] = (df_new['sum'] * 100) / total_price
             df_new = df_new.round(2)
             df_new.to_csv('backtesting/result_%s.csv' % self.symbol, index=False)
-
-            self.show_message('Análisis terminado', cid, False)
 
         except Exception as e:
             print('Error: ', e)
@@ -144,7 +366,8 @@ class CryptoBot:
     def show_operative(self, cid, play):
         if self.process_is_started:
             if self.operative:
-                message = "%s - %s - Riesgo: %s \n" % (
+                message = "%s\n" % self.symbol
+                message += "%s - %s - Riesgo: %s \n" % (
                     self.trade['last_time'], ' 🟢 ' if self.trade['operative'] == 'long' else ' 🔴 ',
                     self.trade['risk'])
                 message += "Inicial: %s - Actual: %s \n" % (
@@ -329,21 +552,21 @@ class CryptoBot:
             if self.trade['last_time'] == '5m':
                 if not self.trades['micro']['5m']['trade']['mean_f'] and (
                         self.trades['short']['30m']['trade']['Momentum']):
-                    temp = 'Long'
+                    temp = 'Short'
                     close = True
             if self.trade['last_time'] == '15m':
                 if not self.trades['short']['15m']['trade']['mean_f'] and (
                         self.trades['short']['30m']['trade']['Momentum']) and (
                         self.trades['micro']['5m']['trade']['Momentum']) or (
                         self.trades['micro']['5m']['trade']['ema']):
-                    temp = 'Long'
+                    temp = 'Short'
                     close = True
             if self.trade['last_time'] == '30m':
                 if (not self.trades['short']['30m']['trade']['mean_f'] and (
                         self.trades['medium']['1h']['trade']['Momentum']) and (
                             self.trades['short']['15m']['trade']['Momentum'])) or (
                         self.trades['short']['15m']['trade']['ema']):
-                    temp = 'Long'
+                    temp = 'Short'
                     close = True
             if self.trade['last_time'] == '1h':
                 if (not self.trades['medium']['1h']['trade']['mean_f'] and (
@@ -351,7 +574,7 @@ class CryptoBot:
                             self.trades['short']['30m']['trade']['Momentum']) and (
                             self.trades['short']['15m']['trade']['Momentum'])) or (
                         self.trades['short']['30m']['trade']['ema']):
-                    temp = 'Long'
+                    temp = 'Short'
                     close = True
             if self.trade['last_time'] == '4h':
                 if (not self.trades['medium']['4h']['trade']['mean_f'] and ((
@@ -360,7 +583,7 @@ class CryptoBot:
                                                                                     self.trades['medium']['1h'][
                                                                                         'trade']['Momentum']))) or (
                         self.trades['medium']['1h']['trade']['ema']):
-                    temp = 'Long'
+                    temp = 'Short'
                     close = True
         if close:
             self.operative = False

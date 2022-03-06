@@ -4,7 +4,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 from modules.financing.data.dictionary import bitso_order_books, binance_order_books
 from modules.core.data.user import User, user_data, get_user_info, save_user_info
-from bot.connect.communication import send_message
+from bot.connect.message_connector import send_message
 
 
 @bot.message_handler(commands=["elegir_mercado"])

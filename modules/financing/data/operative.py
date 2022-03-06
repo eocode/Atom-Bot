@@ -17,3 +17,8 @@ def initialize_operatives():
                                    exchange='BINANCE')
         operatives[value['symbol']] = trader
     print('All prepared')
+
+
+def start_operatives(cid):
+    for key, value in binance_order_books.items():
+        operatives[value['crypto'] + value['pair']].monitor.start(cid)

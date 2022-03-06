@@ -1,6 +1,5 @@
 # Load DB configuration
-from bot.brain import Base, engine
-from bot.connect.communication import say_hello
+from bot.connect.message_connector import say_hello
 import sys
 
 # Load arthur
@@ -9,11 +8,8 @@ from bot.bot import init
 # Load all available commands with modules
 from bot import *
 
-# Load time
-import time
-
 from modules.core.data.user import load_validate_users
-from modules.financing.data.trader import initialize_operatives
+from modules.financing.data.operative import initialize_operatives
 
 if __name__ == "__main__":
     args = sys.argv
@@ -24,8 +20,6 @@ if __name__ == "__main__":
     if len(args) > 0:
         say = "update"
 
-    # DB init
-    Base.metadata.create_all(engine)
     # Init Bot
     init(bot)
 

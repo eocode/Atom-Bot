@@ -15,44 +15,44 @@ binance_order_books = {
         'pair': 'USDT',
         'symbol': 'ETHUSDT'
     },
-    "Chiliz": {
-        'crypto': 'CHZ',
-        'pair': 'USDT',
-        'symbol': 'CHZUSDT'
-    },
-    "Cardano": {
-        'crypto': 'ADA',
-        'pair': 'USDT',
-        'symbol': 'ADAUSDT'
-    },
-    "IOTA": {
-        'crypto': 'IOTA',
-        'pair': 'USDT',
-        'symbol': 'IOTAUSDT'
-    },
-    "Polcadot": {
-        'crypto': 'DOT',
-        'pair': 'USDT',
-        'symbol': 'DOTUSDT'
-    },
-    "Chain Link": {
-        'crypto': 'LINK',
-        'pair': 'USDT',
-        'symbol': 'LINKUSDT'
-    },
-    "Shiba Inu": {
-        'crypto': 'SHIB',
-        'pair': 'USDT',
-        'symbol': 'SHIBUSDT'
-    },
-    "Mana": {
-        'crypto': 'MANA',
-        'pair': 'USDT',
-        'symbol': 'MANAUSDT'
-    },
-    "Sol": {
-        'crypto': 'SOL',
-        'pair': 'USDT',
-        'symbol': 'SOLUSDT'
-    },
+    # "Chiliz": {
+    #     'crypto': 'CHZ',
+    #     'pair': 'USDT',
+    #     'symbol': 'CHZUSDT'
+    # },
+    # "Cardano": {
+    #     'crypto': 'ADA',
+    #     'pair': 'USDT',
+    #     'symbol': 'ADAUSDT'
+    # },
+    # "IOTA": {
+    #     'crypto': 'IOTA',
+    #     'pair': 'USDT',
+    #     'symbol': 'IOTAUSDT'
+    # },
+    # "Polcadot": {
+    #     'crypto': 'DOT',
+    #     'pair': 'USDT',
+    #     'symbol': 'DOTUSDT'
+    # },
+    # "Chain Link": {
+    #     'crypto': 'LINK',
+    #     'pair': 'USDT',
+    #     'symbol': 'LINKUSDT'
+    # },
+    # "Shiba Inu": {
+    #     'crypto': 'SHIB',
+    #     'pair': 'USDT',
+    #     'symbol': 'SHIBUSDT'
+    # },
+    # "Mana": {
+    #     'crypto': 'MANA',
+    #     'pair': 'USDT',
+    #     'symbol': 'MANAUSDT'
+    # },
+    # "Sol": {
+    #     'crypto': 'SOL',
+    #     'pair': 'USDT',
+    #     'symbol': 'SOLUSDT'
+    # },
 }

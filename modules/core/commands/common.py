@@ -1,24 +1,19 @@
 from bot.bot import bot, commands
-from bot.connect.communication import send_voice, name, send_message, valid_user
+from bot.connect.message_connector import send_voice, name, send_message, get_chat_info
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
-
 import unidecode
 
-
-@bot.message_handler(commands=["mi_id"])
-def command_start(m):
-    cid = m.chat.id
-    send_message(cid, "Tú identificador es: " + str(cid))
+from modules.financing.data.operative import start_operatives
 
 
 @bot.message_handler(commands=["acerca"])
 def command_start(m):
-    cid = m.chat.id
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
     text = (
             "Hola "
-            + m.chat.first_name
+            + chat_name
             + " soy "
             + name
             + " versión "
@@ -27,37 +22,48 @@ def command_start(m):
     )
     send_message(
         cid,
-        text + ", para conocer mis funcionalidades solo escribe /ayuda",
+        text
     )
-    if valid_user(cid):
-        send_voice(text)
 
 
 @bot.message_handler(commands=["start"])
 def command_start(m):
-    cid = m.chat.id
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
     try:
-        verified = valid_user(cid)
-        if verified:
-            text = (
-                    "Genial! "
-                    + m.chat.first_name
-                    + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /ayuda."
-            )
+        if active:
+            if verified:
+                if group['group']:
+                    text = (
+                            "Genial! "
+                            + chat_name
+                            + ", el grupo está activado."
+                    )
+                else:
+                    text = (
+                            "Genial! "
+                            + chat_name
+                            + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /ayuda."
+                    )
+            else:
+                text = (
+                        "Falta poco! "
+                        + chat_name
+                        + ", ahora solo se tiene que verificar la cuenta para acceder a todas las funcionalidades."
+                )
         else:
             text = (
                     "Se ha creado tu cuenta! "
-                    + m.chat.first_name
+                    + chat_name
                     + ", pero, necesitas tener una cuenta verificada para acceder a las funcionaliades completas"
             )
-
+            send_voice(
+                "Se agregó la cuenta de: " + chat_name
+            )
+            update_settings(
+                cid=cid, name=chat_name, verified=verified, group=group['group']
+            )
         send_message(cid, text)
-        update_settings(
-            cid=cid, name=m.chat.first_name, current_market="btc_mxn", verified=verified
-        )
-        send_voice(
-            "Se agregó la cuenta de: " + m.chat.first_name
-        )
+
     except Exception as e:
         print(e)
         send_message(
@@ -68,17 +74,24 @@ def command_start(m):
 
 @bot.message_handler(commands=["ayuda"])
 def command_help(m):
-    cid = m.chat.id
-    help_text = "Puedo realizar las siguientes tareas: \n"
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+
+    help_text = "Soy %s, tú asistente personal. Puedo ayudarte a realizar operaciones en el mercado crypto ... \n\n" % \
+                name
+    help_text += "Te comparto los siguientes comandos: \n\n"
     for key in commands:
-        help_text += "/" + key + ": "
-        help_text += commands[key] + "\n"
+        if key not in ("ayuda", "start"):
+            if key not in ("simular_trades", "elegir_mercado", "ver_graficos", "ver_analisis", "ver_resumen", "trade",
+                           "trade_actual") or verified and not group['group']:
+                if key not in ("simular_trades", "trade") or admin and not group['group']:
+                    help_text += "/" + key + ": "
+                    help_text += commands[key] + "\n"
     send_message(cid, help_text, play=False)
 
 
 @bot.message_handler(func=lambda m: True)
 def echo_message(m):
-    cid = m.chat.id
+    cid, verified, chat_name, group, admin, active = get_chat_info(m)
     bot.send_chat_action(cid, "typing")
     text = unidecode.unidecode(m.text)
     if text.lower() == "hola":
@@ -92,20 +105,32 @@ def echo_message(m):
         else:
             if text.lower() == "ayuda":
                 command_help(m)
-                send_voice("Te acabo de enviar la lista de comandos")
+            else:
+                if text.lower() == "iniciar":
+                    if group['group']:
+                        if group['is_admin']:
+                            send_message(cid, "Analizando mercado con la version %s" % version)
+                            start_operatives(cid)
+                        else:
+                            send_message(cid, "No tiene permiso de ejecutar está opción")
+                    else:
+                        send_message(cid, "Solo se permite usar en grupos")
+                else:
+                    send_message(cid, "No entendí")
 
 
-def say_something(message):
+def say_something(m):
     try:
-        cid = message.chat.id
-        response = message.text
-        if valid_user(cid):
+        cid, verified, chat_name, group, admin, active = get_chat_info(m)
+        response = m.text
+        if verified:
             text = "Reproduciendo"
-            send_message(cid, text, play=False)
+            print(cid, text)
+            send_message(cid=cid, text=text, play=False)
             send_voice(response)
         else:
             text = "Tú usuario no puede realizar está acción"
-            send_message(cid, text)
+            send_message(cid=cid, text=text)
     except Exception as e:
         print(e)
-        bot.reply_to(message, "Algo salio mal")
+        bot.reply_to(m, "Algo salio mal")
