@@ -43,7 +43,7 @@
 ## Architecture
 
 <div align="center">
-    <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/architecture.png" 
+    <img src="https://github.com/eocode/Atom-Bot/raw/main/bot/img/architecture_updated.png" 
     alt="ada architecture"/>
 </div>
 
