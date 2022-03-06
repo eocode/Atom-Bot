@@ -18,6 +18,7 @@ thisOS = system()
 
 def get_chat_info(m):
     cid = m.chat.id
+    print(m.chat.type)
     usr = get_settings(cid)
     if usr is not None:
         verified = usr.is_verified
