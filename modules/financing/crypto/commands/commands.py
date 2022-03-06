@@ -12,9 +12,7 @@ def command_operation(m):
     cid, verified, chat_name, group, admin, active = get_chat_info(m)
     if group['group']:
         for key, value in binance_order_books.items():
-            status = operatives[value['crypto'] + value['pair']].monitor.show_operative(cid, False)
-            if not status:
-                break
+            operatives[value['crypto'] + value['pair']].monitor.show_operative(cid, False)
     else:
         user = get_user_info(cid)
         if user.market in operatives:
