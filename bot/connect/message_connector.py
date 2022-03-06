@@ -28,7 +28,7 @@ def get_chat_info(m):
         verified = False
         is_admin = False
         is_active = False
-    if m.chat.type == 'group':
+    if m.chat.type in ("group", "supergroup"):
         chat_name = m.chat.title
         usr2 = get_settings(m.from_user.id)
         if usr2 is not None:
