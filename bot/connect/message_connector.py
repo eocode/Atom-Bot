@@ -8,8 +8,7 @@ from telebot.types import ReplyKeyboardRemove
 from bot.connect.thread_connector import async_fn, limit
 from bot.constants import version
 from bot.bot import bot
-from modules.core.data.user import get_user_info
-from modules.core.model.account import get_settings
+from modules.core.data.user import get_user_info, load_user
 import subprocess
 
 name = os.environ["bot_name"]
@@ -17,34 +16,8 @@ thisOS = system()
 
 
 def get_chat_info(m):
-    cid = m.chat.id
-    print(m.chat.type)
-    usr = get_settings(cid)
-    if usr is not None:
-        verified = usr.is_verified
-        is_admin = usr.is_admin
-        is_active = True
-    else:
-        verified = False
-        is_admin = False
-        is_active = False
-    if m.chat.type in ("group", "supergroup"):
-        chat_name = m.chat.title
-        usr2 = get_settings(m.from_user.id)
-        if usr2 is not None:
-            verified2 = usr2.is_verified
-            is_admin2 = usr2.is_admin
-            is_active2 = True
-        else:
-            verified2 = False
-            is_admin2 = False
-            is_active2 = False
-        group = {"cid": m.from_user.id, "name": m.from_user.first_name, "group": True, "verified": verified2,
-                 "is_admin": is_admin2, "is_active": is_active2}
-    else:
-        chat_name = m.chat.first_name
-        group = {"group": False}
-    return cid, verified, chat_name, group, is_admin, is_active
+    usr = load_user(m)
+    return usr
 
 
 @limit(10)

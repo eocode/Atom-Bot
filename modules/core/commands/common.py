@@ -10,104 +10,114 @@ from modules.financing.data.operative import start_operatives
 
 @bot.message_handler(commands=["acerca"])
 def command_start(m):
-    cid, verified, chat_name, group, admin, active = get_chat_info(m)
-    text = (
-            "Hola "
-            + chat_name
-            + " soy "
-            + name
-            + " versión "
-            + version
-            + ", ¿En qué puedo ayudarte?"
-    )
+    user = get_chat_info(m)
+    if user.group['group']:
+        text = (
+                "Hola "
+                + user.name
+                + " soy "
+                + name
+                + " versión "
+                + version
+                + ", ¿En qué puedo ayudarte?"
+        )
+    else:
+        text = (
+                "Hola "
+                + user.name
+                + " soy "
+                + name
+                + " versión "
+                + version
+                + ", la última sync fue hace " + user.minutes
+        )
     send_message(
-        cid,
+        user.cid,
         text
     )
 
 
 @bot.message_handler(commands=["start"])
 def command_start(m):
-    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+    user = get_chat_info(m)
     try:
-        if active:
-            if verified:
-                if group['group']:
+        if user.is_active:
+            if user.is_verified:
+                if user.group['group']:
                     text = (
                             "Genial! "
-                            + chat_name
+                            + user.name
                             + ", el grupo está activado."
                     )
                 else:
                     text = (
                             "Genial! "
-                            + chat_name
+                            + user.name
                             + ", tu cuenta ha sido verificada y tienes acceso a todas las funcionalidades, para ver todos los comandos presiona: /ayuda."
                     )
             else:
                 text = (
                         "Falta poco! "
-                        + chat_name
+                        + user.name
                         + ", ahora solo se tiene que verificar la cuenta para acceder a todas las funcionalidades."
                 )
         else:
             text = (
                     "Se ha creado tu cuenta! "
-                    + chat_name
+                    + user.name
                     + ", pero, necesitas tener una cuenta verificada para acceder a las funcionaliades completas"
             )
             send_voice(
-                "Se agregó la cuenta de: " + chat_name
+                "Se agregó la cuenta de: " + user.name
             )
             update_settings(
-                cid=cid, name=chat_name, verified=verified, group=group['group']
+                cid=user.cid, name=user.name, verified=user.is_verified, group=user.group['group']
             )
-        send_message(cid, text)
+        send_message(user.cid, text)
 
     except Exception as e:
         print(e)
         send_message(
-            cid,
+            user.cid,
             "Ocurrio un error",
         )
 
 
 @bot.message_handler(commands=["ayuda"])
 def command_help(m):
-    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+    user = get_chat_info(m)
 
-    help_text = "Soy %s, tú asistente personal. Puedo ayudarte a realizar operaciones en el mercado crypto ... \n\n" % \
-                name
+    help_text = "Puedo ayudarte a realizar operaciones en el mercado crypto ... \n\n"
     help_text += "Te comparto los siguientes comandos: \n\n"
     for key in commands:
         if key not in ("ayuda", "start"):
             if key not in (
-                    "simular_trades", "elegir_mercado", "ver_graficos", "trade") or verified and not \
-                    group['group']:
-                if key not in ("simular_trades", "trade") or admin and not group['group']:
+                    "simular_trades", "elegir_mercado", "ver_graficos", "trade") or user.is_verified and not \
+                    user.group['group']:
+                if key not in ("simular_trades", "trade") or user.is_admin and not user.group['group']:
                     help_text += "/" + key + ": "
                     help_text += commands[key] + "\n"
-    send_message(cid, help_text, play=False)
+    send_message(user.cid, help_text, play=False)
 
 
 @bot.message_handler(commands=["iniciar"])
 def command_init(m):
-    cid, verified, chat_name, group, admin, active = get_chat_info(m)
+    user = get_chat_info(m)
 
-    if group['group']:
-        if group['is_admin']:
-            send_message(cid, "Analizando con la version %s" % version)
-            start_operatives(cid)
+    if user.group['group']:
+        if user.group['is_admin']:
+            send_message(user.cid, "Analizando con la version %s" % version)
+            start_operatives(user.cid)
         else:
-            send_message(cid, "No tiene permiso de ejecutar está opción")
+            send_message(user.cid, "No tiene permiso de ejecutar está opción")
     else:
-        send_message(cid, "Solo se permite usar en grupos")
+        send_message(user.cid, "Solo se permite usar en grupos")
 
 
 @bot.message_handler(func=lambda m: True)
 def echo_message(m):
-    cid, verified, chat_name, group, admin, active = get_chat_info(m)
-    bot.send_chat_action(cid, "typing")
+    user = get_chat_info(m)
+    bot.send_chat_action(user.cid, "typing")
     text = unidecode.unidecode(m.text)
     if text.lower() == "hola":
         reply = get_greeting(m.chat.first_name)
@@ -127,16 +137,16 @@ def echo_message(m):
 
 def say_something(m):
     try:
-        cid, verified, chat_name, group, admin, active = get_chat_info(m)
+        user = get_chat_info(m)
         response = m.text
-        if verified:
+        if user.is_verified:
             text = "Reproduciendo"
-            print(cid, text)
-            send_message(cid=cid, text=text, play=False)
+            print(user.cid, text)
+            send_message(cid=user.cid, text=text, play=False)
             send_voice(response)
         else:
             text = "Tú usuario no puede realizar está acción"
-            send_message(cid=cid, text=text)
+            send_message(cid=user.cid, text=text)
     except Exception as e:
         print(e)
         bot.reply_to(m, "Algo salio mal")

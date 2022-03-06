@@ -8,7 +8,6 @@ from bot.bot import init
 # Load all available commands with modules
 from bot import *
 
-from modules.core.data.user import load_validate_users
 from modules.financing.data.operative import initialize_operatives
 
 if __name__ == "__main__":
@@ -32,7 +31,6 @@ if __name__ == "__main__":
     try:
         # Configure initial data
         initialize_operatives()
-        load_validate_users()
 
         # Show user message
         print("Server started")
