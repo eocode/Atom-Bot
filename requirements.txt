@@ -16,4 +16,4 @@ matplotlib
 requests
 scipy
 pymysql
-playsound
+pydub

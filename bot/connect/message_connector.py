@@ -31,8 +31,10 @@ def send_voice(text):
     else:
         tts = gTTS(text, lang="es", tld="com.mx")
         tts.save(file)
-        from playsound import playsound
-        playsound(file)
+        from pydub import AudioSegment
+        from pydub.playback import play
+        song = AudioSegment.from_wav(file)
+        play(song)
     os.remove(file)
 
 
