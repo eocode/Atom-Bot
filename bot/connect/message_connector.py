@@ -24,17 +24,13 @@ def get_chat_info(m):
 @async_fn
 def send_voice(text):
     file = hashlib.md5(text.encode()).hexdigest() + ".wav"
+    tts = gTTS(text, lang="es", tld="com.mx")
+    tts.save(file)
     if thisOS == "Linux":
-        tts = gTTS(text, lang="es", tld="com.mx")
-        tts.save(file)
         subprocess.run("mpg123 " + file, shell=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     else:
-        tts = gTTS(text, lang="es", tld="com.mx")
-        tts.save(file)
-        from pydub import AudioSegment
-        from pydub.playback import play
-        song = AudioSegment.from_wav(file)
-        play(song)
+        subprocess.run("ffplay %s -autoexit -nodisp" + file, shell=True, stdout=subprocess.PIPE,
+                       stderr=subprocess.DEVNULL)
     os.remove(file)
 
 

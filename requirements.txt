@@ -16,4 +16,3 @@ matplotlib
 requests
 scipy
 pymysql
-pydub
