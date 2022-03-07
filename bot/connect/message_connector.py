@@ -29,7 +29,7 @@ def send_voice(text):
     if thisOS == "Linux":
         subprocess.run("mpg123 " + file, shell=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     else:
-        subprocess.run("ffplay %s -autoexit -nodisp" + file, shell=True, stdout=subprocess.PIPE,
+        subprocess.run("ffplay %s -autoexit -nodisp" % file, shell=True, stdout=subprocess.PIPE,
                        stderr=subprocess.DEVNULL)
     os.remove(file)
 
