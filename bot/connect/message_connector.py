@@ -9,6 +9,7 @@ from bot.connect.thread_connector import async_fn, limit
 from bot.constants import version
 from bot.bot import bot
 from modules.core.data.user import get_user_info, load_user
+import random
 import subprocess
 
 name = os.environ["bot_name"]
@@ -20,10 +21,10 @@ def get_chat_info(m):
     return usr
 
 
-@limit(10)
+@limit(1)
 @async_fn
 def send_voice(text):
-    file = hashlib.md5(text.encode()).hexdigest() + ".wav"
+    file = hashlib.md5(text.encode()).hexdigest() + str(random.randint(1, 100000)) + ".wav"
     tts = gTTS(text, lang="es", tld="com.mx")
     tts.save(file)
     if thisOS == "Linux":

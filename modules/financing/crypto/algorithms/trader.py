@@ -530,25 +530,25 @@ class CryptoBot:
             if self.trade['last_time'] == '30m':
                 if (not self.trades['short']['30m']['trade']['mean_f'] and (
                         not self.trades['medium']['1h']['trade']['Momentum']) and (
-                        not self.trades['short']['15m']['trade']['Momentum'])):
+                            not self.trades['short']['15m']['trade']['Momentum'])) or (  # Brake all if temp is negative
+                        not self.trades['micro']['1m']['trade']['Momentum'] and
+                        not self.trades['micro']['5m']['trade']['Momentum'] and
+                        not self.trades['short']['15m']['trade']['Momentum'] and
+                        not self.trades['short']['30m']['trade']['Momentum']
+                ):
                     temp = 'Long'
                     close = True
             if self.trade['last_time'] == '1h':
                 if (not self.trades['medium']['1h']['trade']['mean_f'] and (
                         not self.trades['medium']['4h']['trade']['Momentum']) and (
-                        not self.trades['short']['30m']['trade']['Momentum']) and (
-                        not self.trades['short']['15m']['trade']['Momentum'])):
+                            not self.trades['short']['30m']['trade']['Momentum']) and (
+                            not self.trades['short']['15m']['trade']['Momentum'])):
                     temp = 'Long'
                     close = True
             if self.trade['last_time'] == '4h':
-                if (not self.trades['medium']['4h']['trade']['mean_f'] and ((
-                                                                                    not
-                                                                                    self.trades['large']['1d']['trade'][
-                                                                                        'Momentum']) or (
-                                                                                    not
-                                                                                    self.trades['medium']['1h'][
-                                                                                        'trade'][
-                                                                                        'Momentum']))):
+                if (not self.trades['medium']['4h']['trade']['mean_f'] and (
+                        (not self.trades['large']['1d']['trade']['Momentum']) or (
+                        not self.trades['medium']['1h']['trade']['Momentum']))):
                     temp = 'Long'
                     close = True
         # Short
