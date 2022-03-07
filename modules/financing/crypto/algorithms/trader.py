@@ -477,16 +477,14 @@ class CryptoBot:
                 self.trade['operative'], self.symbol, message, self.trades['micro']['1m']['trade']['close']), cid=cid,
                               play=play)
             if action == 'Open':
-                message = "%s ALERTA de %s en %s" % (
-                    self.crypto, ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'),
-                    self.trades['micro']['1m']['trade']['close'])
+                message = "Inicia %s %s en %s" % (
+                    ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'), self.crypto,
+                    round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Update':
-                message = "%s ALERTA de actualización en %s" % (
-                    self.crypto, self.trades['micro']['1m']['trade']['close'])
+                message = "Continua %s en %s" % (
+                    self.crypto, round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Close':
-                message = "%s ALERTA de cerrar en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
-            send_voice(message)
-            send_voice(message)
+                message = "Cierra %s en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
             send_voice(message)
         else:
             win = ''
@@ -541,8 +539,8 @@ class CryptoBot:
             if self.trade['last_time'] == '1h':
                 if (not self.trades['medium']['1h']['trade']['mean_f'] and (
                         not self.trades['medium']['4h']['trade']['Momentum']) and (
-                            not self.trades['short']['30m']['trade']['Momentum']) and (
-                            not self.trades['short']['15m']['trade']['Momentum'])):
+                        not self.trades['short']['30m']['trade']['Momentum']) and (
+                        not self.trades['short']['15m']['trade']['Momentum'])):
                     temp = 'Long'
                     close = True
             if self.trade['last_time'] == '4h':
