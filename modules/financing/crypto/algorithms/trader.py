@@ -380,7 +380,7 @@ class CryptoBot:
                     self.trade['value'], self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s\n" % (self.profit())
             else:
-                message = "No hay ninguna operativa actualmente"
+                message = "No hay ninguna operativa para %s actualmente" % self.symbol
         else:
             message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
         self.show_message(message=message, cid=cid, play=play)

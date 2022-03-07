@@ -23,7 +23,7 @@ def get_chat_info(m):
 @limit(10)
 @async_fn
 def send_voice(text):
-    file = hashlib.md5(text.encode()).hexdigest() + ".mp3"
+    file = hashlib.md5(text.encode()).hexdigest() + ".wav"
     if thisOS == "Linux":
         tts = gTTS(text, lang="es", tld="com.mx")
         tts.save(file)
