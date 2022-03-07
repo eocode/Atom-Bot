@@ -58,6 +58,7 @@ def load_user_data(m, cid):
     if usr is not None:
         new_user.is_verified = usr.is_verified
         new_user.is_admin = usr.is_admin
+        new_user.speak = usr.speak
         new_user.is_active = True
         new_user.market = usr.current_market
         new_user.crypto = usr.current_crypto
