@@ -473,9 +473,6 @@ class CryptoBot:
 
     def notify(self, testing, message, action, cid=None, play=False):
         if not testing:
-            self.show_message(message="%s de %s %s en %s" % (
-                self.trade['operative'], self.symbol, message, self.trades['micro']['1m']['trade']['close']), cid=cid,
-                              play=play)
             if action == 'Open':
                 message = "Inicia %s %s en %s" % (
                     ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'), self.crypto,
@@ -485,7 +482,7 @@ class CryptoBot:
                     self.crypto, round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Close':
                 message = "Cierra %s en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
-            send_voice(message)
+            self.show_message(message=message, play=True, cid=cid)
         else:
             win = ''
             if action != 'Close':
