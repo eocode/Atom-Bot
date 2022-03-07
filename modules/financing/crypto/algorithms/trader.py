@@ -508,7 +508,11 @@ class CryptoBot:
         if self.trade['operative'] == 'long':
             if self.trade['last_time'] == '1m':
                 if not self.trades['micro']['1m']['trade']['mean_f'] and (
-                        not self.trades['short']['15m']['trade']['Momentum']):
+                        not self.trades['short']['15m']['trade']['Momentum']) or (
+                        not self.trades['micro']['1m']['trade']['Momentum'] and
+                        not self.trades['short']['15m']['trade']['Momentum'] and
+                        not self.trades['short']['30m']['trade']['Momentum']
+                ):
                     temp = 'Long'
                     close = True
             if self.trade['last_time'] == '5m':
@@ -550,7 +554,11 @@ class CryptoBot:
         else:
             if self.trade['last_time'] == '1m':
                 if self.trades['micro']['1m']['trade']['mean_f'] and (
-                        self.trades['short']['15m']['trade']['Momentum']):
+                        self.trades['short']['15m']['trade']['Momentum']) or (
+                        self.trades['micro']['1m']['trade']['Momentum'] and
+                        self.trades['short']['15m']['trade']['Momentum'] and
+                        self.trades['short']['30m']['trade']['Momentum']
+                ):
                     temp = 'Short'
                     close = True
             if self.trade['last_time'] == '5m':
@@ -568,8 +576,11 @@ class CryptoBot:
             if self.trade['last_time'] == '30m':
                 if (not self.trades['short']['30m']['trade']['mean_f'] and (
                         self.trades['medium']['1h']['trade']['Momentum']) and (
-                            self.trades['short']['15m']['trade']['Momentum'])) or (
-                        self.trades['short']['15m']['trade']['ema']):
+                            self.trades['short']['15m']['trade']['Momentum'])) or (  # Brake all if temp is negative
+                        self.trades['micro']['1m']['trade']['Momentum'] and
+                        self.trades['micro']['5m']['trade']['Momentum'] and
+                        self.trades['short']['15m']['trade']['Momentum'] and
+                        self.trades['short']['30m']['trade']['Momentum']):
                     temp = 'Short'
                     close = True
             if self.trade['last_time'] == '1h':
@@ -606,6 +617,7 @@ class CryptoBot:
                 if ((self.trades['micro']['1m']['trade']['mean_f'] and
                      self.trades['micro']['1m']['trade']['Momentum']) and (
                             self.trades['micro']['1m']['trade']['confirm_dir'] and
+                            self.trades['short']['15m']['trade']['RSI'] and
                             self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1)) and not (
                         not self.trades['micro']['1m']['trade']['Momentum'] and
                         not self.trades['micro']['5m']['trade']['Momentum'] and
@@ -615,6 +627,7 @@ class CryptoBot:
                 if ((not self.trades['micro']['1m']['trade']['mean_f']) and (
                         not self.trades['micro']['1m']['trade']['Momentum']) and (
                             not self.trades['micro']['1m']['trade']['confirm_dir'] and
+                            not self.trades['short']['15m']['trade']['RSI'] and
                             self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1)) and not (
                         self.trades['micro']['1m']['trade']['Momentum'] and
                         self.trades['micro']['5m']['trade']['Momentum'] and
