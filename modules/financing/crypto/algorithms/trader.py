@@ -272,7 +272,7 @@ class CryptoBot:
     def start(self, cid=None):
         if not self.process_is_started:
             self.make_simulation(cid, download=True)
-            send_message(cid, "Monitoreando %s " % self.symbol, play=True)
+            send_message(cid, "Monitoreando %s " % self.crypto, play=True)
             self.process_is_started = True
             while (True):
                 # For all temps
@@ -616,7 +616,9 @@ class CryptoBot:
                             self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1)) and not (
                         not self.trades['micro']['1m']['trade']['Momentum'] and
                         not self.trades['micro']['5m']['trade']['Momentum'] and
-                        not self.trades['short']['15m']['trade']['Momentum']):
+                        not self.trades['short']['15m']['trade']['Momentum']) and (
+                        self.trades['micro']['1m']['trade']['RSI_value'] < 70
+                ):
                     self.show_results(cid, play, 'Iniciado', testing, 'micro', '1m', 'long')
                 # Short
                 if ((not self.trades['micro']['1m']['trade']['mean_f']) and (
@@ -675,6 +677,7 @@ class CryptoBot:
             self.trades[type][time]['trade']['mean_f_ups'] = last_row['ema_f_ups']
             self.trades[type][time]['trade']['Momentum'] = last_row['positive_momentum']
             self.trades[type][time]['trade']['Momentums'] = last_row['momentum_ups']
+            self.trades[type][time]['trade']['Momentum_value'] = last_row['momentum']
             self.trades[type][time]['trade']['confirm_dir'] = last_row['DIFF']
             self.trades[type][time]['trade']['confirm_dir_ups'] = last_row['ups']
             self.trades[type][time]['trade']['variation'] = last_row['close_variation']

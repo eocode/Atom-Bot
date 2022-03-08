@@ -109,7 +109,7 @@ def command_init(m):
 
     if user.group['group']:
         if user.group['is_admin']:
-            send_message(user.cid, "Analizando con la version %s" % version)
+            send_message(user.cid, "Analizando con la versión %s" % version)
             start_operatives(user.cid)
         else:
             send_message(user.cid, "No tiene permiso de ejecutar está opción")
