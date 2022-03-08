@@ -1,5 +1,4 @@
 from modules.core.model import get_settings
-from modules.core.model.account import get_accounts
 from datetime import datetime
 
 user_data = {}

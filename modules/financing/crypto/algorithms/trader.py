@@ -471,7 +471,7 @@ class CryptoBot:
                 self.trades['micro']['1m']['trade']['close'])
         return round(diff, 2)
 
-    def notify(self, testing, message, action, cid=None, play=False):
+    def notify(self, testing, message, action, cid=None, play=True):
         if not testing:
             if action == 'Open':
                 message = "Inicia %s %s en %s" % (
@@ -482,7 +482,7 @@ class CryptoBot:
                     self.crypto, round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Close':
                 message = "Cierra %s en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
-            self.show_message(message=message, play=True, cid=cid)
+            self.show_message(message=message, play=play, cid=cid)
         else:
             win = ''
             if action != 'Close':
@@ -602,12 +602,7 @@ class CryptoBot:
                     close = True
         if close:
             self.operative = False
-            if not testing:
-                self.show_message(
-                    message='Cerrar %s de %s en %s' % (temp, self.symbol, self.trades['micro']['1m']['trade']['close']),
-                    cid=cid, play=play)
-            else:
-                self.notify(testing=testing, message='Cierre', action='Close')
+            self.notify(testing=testing, message='Cierre', action='Close')
 
     def take_decision(self, cid=None, play=False, testing=False):
         # Micro Trade

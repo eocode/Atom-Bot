@@ -30,10 +30,12 @@ def command_start(m):
                 + " versión "
                 + version
                 + ", la última sync fue hace " + str(user.minutes)
+                + " y la reproducción está " + ("Activada" if user.speak else "Desactivada")
         )
     send_message(
-        user.cid,
-        text
+        cid=user.cid,
+        text=text,
+        play=False
     )
 
 
