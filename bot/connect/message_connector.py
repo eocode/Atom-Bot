@@ -49,7 +49,9 @@ def send_message(cid, text, play=True, close_markup=False):
             cid,
             text
         )
+    print('Show message ', usr.speak, play)
     if usr.speak and play:
+        print('Send to speaker')
         send_voice(text)
 
 

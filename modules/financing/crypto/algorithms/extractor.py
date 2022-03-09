@@ -162,8 +162,8 @@ def get_klines(symbol, kline_size, data_df):
     available_data = math.ceil(delta_min / system('algorithms').sizes[kline_size])
     print(oldest_point, newest_point, available_data)
     return system('algorithms').client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                          start_str=oldest_point.strftime("%d %b %Y %H:%M:%S"),
-                                                          end_str=newest_point.strftime("%d %b %Y %H:%M:%S"))
+                                                             start_str=oldest_point.strftime("%d %b %Y %H:%M:%S"),
+                                                             end_str=newest_point.strftime("%d %b %Y %H:%M:%S"))
 
 
 def get_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
@@ -176,8 +176,8 @@ def get_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
     # print(old_date, new_date)
 
     return system('algorithms').client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                          start_str=old_date,
-                                                          end_str=new_date)
+                                                             start_str=old_date,
+                                                             end_str=new_date)
 
 
 def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_increment=True):
@@ -195,8 +195,8 @@ def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_incre
                 unit='ms').strftime("%d %b %Y %H:%M:%S")
             # print(oldest_point, newest_point)
             klines = system('algorithms').client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                                    start_str=oldest_point,
-                                                                    end_str=newest_point)
+                                                                       start_str=oldest_point,
+                                                                       end_str=newest_point)
         else:
             klines = get_klines_times(symbol, kline_size, data_df)
 
