@@ -159,8 +159,8 @@ def analysis(df, ma_f, ma_s, mas, time):
     df.fillna(value=0, inplace=True)
 
     df = simple_moving_average(14, df, 'up')
-    df = simple_moving_average(5, df, 'down')
-    df['RSI'] = 100 - (100 / (1 + df['mean_up_%s' % 14] / df['mean_down_%s' % 5]))
+    df = simple_moving_average(14, df, 'down')
+    df['RSI'] = 100 - (100 / (1 + df['mean_up_%s' % 14] / df['mean_down_%s' % 14]))
 
     convert_columns_to_float(df, ['diff'])
     convert_columns_to_float(df, ['diffh'])
@@ -205,7 +205,7 @@ def analysis(df, ma_f, ma_s, mas, time):
 
     convert_columns_to_float(df, ['momentum'])
 
-    df.drop(columns=['mean_up_%s' % 14, 'mean_down_%s' % 5],
+    df.drop(columns=['mean_up_%s' % 14, 'mean_down_%s' % 14],
             inplace=True)
 
     df.dropna(inplace=True)

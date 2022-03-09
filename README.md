@@ -17,11 +17,18 @@
 </div>
 
 ## Features
-* Binance (USDT)
+* Crypto Trading
   * Smart alerts and monitor
+    * Based in Bayes Theorem
   * Market Analyze
+    * Calculate main trading indicators
+      * Moving Average
+      * Squeeze Momentum
+      * RSI
   * Graphs
+    * Visualize indicators
   * Simulations and backtesting
+    * 91% - 96% gains
 * Telegram messages by users and groups
 * Speak messages
 * RaspberryPI compatibility connected by bluetooth with Alexa
