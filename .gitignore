@@ -19,6 +19,7 @@ simulate.py
 # C extensions
 *.so
 *.mp3
+*.wav
 .handler-saves/
 alembic.ini
 /labs

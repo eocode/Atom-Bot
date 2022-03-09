@@ -554,11 +554,9 @@ class CryptoBot:
                         self.trades['short']['30m']['trade']['ema']):
                     close = True
             if self.trade['last_time'] == '4h':
-                if (self.trades['medium']['4h']['trade']['mean_f'] and ((
-                                                                                self.trades['large']['1d']['trade'][
-                                                                                    'Momentum']) or (
-                                                                                self.trades['medium']['1h'][
-                                                                                    'trade']['Momentum']))) or (
+                if (self.trades['medium']['4h']['trade']['mean_f'] and (
+                        (self.trades['large']['1d']['trade']['Momentum']) or (
+                        self.trades['medium']['1h']['trade']['Momentum']))) or (
                         self.trades['medium']['1h']['trade']['ema']):
                     close = True
         if close:
