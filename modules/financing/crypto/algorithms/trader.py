@@ -235,8 +235,8 @@ class CryptoBot:
     @async_fn
     def start(self, cid=None):
         if not self.process_is_started:
-            self.make_simulation(cid, download=True)
-            send_message(cid=cid, text="Monitoreando %s " % self.crypto, play=True)
+            self.make_simulation(cid=cid, download=True)
+            send_message(cid=cid, text="Monitoreando %s " % self.crypto, play=False)
             self.process_is_started = True
             while (True):
                 # For all temps
@@ -254,13 +254,13 @@ class CryptoBot:
                         self.save_trade(last_row=last_row, time=time)
                         sleep(2)
                     self.first_iteration = True
-                    self.take_decision(cid, True)
+                    self.take_decision(cid=cid, play=True, testing=False)
                     print(self.trades['micro']['1m']['fingerprint'], self.symbol)
                     sleep(30)
                 except Exception as e:
                     print('Error: ', e)
         else:
-            send_message(cid=cid, text="Monitoreando %s" % self.symbol, play=True)
+            send_message(cid=cid, text="Monitoreando %s" % self.symbol, play=False)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
 
     def make_simulation(self, cid, download=False):
@@ -290,7 +290,6 @@ class CryptoBot:
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), time='1d')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), time='1w')
                 self.take_decision(cid=cid, play=False, testing=True)
-                # print(self.trades['micro']['1m']['fingerprint'])
 
             df = pd.DataFrame(self.testing,
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
@@ -306,6 +305,20 @@ class CryptoBot:
             df_new['%_by_price'] = (df_new['sum'] * 100) / total_price
             df_new = df_new.round(2)
             df_new.to_csv('backtesting/result_%s.csv' % self.symbol, index=False)
+
+            gain = df_new[df_new['Result'] == 'Ganado']
+            trades = gain['%_price'].sum()
+            variation = gain['sum'].sum()
+            prices = gain['%_by_price'].sum()
+            message = "Eficiencia %s: \n\n%s Ganados: \ntrades: %s margen: %s \n" % (
+                self.crypto, round(variation, 2), int(round(trades, 0)), int(round(prices, 0)))
+            loss = df_new[df_new['Result'] == 'Perdido']
+            variation = loss['sum'].sum()
+            trades = loss['%_price'].sum()
+            prices = loss['%_by_price'].sum()
+            message += "%s Perdidos: \ntrades: %s margen: %s" % (
+                round(variation, 2), int(round(trades, 0)), int(round(prices, 0)))
+            send_message(cid=cid, play=False, text=message)
 
         except Exception as e:
             print('Error: ', e)
@@ -438,6 +451,13 @@ class CryptoBot:
         return round(diff, 2)
 
     def notify(self, testing, message, action, cid=None, play=True):
+        if action != 'Close':
+            diff = 0
+            win = message
+        else:
+            diff = self.profit()
+            win = 'Ganado' if diff > 0 else 'Perdido'
+
         if not testing:
             if action == 'Open':
                 message = "Inicia %s %s en %s" % (
@@ -447,16 +467,12 @@ class CryptoBot:
                 message = "Continua %s en %s" % (
                     self.crypto, round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Close':
-                message = "Cierra %s en %s" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
+                message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
+                message += "Resultado: %s %s" % win
+            send_message(text=message, play=play, cid=cid)
+            send_message(text=message, play=play, cid=cid)
             send_message(text=message, play=play, cid=cid)
         else:
-            if action != 'Close':
-                diff = 0
-                win = message
-            else:
-                diff = self.profit()
-                win = 'Ganado' if diff > 0 else 'Perdido'
-
             row = [self.trades['micro']['1m']['fingerprint'], action,
                    self.trade['temp'], self.trade['operative'],
                    self.trades['micro']['1m']['trade']['close'], diff, win,
