@@ -6,6 +6,7 @@ from modules.financing.crypto.algorithms.extractor import get_binance_symbol_dat
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
 from time import sleep
+from datetime import datetime
 
 
 class CryptoBot:
@@ -228,7 +229,6 @@ class CryptoBot:
                 'plot': 90
             },
         }
-        self.updates = []
         self.testing = []
 
     @limit(1)
@@ -293,7 +293,7 @@ class CryptoBot:
 
             df = pd.DataFrame(self.testing,
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
-                                       'Time'])
+                                       'Time', 'Elapsed', 'Min', 'Max'])
 
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
             df = df[df['Result'] != 'Iniciado']
@@ -323,6 +323,14 @@ class CryptoBot:
         except Exception as e:
             print('Error: ', e)
 
+    def elapsed_time(self, current=True):
+        if current:
+            diff = (datetime.utcnow() - self.trade['fingerprint'])
+        else:
+            date_time_obj = datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+            diff = (date_time_obj - self.trade['fingerprint'])
+        return round(diff.total_seconds() / 60 / 60, 2)
+
     @limit(1)
     @async_fn
     def save_operative(self, temp, time, close, operative):
@@ -332,19 +340,10 @@ class CryptoBot:
         self.trade['last_temp'] = temp
         self.trade['value'] = close
         self.trade['risk'] = 100
-
-    @limit(1)
-    @async_fn
-    def save_update(self):
-        update = {
-            'temp': self.trade['temp'],
-            'operative': self.trade['operative'],
-            'last_time': self.trade['last_time'],
-            'last_temp': self.trade['last_temp'],
-            'value': self.trades['micro', '1m']['trade']['close'],
-            'risk': self.trade['risk']
-        }
-        self.updates.append(update)
+        date_time_obj = datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+        self.trade['fingerprint'] = date_time_obj
+        self.trade['max'] = close
+        self.trade['min'] = close
 
     @limit(1)
     @async_fn
@@ -357,7 +356,10 @@ class CryptoBot:
                     self.trade['risk'])
                 message += "Inicial: %s - Actual: %s \n" % (
                     self.trade['value'], self.trades['micro']['1m']['trade']['close'])
-                message += "Resultado: %s\n" % (self.profit())
+                message += "Resultado: %s\n\nStats\n" % (self.profit())
+
+                message += "Tiempo: %s hrs\n" % (self.elapsed_time(current=True))
+                message += "Máximo: %s Minimo %s" % (round(self.trade['max']), round(self.trade['min']))
             else:
                 message = "No hay ninguna operativa para %s actualmente" % self.symbol
         else:
@@ -477,7 +479,7 @@ class CryptoBot:
                    self.trade['temp'], self.trade['operative'],
                    self.trades['micro']['1m']['trade']['close'], diff, win,
                    self.trade['risk'],
-                   self.trade['last_time']]
+                   self.trade['last_time'], self.elapsed_time(current=False), self.trade['min'], self.trade['max']]
             self.testing.append(row)
 
     def evaluate_operative(self, testing):
@@ -610,6 +612,12 @@ class CryptoBot:
                 ):
                     self.show_results(cid, play, 'Iniciado', testing, 'micro', '1m', 'short')
         else:
+            self.trade['max'] = self.trades['micro']['1m']['trade']['close'] if self.trades['micro']['1m']['trade'][
+                                                                                    'close'] > self.trade['max'] else \
+                self.trade['max']
+            self.trade['min'] = self.trades['micro']['1m']['trade']['close'] if self.trades['micro']['1m']['trade'][
+                                                                                    'close'] < self.trade['min'] else \
+                self.trade['min']
             self.evaluate_operative(testing)
 
     def save_trade(self, time, last_row):
