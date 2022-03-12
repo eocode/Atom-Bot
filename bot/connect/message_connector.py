@@ -35,9 +35,7 @@ def send_voice(text):
     os.remove(file)
 
 
-def send_message(cid, text, play=True, close_markup=False):
-    usr = get_user_info(cid)
-    bot.send_chat_action(cid, "typing")
+def bot_message(close_markup, cid, text):
     if close_markup:
         bot.send_message(
             cid,
@@ -49,10 +47,20 @@ def send_message(cid, text, play=True, close_markup=False):
             cid,
             text
         )
-    print('Show message ', usr.speak, play)
-    if usr.speak and play:
-        print('Send to speaker')
-        send_voice(text)
+
+
+def send_message(cid, text, play=True, close_markup=False):
+    usr = get_user_info(cid)
+    print('Show message ', usr.speak, play, cid)
+    bot.send_chat_action(cid, "typing")
+    try:
+        bot_message(close_markup, cid, text)
+        if usr.speak and play:
+            print('Send to speaker')
+            send_voice(text)
+    except Exception as e:
+        bot_message(close_markup, cid, text)
+        print(e)
 
 
 def send_photo(cid, photo):

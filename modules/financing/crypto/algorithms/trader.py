@@ -335,8 +335,6 @@ class CryptoBot:
     def trade_variation(self, current):
         return round((1 - (current / self.trade['value'])) * 100, 2)
 
-    @limit(1)
-    @async_fn
     def save_operative(self, temp, time, close, operative):
         self.trade['temp'] = temp
         self.trade['operative'] = operative
@@ -349,8 +347,6 @@ class CryptoBot:
         self.trade['max'] = close
         self.trade['min'] = close
 
-    @limit(1)
-    @async_fn
     def show_operative(self, cid, play):
         if self.process_is_started:
             if self.operative:
@@ -478,12 +474,11 @@ class CryptoBot:
                     self.crypto, round(self.trades['micro']['1m']['trade']['close'], 0))
             if action == 'Close':
                 message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
-                message += "Resultado: %s %s" % win
+                message += "Resultado: %s" % win
             send_message(text=message, play=False, cid=cid)
             send_message(text=message, play=False, cid=cid)
-            send_voice("Alerta %s" % self.crypto)
-            send_voice("Alerta %s" % self.crypto)
-            send_voice("Alerta %s" % self.crypto)
+            send_voice("Alerta")
+            send_voice("Alerta")
         else:
             row = [self.trades['micro']['1m']['fingerprint'], action,
                    self.trade['temp'], self.trade['operative'],
