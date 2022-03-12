@@ -28,7 +28,7 @@
   * Graphs
     * Visualize indicators
   * Simulations and backtesting
-    * 91% - 96% gains
+    * 91% - 99% gains adjusting simulation for best start point
 * Telegram messages by users and groups
 * Speak messages
 * RaspberryPI compatibility connected by bluetooth with Alexa
