@@ -11,6 +11,7 @@ load_dotenv()
 
 # Init
 bot = telebot.TeleBot(os.environ["telegram_token_bot"])
+telebot.apihelper.SESSION_TIME_TO_LIVE = 5 * 60
 
 # list of available commands
 # Common commands
