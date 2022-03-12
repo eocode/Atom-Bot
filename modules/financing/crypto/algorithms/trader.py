@@ -231,13 +231,24 @@ class CryptoBot:
             },
         }
         self.testing = []
+        self.cids = []
+
+    def send_messages(self, message, play=False, alert=False):
+        print('ALERT')
+        print(message)
+        for cid in self.cids:
+            send_message(cid=cid, text=message, play=play)
+        if alert:
+            send_voice("Alerta")
+            send_voice("Alerta")
 
     @limit(1)
     @async_fn
     def start(self, cid=None):
         if not self.process_is_started:
-            self.make_simulation(cid=cid, download=True)
-            send_message(cid=cid, text="Monitoreando %s " % self.crypto, play=False)
+            self.cids.append(cid)
+            self.make_simulation(download=True)
+            self.send_messages(message="Monitoreando %s " % self.crypto)
             self.process_is_started = True
             while (True):
                 # For all temps
@@ -255,16 +266,16 @@ class CryptoBot:
                         self.save_trade(last_row=last_row, time=time)
                         sleep(2)
                     self.first_iteration = True
-                    self.take_decision(cid=cid, testing=False)
+                    self.take_decision(testing=False)
                     print(self.trades['micro']['1m']['fingerprint'], self.symbol)
                     sleep(30)
                 except Exception as e:
                     print('Error: ', e)
         else:
-            send_message(cid=cid, text="Monitoreando %s" % self.symbol, play=False)
+            self.send_messages(message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
 
-    def make_simulation(self, cid, download=False):
+    def make_simulation(self, download=False):
         try:
 
             if download:
@@ -295,7 +306,7 @@ class CryptoBot:
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '4h', row['timestamp']), time='4h')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), time='1d')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), time='1w')
-                self.take_decision(cid=cid, testing=True)
+                self.take_decision(testing=True)
 
             df = pd.DataFrame(self.testing,
                               columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
@@ -324,7 +335,7 @@ class CryptoBot:
             prices = loss['%_by_price'].sum()
             message += "%s Perdidos: \ntrades: %s margen: %s" % (
                 round(variation, 2), int(round(trades, 0)), int(round(prices, 0)))
-            send_message(cid=cid, play=False, text=message)
+            self.send_messages(message=message)
 
         except Exception as e:
             print('Error: ', e)
@@ -340,8 +351,6 @@ class CryptoBot:
     def trade_variation(self, current):
         return round((1 - (current / self.trade['value'])) * 100, 2)
 
-    @limit(1)
-    @async_fn
     def save_operative(self, temp, time, close, operative):
         self.trade['temp'] = temp
         self.trade['operative'] = operative
@@ -356,7 +365,7 @@ class CryptoBot:
 
     @limit(1)
     @async_fn
-    def show_operative(self, cid, play):
+    def show_operative(self):
         if self.process_is_started:
             if self.operative:
                 message = "%s\n" % self.symbol
@@ -377,14 +386,14 @@ class CryptoBot:
                 message = "No hay ninguna operativa para %s actualmente" % self.symbol
         else:
             message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
-        send_message(text=message, cid=cid, play=play)
+        self.send_messages(message=message)
 
-    def show_results(self, cid, message, testing, temp, time, operative):
+    def show_results(self, message, testing, temp, time, operative):
         self.operative = True
         self.save_operative(temp, time,
                             self.trades[temp][time]['trade']['close'],
                             operative)
-        self.notify(testing=testing, message=message, action='Open', cid=cid)
+        self.notify(testing=testing, message=message, action='Open')
 
     def validate_change_temp(self, testing):
         change = False
@@ -465,7 +474,7 @@ class CryptoBot:
                 self.trades['micro']['1m']['trade']['close'])
         return round(diff, 2)
 
-    def notify(self, testing, message, action, cid=None):
+    def notify(self, testing, message, action):
         if action == 'Open':
             diff = 0
             win = message
@@ -484,10 +493,8 @@ class CryptoBot:
             if action == 'Close':
                 message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s" % win
-            send_message(text=message, play=False, cid=cid)
-            send_message(text=message, play=False, cid=cid)
-            send_voice("Alerta")
-            send_voice("Alerta")
+            self.send_messages(message=message, play=False, alert=True)
+            self.send_messages(message=message, play=False, alert=True)
         else:
             row = [self.trades['micro']['1m']['fingerprint'], action,
                    self.trade['temp'], self.trade['operative'],
@@ -595,7 +602,7 @@ class CryptoBot:
             self.operative = False
             self.notify(testing=testing, message='Cierre', action='Close')
 
-    def take_decision(self, cid=None, testing=False):
+    def take_decision(self, testing=False):
         # Micro Trade
         if not self.operative:
             if self.trade_type == 'micro':
@@ -610,7 +617,7 @@ class CryptoBot:
                         not self.trades['short']['15m']['trade']['Momentum']) and (
                         self.trades['micro']['1m']['trade']['RSI_value'] < 70
                 ):
-                    self.show_results(cid, 'Iniciado', testing, 'micro', '1m', 'long')
+                    self.show_results('Iniciado', testing, 'micro', '1m', 'long')
                 # Short
                 if ((not self.trades['micro']['1m']['trade']['mean_f'] and
                      not self.trades['micro']['1m']['trade']['Momentum']) and (
@@ -624,7 +631,7 @@ class CryptoBot:
                         self.trades['micro']['5m']['trade']['Momentum'] and
                         self.trades['short']['15m']['trade']['Momentum']
                 ):
-                    self.show_results(cid, 'Iniciado', testing, 'micro', '1m', 'short')
+                    self.show_results('Iniciado', testing, 'micro', '1m', 'short')
         else:
             self.trade['max'] = self.trades['micro']['1m']['trade']['close'] if self.trades['micro']['1m']['trade'][
                                                                                     'close'] > self.trade['max'] else \

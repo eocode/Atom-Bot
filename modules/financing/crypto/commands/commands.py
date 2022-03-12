@@ -12,11 +12,11 @@ def command_operation(m):
     user = get_chat_info(m)
     if user.group['group']:
         for key, value in binance_order_books.items():
-            operatives[value['crypto'] + value['pair']].monitor.show_operative(user.cid, False)
+            operatives[value['crypto'] + value['pair']].monitor.show_operative()
     else:
         user = get_user_info(user.cid)
         if user.market in operatives:
-            operatives[user.market].monitor.show_operative(user.cid, False)
+            operatives[user.market].monitor.show_operative()
         else:
             send_message(user.cid, 'Necesita preparar la operativa antes')
 
