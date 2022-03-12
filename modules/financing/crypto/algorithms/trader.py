@@ -274,8 +274,13 @@ class CryptoBot:
             load_test_data(self.configuration.items(), self.trades, self.symbol)
 
             main = self.trades[get_type_trade('1m', self.trades)]['1m']['data']
-            main = main[
-                main['timestamp'] > self.trades[get_type_trade('1d', self.trades)]['1d']['data'].loc[6, 'timestamp']]
+
+            open = pd.read_csv('backtesting/trades_%s.csv' % self.symbol)
+            timestamp = open[open['Action'] == 'Open'].reset_index().loc[3, 'time']
+
+            print("Initial Analysis: ", timestamp, self.crypto)
+
+            main = main[main['timestamp'] >= timestamp]
             self.process_is_started = True
             self.first_iteration = True
 
@@ -335,6 +340,8 @@ class CryptoBot:
     def trade_variation(self, current):
         return round((1 - (current / self.trade['value'])) * 100, 2)
 
+    @limit(1)
+    @async_fn
     def save_operative(self, temp, time, close, operative):
         self.trade['temp'] = temp
         self.trade['operative'] = operative
@@ -347,6 +354,8 @@ class CryptoBot:
         self.trade['max'] = close
         self.trade['min'] = close
 
+    @limit(1)
+    @async_fn
     def show_operative(self, cid, play):
         if self.process_is_started:
             if self.operative:
