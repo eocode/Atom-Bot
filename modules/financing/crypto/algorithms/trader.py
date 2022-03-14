@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 
 from bot.connect.message_connector import send_message, send_voice
@@ -233,14 +235,15 @@ class CryptoBot:
         self.testing = []
         self.cids = []
 
-    def send_messages(self, message, play=False, alert=False):
+    def send_messages(self, message, play=False, alert=False, runs=1):
         print('ALERT')
         print(message)
-        for cid in self.cids:
-            send_message(cid=cid, text=message, play=play)
-        if alert:
-            send_voice("Alerta")
-            send_voice("Alerta")
+        for i in range(runs):
+            for cid in self.cids:
+                send_message(cid=cid, text=message, play=play)
+                time.sleep(runs)
+            if alert:
+                send_voice("Alerta")
 
     @limit(1)
     @async_fn
@@ -268,7 +271,7 @@ class CryptoBot:
                     self.first_iteration = True
                     self.take_decision(testing=False)
                     print(self.trades['micro']['1m']['fingerprint'], self.symbol)
-                    sleep(30)
+                    sleep(20)
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -493,8 +496,7 @@ class CryptoBot:
             if action == 'Close':
                 message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s" % win
-            self.send_messages(message=message, play=False, alert=True)
-            self.send_messages(message=message, play=False, alert=True)
+            self.send_messages(message=message, play=False, alert=True, runs=3)
         else:
             row = [self.trades['micro']['1m']['fingerprint'], action,
                    self.trade['temp'], self.trade['operative'],
@@ -538,14 +540,14 @@ class CryptoBot:
                     close = True
             if self.trade['last_time'] == '1h':
                 if (not self.trades['medium']['1h']['trade']['mean_f'] and (
-                        not self.trades['medium']['4h']['trade']['Momentum']) and (
+                        not self.trades['medium']['1h']['trade']['Momentum']) and (
                         not self.trades['short']['30m']['trade']['Momentum']) and (
                         not self.trades['short']['15m']['trade']['Momentum'])):
                     close = True
             if self.trade['last_time'] == '4h':
                 if (not self.trades['medium']['4h']['trade']['mean_f'] and (
                         (not self.trades['large']['1d']['trade']['Momentum']) or (
-                        not self.trades['medium']['1h']['trade']['Momentum']))):
+                        not self.trades['medium']['4h']['trade']['Momentum']))):
                     close = True
         # Short
         else:
