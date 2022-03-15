@@ -388,8 +388,9 @@ class CryptoBot:
                     round(self.trade['max']), self.trade_variation(round(self.trade['max'])))
                 message += "Minimo: %s con %s\n\n" % (
                     round(self.trade['min']), self.trade_variation(round(self.trade['min'])))
-                message += "Tiempo en %s de %s periodos de 30m" % (
-                    ('long' if self.trades['short']['30m']['trade']['Momentum'] else 'short'),
+                message += "%s de %s hrs con %s periodos" % (
+                    ('Long' if self.trades['short']['30m']['trade']['Momentum'] else 'Short'),
+                    ((self.trades['short']['30m']['trade']['Momentums']) * 30) / 60,
                     self.trades['short']['30m']['trade']['Momentums'])
             else:
                 message = "No hay ninguna operativa para %s actualmente" % self.symbol
