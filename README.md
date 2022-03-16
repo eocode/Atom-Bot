@@ -33,6 +33,16 @@
 * Speak messages
 * RaspberryPI compatibility connected by bluetooth with Alexa
 
+### Bot Versions
+
+The project is based in the next convention:
+
+`Version: 1.2.3`
+
+* 1.- Important changes
+* 2.- Continous Improves 
+* 3.- Bug fixes
+
 ### Require
 
 * Python 3.7 +
