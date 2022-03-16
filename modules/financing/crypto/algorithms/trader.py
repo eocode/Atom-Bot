@@ -413,6 +413,7 @@ class CryptoBot:
                 if self.trades['micro']['5m']['trade']['ema']:
                     self.trade['risk'] = self.trade['risk'] - 10
                     self.trade['last_time'] = '5m'
+                    self.trade['last_temp'] = 'micro'
                     change = True
             if self.trade['last_time'] == '5m':
                 if self.trades['short']['15m']['trade']['ema']:
@@ -432,6 +433,7 @@ class CryptoBot:
                 if not self.trades['micro']['5m']['trade']['ema']:
                     self.trade['risk'] = self.trade['risk'] - 10
                     self.trade['last_time'] = '5m'
+                    self.trade['last_temp'] = 'micro'
                     change = True
             if self.trade['last_time'] == '5m':
                 if not self.trades['short']['15m']['trade']['ema']:
@@ -494,68 +496,19 @@ class CryptoBot:
 
         # Long
         if self.trade['operative'] == 'long':
-            if self.trade['last_time'] == '1m':
-                if not self.trades['micro']['1m']['trade']['mean_f'] or (
-                        not self.trades['micro']['5m']['trade']['Momentum'] or
-                        not self.trades['micro']['1m']['trade']['Momentum'] or
-                        not self.trades['short']['15m']['trade']['Momentum'] or
-                        not self.trades['short']['30m']['trade']['Momentum']
-                ):
-                    close = True
-            if self.trade['last_time'] == '5m':
-                if not self.trades['micro']['5m']['trade']['mean_f'] or (
-                        not self.trades['micro']['1m']['trade']['Momentum'] and
-                        not self.trades['micro']['5m']['trade']['Momentum'] or
-                        not self.trades['short']['15m']['trade']['Momentum'] or
-                        not self.trades['short']['30m']['trade']['Momentum']
-                ):
-                    close = True
-            if self.trade['last_time'] == '15m':
-                if (not self.trades['short']['15m']['trade']['mean_f'] or (
-                        not self.trades['micro']['5m']['trade']['Momentum'] and
-                        not self.trades['short']['15m']['trade']['Momentum'] or
-                        not self.trades['short']['30m']['trade']['Momentum'])):
-                    close = True
-            if self.trade['last_time'] == '30m':
-                if (not self.trades['short']['30m']['trade']['mean_f'] or (
-                        not self.trades['short']['30m']['trade']['Momentum'])) or (  # Brake all if temp is negative
-                        not self.trades['micro']['1m']['trade']['Momentum'] and
-                        not self.trades['micro']['5m']['trade']['Momentum'] or
-                        not self.trades['short']['15m']['trade']['Momentum']
-                ):
-                    close = True
+            if (not self.trades['short']['15m']['trade']['RSI'] and
+                not self.trades['micro']['5m']['trade']['RSI'] and
+                not self.trades['micro']['5m']['trade']['mean_f']) or (
+                    not self.trades['short']['30m']['trade']['Momentum']):
+                close = True
 
         # Short
         else:
-            if self.trade['last_time'] == '1m':
-                if self.trades['micro']['1m']['trade']['mean_f'] or (
-                        self.trades['micro']['5m']['trade']['Momentum'] or
-                        self.trades['micro']['1m']['trade']['Momentum'] or
-                        self.trades['short']['15m']['trade']['Momentum'] or
-                        self.trades['short']['30m']['trade']['Momentum']):
-                    close = True
-            if self.trade['last_time'] == '5m':
-                if self.trades['micro']['5m']['trade']['mean_f'] or (
-                        self.trades['micro']['1m']['trade']['Momentum'] and
-                        self.trades['micro']['5m']['trade']['Momentum'] or
-                        self.trades['short']['15m']['trade']['Momentum'] or
-                        self.trades['short']['30m']['trade']['Momentum']
-                ):
-                    close = True
-            if self.trade['last_time'] == '15m':
-                if self.trades['short']['15m']['trade']['mean_f'] or (
-                        self.trades['short']['15m']['trade']['Momentum'] and
-                        self.trades['micro']['5m']['trade']['Momentum'] or
-                        self.trades['short']['30m']['trade']['Momentum']
-                ):
-                    close = True
-            if self.trade['last_time'] == '30m':
-                if (self.trades['short']['30m']['trade']['mean_f'] or
-                    self.trades['short']['30m']['trade']['Momentum']) or (  # Brake all if temp is negative
-                        self.trades['micro']['1m']['trade']['Momentum'] and
-                        self.trades['micro']['5m']['trade']['Momentum'] or
-                        self.trades['short']['15m']['trade']['Momentum']):
-                    close = True
+            if ((self.trades['short']['15m']['trade']['RSI'] and
+                 self.trades['micro']['5m']['trade']['Momentum'] and
+                 self.trades['micro']['5m']['trade']['mean_f']) or (
+                    self.trades['short']['30m']['trade']['Momentum'])):
+                close = True
 
         if close:
             self.operative = False
@@ -566,33 +519,24 @@ class CryptoBot:
         if not self.operative:
             if self.trade_type == 'micro':
                 # Long
-                if ((self.trades['micro']['1m']['trade']['mean_f'] and
-                     self.trades['micro']['1m']['trade']['Momentum']) and (
-                            self.trades['micro']['1m']['trade']['confirm_dir'] and
-                            self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1)) and (
-                        self.trades['micro']['1m']['trade']['RSI_value'] < 70 and (
-                        self.trades['micro']['1m']['trade']['Momentum'] and
-                        self.trades['micro']['5m']['trade']['Momentum'] and
-                        self.trades['short']['30m']['trade']['Momentum'])
-                ):
+                if (self.trades['micro']['5m']['trade']['RSI'] and
+                    self.trades['micro']['1m']['trade']['RSI'] and
+                    self.trades['short']['30m']['trade']['RSI']) and (
+                        self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'long')
                 # Short
-                if ((not self.trades['micro']['1m']['trade']['mean_f'] and
-                     not self.trades['micro']['1m']['trade']['Momentum']) and (
-                            not self.trades['micro']['1m']['trade']['confirm_dir'] and
-                            self.trades['micro']['1m']['trade']['confirm_dir_ups'] > 1)) and (
-                        not self.trades['micro']['1m']['trade']['Momentum'] and
-                        not self.trades['micro']['5m']['trade']['Momentum'] and
-                        not self.trades['short']['30m']['trade']['Momentum']
-                ):
+                if (not self.trades['micro']['5m']['trade']['RSI'] and
+                    not self.trades['micro']['1m']['trade']['RSI'] and
+                    not self.trades['short']['30m']['trade']['RSI']) and (
+                        not self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'short')
         else:
-            self.trade['max'] = self.trades['micro']['1m']['trade']['close'] if self.trades['micro']['1m']['trade'][
-                                                                                    'close'] > self.trade['max'] else \
-                self.trade['max']
-            self.trade['min'] = self.trades['micro']['1m']['trade']['close'] if self.trades['micro']['1m']['trade'][
-                                                                                    'close'] < self.trade['min'] else \
-                self.trade['min']
+            self.trade['max'] = (self.trades['micro']['1m']['trade']['close'] if (
+                    self.trades['micro']['1m']['trade']['close'] > self.trade['max']) else
+                                 self.trade['max'])
+            self.trade['min'] = (self.trades['micro']['1m']['trade']['close'] if (
+                    self.trades['micro']['1m']['trade']['close'] < self.trade['min']) else
+                                 self.trade['min'])
             self.evaluate_operative(testing)
 
     def save_trade(self, time, last_row):
