@@ -37,7 +37,7 @@
 
 The project is based in the next convention:
 
-`Version: 1.2.3`
+Version: 1.2.3`
 
 * 1.- Important changes
 * 2.- Continous Improves 

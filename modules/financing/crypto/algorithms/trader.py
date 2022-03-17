@@ -521,12 +521,14 @@ class CryptoBot:
                 # Long
                 if (self.trades['micro']['5m']['trade']['RSI'] and
                     self.trades['micro']['1m']['trade']['RSI'] and
+                    self.trades['short']['15m']['trade']['RSI'] and
                     self.trades['short']['30m']['trade']['RSI']) and (
                         self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'long')
                 # Short
                 if (not self.trades['micro']['5m']['trade']['RSI'] and
                     not self.trades['micro']['1m']['trade']['RSI'] and
+                    not self.trades['short']['15m']['trade']['RSI'] and
                     not self.trades['short']['30m']['trade']['RSI']) and (
                         not self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'short')
