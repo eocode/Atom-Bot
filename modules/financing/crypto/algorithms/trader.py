@@ -256,22 +256,23 @@ class CryptoBot:
             while (True):
                 # For all temps
                 try:
-                    for time, options in self.configuration.items():
-                        # Get Data
-                        data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
-                                                       save=False, sma=options['days_s'])
-                        # Analyse
-                        options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
-                                                   mas=options['smas'], time=time)
-                        df = options['data'].tail(365)
+                    current_minute = datetime.now().minute
+                    if current_minute != self.trades['micro']['1m']['last_minute']:
+                        for time, options in self.configuration.items():
+                            # Get Data
+                            data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
+                                                           save=False, sma=options['days_s'])
+                            # Analyse
+                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
+                                                       mas=options['smas'], time=time)
+                            df = options['data'].tail(365)
 
-                        last_row = df.iloc[-1, :]
-                        self.save_trade(last_row=last_row, time=time)
-                        sleep(2)
-                    self.first_iteration = True
-                    self.take_decision(testing=False)
-                    print(self.trades['micro']['1m']['fingerprint'], self.symbol)
-                    sleep(20)
+                            last_row = df.iloc[-1, :]
+                            self.save_trade(last_row=last_row, time=time)
+                            sleep(2)
+                        self.first_iteration = True
+                        self.take_decision(testing=False)
+                        print(self.trades['micro']['1m']['fingerprint'], self.symbol)
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -505,6 +506,7 @@ class CryptoBot:
         # Short
         else:
             if ((self.trades['short']['15m']['trade']['RSI'] and
+                 self.trades['micro']['5m']['trade']['RSI'] and
                  self.trades['micro']['5m']['trade']['Momentum'] and
                  self.trades['micro']['5m']['trade']['mean_f']) or (
                     self.trades['short']['30m']['trade']['Momentum'])):
@@ -555,6 +557,8 @@ class CryptoBot:
             return False
         else:
             self.trades[type][time]['fingerprint'] = last_row['time']
+            self.trades[type][time]['last_minute'] = datetime.strptime(
+                str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S').minute
             self.trades[type][time]['trend'] = last_row['trend']
             self.trades[type][time]['trade']['high'] = last_row['high']
             self.trades[type][time]['trade']['low'] = last_row['low']

@@ -13,7 +13,7 @@ def command_start(m):
     user = get_chat_info(m)
     if not user.group['group']:
         text = (
-                "Hola "
+                "Hola grupo "
                 + user.name
                 + " soy "
                 + name
