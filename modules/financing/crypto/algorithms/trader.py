@@ -243,7 +243,7 @@ class CryptoBot:
                 send_message(cid=cid, text=message, play=play)
                 time.sleep(runs)
             if alert:
-                send_voice("Alerta")
+                send_voice(self.trade['operative'])
 
     @limit(1)
     @async_fn
@@ -522,14 +522,18 @@ class CryptoBot:
                 if (self.trades['micro']['5m']['trade']['RSI'] and
                     self.trades['micro']['1m']['trade']['RSI'] and
                     self.trades['short']['15m']['trade']['RSI'] and
-                    self.trades['short']['30m']['trade']['RSI']) and (
+                    self.trades['short']['30m']['trade']['RSI'] and
+                    self.trades['medium']['1h']['trade']['RSI'] and
+                    self.trades['medium']['4h']['trade']['RSI']) and (
                         self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'long')
                 # Short
                 if (not self.trades['micro']['5m']['trade']['RSI'] and
                     not self.trades['micro']['1m']['trade']['RSI'] and
                     not self.trades['short']['15m']['trade']['RSI'] and
-                    not self.trades['short']['30m']['trade']['RSI']) and (
+                    not self.trades['short']['30m']['trade']['RSI'] and
+                    not self.trades['medium']['1h']['trade']['RSI'] and
+                    not self.trades['medium']['4h']['trade']['RSI']) and (
                         not self.trades['short']['30m']['trade']['Momentum']):
                     self.show_results('Iniciado', testing, 'micro', '1m', 'short')
         else:
