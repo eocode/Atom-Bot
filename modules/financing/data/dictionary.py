@@ -25,11 +25,11 @@ binance_order_books = {
     #     'pair': 'USDT',
     #     'symbol': 'CHZUSDT'
     # },
-    "Cardano": {
-        'crypto': 'ADA',
-        'pair': 'USDT',
-        'symbol': 'ADAUSDT'
-    },
+    # "Cardano": {
+    #     'crypto': 'ADA',
+    #     'pair': 'USDT',
+    #     'symbol': 'ADAUSDT'
+    # },
     # "IOTA": {
     #     'crypto': 'IOTA',
     #     'pair': 'USDT',

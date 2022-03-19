@@ -104,10 +104,6 @@ For ubuntu requiere
 
 ``sudo apt-get install mpg123``
 
-For windows requiere
-
-`Install https://ffmpeg.org and add to path`
-
 Migrations
 
 ``alembic revision --autogenerate -m "first migration"``
