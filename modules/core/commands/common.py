@@ -5,7 +5,8 @@ from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
 import unidecode
 
-from modules.financing.data.operative import start_operatives
+from modules.financing.data.dictionary import binance_order_books
+from modules.financing.data.operative import start_operatives, operatives
 
 
 @bot.message_handler(commands=["acerca"])
@@ -13,7 +14,7 @@ def command_start(m):
     user = get_chat_info(m)
     if not user.group['group']:
         text = (
-                "Hola grupo "
+                "Hola "
                 + user.name
                 + " soy "
                 + name
@@ -23,14 +24,14 @@ def command_start(m):
         )
     else:
         text = (
-                "Hola "
+                "Hola  grupo "
                 + user.name
                 + " soy "
                 + name
                 + " versión "
                 + version
-                + ", la última sync fue hace " + str(user.minutes)
-                + " y la reproducción está " + ("Activada" if user.speak else "Desactivada")
+                + ", la última actualización fue hace " + str(user.minutes)
+                + "minutos. La reproducción está " + ("Activada" if user.speak else "Desactivada")
         )
     send_message(
         cid=user.cid,
@@ -117,6 +118,20 @@ def command_init(m):
         send_message(user.cid, "Solo se permite usar en grupos")
 
 
+@bot.message_handler(commands=["alertas"])
+def command_alerts(m):
+    user = get_chat_info(m)
+
+    if user.group['group']:
+        for key, value in binance_order_books.items():
+            operatives[value['crypto'] + value['pair']].monitor.show_operative()
+    else:
+        if user.market in operatives:
+            operatives[user.market].monitor.show_operative()
+        else:
+            send_message(user.cid, 'Necesita preparar la operativa antes')
+
+
 @bot.message_handler(func=lambda m: True)
 def echo_message(m):
     user = get_chat_info(m)
@@ -136,6 +151,9 @@ def echo_message(m):
             else:
                 if text.lower() == "iniciar":
                     command_init(m)
+                else:
+                    if text.lower() == "alertas":
+                        command_alerts(m)
 
 
 def say_something(m):

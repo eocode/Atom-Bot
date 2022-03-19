@@ -18,12 +18,10 @@ telebot.apihelper.SESSION_TIME_TO_LIVE = 5 * 60
 commands = {"start": "Primeros pasos y bienvenida",
             "acerca": "Conoce a " + os.environ["bot_name"],
             "ayuda": "Lista de los comandos",
-            "configuracion": "Tus ajustes actuales",
             "elegir_mercado": "Selecciona un mercado",
             "ver_graficos": "Indicadores de trade",
             "trade": "Recibe recomendaciones",
-            "simular_trades": "Realiza un backtest",
-            "alertas": "Ver operativas"}
+            "simular_trades": "Realiza un backtest"}
 
 
 # Personal commands

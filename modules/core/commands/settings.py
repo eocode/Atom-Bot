@@ -60,21 +60,3 @@ def set_current_market_option(m):
     except Exception as e:
         print(e)
         bot.reply_to(m, "Algo salio mal al obtener los valores")
-
-
-@bot.message_handler(commands=["configuracion"])
-def my_settings(m):
-    try:
-        cid = m.chat.id
-        bot.send_chat_action(cid, "typing")
-        settings = get_settings(cid)
-        send_message(cid, settings)
-        user = get_user_info(cid)
-        user.market = settings.current_market
-        user.platform = settings.current_platform
-        user.crypto = settings.current_crypto
-        user.pair = settings.current_pair
-        save_user_info(cid, user)
-    except Exception as e:
-        print(e)
-        bot.reply_to(m, "Algo salio mal al obtener tus datos")

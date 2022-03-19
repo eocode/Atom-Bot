@@ -17,7 +17,18 @@
 </div>
 
 ## Features
+* Nutritional assistant
+  * Work in Progress
+* Personalized Chat responses
+* Telegram messages by users and groups
+* Speak messages
+* RaspberryPI compatibility connected by bluetooth with Alexa echo DOT
 * Crypto Trading
+  * Supported cryptos
+    * BTC
+    * ETH
+    * ADA
+    * SOL
   * Smart alerts and monitor
     * Based in Bayes Theorem
   * Market Analyze
@@ -28,10 +39,8 @@
   * Graphs
     * Visualize indicators
   * Simulations and backtesting
+    * Scan back 15 days
     * 91% - 99% gains adjusting simulation for best start point
-* Telegram messages by users and groups
-* Speak messages
-* RaspberryPI compatibility connected by bluetooth with Alexa
 
 ### Bot Versions
 
@@ -54,8 +63,7 @@ Version: 1.2.3`
 
 ## Support
 
-* Linux
-* Windows
+* Linux host
 
 ## Architecture
 

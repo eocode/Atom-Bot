@@ -15,16 +15,21 @@ binance_order_books = {
         'pair': 'USDT',
         'symbol': 'ETHUSDT'
     },
+    "Sol": {
+        'crypto': 'SOL',
+        'pair': 'USDT',
+        'symbol': 'SOLUSDT'
+    },
     # "Chiliz": {
     #     'crypto': 'CHZ',
     #     'pair': 'USDT',
     #     'symbol': 'CHZUSDT'
     # },
-    # "Cardano": {
-    #     'crypto': 'ADA',
-    #     'pair': 'USDT',
-    #     'symbol': 'ADAUSDT'
-    # },
+    "Cardano": {
+        'crypto': 'ADA',
+        'pair': 'USDT',
+        'symbol': 'ADAUSDT'
+    },
     # "IOTA": {
     #     'crypto': 'IOTA',
     #     'pair': 'USDT',
@@ -49,10 +54,5 @@ binance_order_books = {
     #     'crypto': 'MANA',
     #     'pair': 'USDT',
     #     'symbol': 'MANAUSDT'
-    # },
-    # "Sol": {
-    #     'crypto': 'SOL',
-    #     'pair': 'USDT',
-    #     'symbol': 'SOLUSDT'
-    # },
+    # }
 }

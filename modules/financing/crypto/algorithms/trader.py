@@ -9,7 +9,7 @@ from modules.financing.crypto.algorithms.extractor import get_binance_symbol_dat
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
 from time import sleep
-from datetime import datetime
+import datetime
 
 
 class CryptoBot:
@@ -34,7 +34,8 @@ class CryptoBot:
             'value': 0,
             'last_temp': '',
             'last_time': '',
-            'risk': 0
+            'risk': 0,
+            'action': ''
         }
         self.trades = {
             'large': {
@@ -243,7 +244,7 @@ class CryptoBot:
                 send_message(cid=cid, text=message, play=play)
                 time.sleep(runs)
             if alert:
-                send_voice(self.trade['operative'])
+                send_voice(self.trade['action'])
 
     @limit(1)
     @async_fn
@@ -256,7 +257,7 @@ class CryptoBot:
             while (True):
                 # For all temps
                 try:
-                    current_minute = datetime.now().minute
+                    current_minute = datetime.datetime.now().minute
                     if current_minute != self.trades['micro']['1m']['last_minute']:
                         for time, options in self.configuration.items():
                             # Get Data
@@ -290,12 +291,16 @@ class CryptoBot:
 
             main = self.trades[get_type_trade('1m', self.trades)]['1m']['data']
 
-            open = pd.read_csv('backtesting/trades_%s.csv' % self.symbol)
-            timestamp = open[open['Action'] == 'Open'].reset_index().loc[3, 'time']
+            # open = pd.read_csv('backtesting/trades_%s.csv' % self.symbol)
+            # timestamp = open[open['Action'] == 'Open'].reset_index().loc[3, 'time']
+
+            tod = datetime.datetime.now()
+            d = datetime.timedelta(days=15)
+            timestamp = tod - d
 
             print("Initial Analysis: ", timestamp, self.crypto)
 
-            main = main[main['timestamp'] >= timestamp]
+            main = main[main['timestamp'] >= str(timestamp)]
             self.process_is_started = True
             self.first_iteration = True
 
@@ -349,9 +354,9 @@ class CryptoBot:
 
     def elapsed_minutes(self, current=True):
         if current:
-            diff = (datetime.utcnow() - self.trade['fingerprint'])
+            diff = (datetime.datetime.utcnow() - self.trade['fingerprint'])
         else:
-            date_time_obj = datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
             diff = (date_time_obj - self.trade['fingerprint'])
         return round(diff.total_seconds() / 60, 2)
 
@@ -365,7 +370,7 @@ class CryptoBot:
         self.trade['last_temp'] = temp
         self.trade['value'] = close
         self.trade['risk'] = 100
-        date_time_obj = datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+        date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
         self.trade['fingerprint'] = date_time_obj
         self.trade['max'] = close
         self.trade['min'] = close
@@ -472,6 +477,7 @@ class CryptoBot:
             win = 'Ganado' if diff >= 0 else 'Perdido'
 
         if not testing:
+            self.trade['action'] = action
             if action == 'Open':
                 message = "Inicia %s %s en %s" % (
                     ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'), self.crypto,
@@ -557,7 +563,7 @@ class CryptoBot:
             return False
         else:
             self.trades[type][time]['fingerprint'] = last_row['time']
-            self.trades[type][time]['last_minute'] = datetime.strptime(
+            self.trades[type][time]['last_minute'] = datetime.datetime.strptime(
                 str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S').minute
             self.trades[type][time]['trend'] = last_row['trend']
             self.trades[type][time]['trade']['high'] = last_row['high']
