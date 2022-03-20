@@ -125,8 +125,10 @@ class CryptoBot:
                             last_row = df.iloc[-1, :]
                             self.save_trade(last_row=last_row, size=size)
                             if size == '1m':
-                                message = "%s actualizado el %s" % (
-                                    self.symbol, convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
+                                message = "-------------------------------------------------------------------\n" \
+                                          "%s actualizado el %s" % (
+                                              self.symbol,
+                                              convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
                                 logging_message(message)
                             message = " 1m   - RSI %s | " % self.trades['micro']['1m']['trade']['RSI']
                             message += " 5m  - RSI %s | " % self.trades['micro']['5m']['trade']['RSI']
@@ -134,8 +136,8 @@ class CryptoBot:
                             message += " 30m - RSI %s Momentum %s \n" % (
                                 self.trades['short']['30m']['trade']['RSI'],
                                 self.trades['short']['30m']['trade']['Momentum'])
-                            message += " 1h  - RSI %s | " % self.trades['medium']['1h']['trade']['RSI']
-                            message += " 4h  - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
+                            message += " 1h   - RSI %s | " % self.trades['medium']['1h']['trade']['RSI']
+                            message += " 4h   - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
                             logging_message(message)
                             self.take_decision(testing=False)
 
