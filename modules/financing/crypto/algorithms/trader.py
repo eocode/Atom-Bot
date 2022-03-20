@@ -85,8 +85,7 @@ class CryptoBot:
                             sleep(2)
                         self.first_iteration = True
                         self.take_decision(testing=False)
-                        print(self.trades['micro']['1m']['fingerprint'],
-                              convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])), self.symbol)
+                        print(convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])), self.symbol)
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -292,14 +291,14 @@ class CryptoBot:
     def take_decision(self, testing=False):
 
         if not testing:
-            message = "%s\n" % self.crypto
+            message = "%s | " % self.crypto
             message += "1m - RSI %s" % self.trades['micro']['1m']['trade']['RSI']
-            message += "5m - RSI %s" % self.trades['micro']['5m']['trade']['RSI']
-            message += "15m - RSI %s" % self.trades['short']['15m']['trade']['RSI']
-            message += "30m - RSI %s Momentum %s" % (
+            message += " 5m - RSI %s" % self.trades['micro']['5m']['trade']['RSI']
+            message += " 15m - RSI %s" % self.trades['short']['15m']['trade']['RSI']
+            message += " 30m - RSI %s Momentum %s" % (
                 self.trades['short']['30m']['trade']['RSI'], self.trades['short']['30m']['trade']['Momentum'])
-            message += "1h - RSI %s" % self.trades['medium']['1h']['trade']['RSI']
-            message += "4h - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
+            message += " 1h - RSI %s" % self.trades['medium']['1h']['trade']['RSI']
+            message += " 4h - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
             print(message)
 
         # Micro Trade
