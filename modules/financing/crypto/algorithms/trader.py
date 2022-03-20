@@ -114,7 +114,7 @@ class CryptoBot:
                 try:
                     for size, options in configuration.items():
                         if self.check_if_update(size):
-                            logging_message("Se actualizo: %s" % size)
+                            logging_message("%s actualizado en %s" % (self.crypto, size))
                             # Get Data
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
@@ -133,7 +133,7 @@ class CryptoBot:
                                 self.trades['short']['30m']['trade']['RSI'],
                                 self.trades['short']['30m']['trade']['Momentum'])
                             message += " 1h  - RSI %s | " % self.trades['medium']['1h']['trade']['RSI']
-                            message += " 4h  - RSI %s\n\n" % self.trades['medium']['4h']['trade']['RSI']
+                            message += " 4h  - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
                             logging_message(message)
                             self.take_decision(testing=False)
                     self.first_iteration = True
