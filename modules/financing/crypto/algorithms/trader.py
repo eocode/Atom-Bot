@@ -12,6 +12,7 @@ from modules.financing.crypto.algorithms.extractor import get_binance_symbol_dat
 from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
 from time import sleep
 import datetime
+from datetime import timedelta
 
 from modules.financing.crypto.algorithms.trades import trades
 
@@ -59,6 +60,47 @@ class CryptoBot:
             if alert:
                 send_voice(self.trade['action'])
 
+    def check_if_update(self, size):
+        current_time = datetime.datetime.utcnow()
+        period = size[-1]
+        t = int(size[:-1])
+        delta = None
+        full = True
+        if period == 'm':
+            full = True
+            delta = timedelta(minutes=t)
+        if period == 'h':
+            full = True
+            delta = timedelta(hours=t)
+        if period == 'd':
+            full = False
+            delta = timedelta(days=t)
+        if period == 'w':
+            full = False
+            delta = timedelta(weeks=t)
+        lt = str(self.trades[get_type_trade(size, self.trades)][size]['fingerprint'])
+        if full:
+            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
+        else:
+            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
+        updatable = current_time - delta
+        return True if updatable >= last_time else False
+
+    def elapsed_time(self, current=True):
+        return round(self.elapsed_minutes(current=current) / 60, 2)
+
+    def elapsed_minutes(self, current=True):
+        if current:
+            diff = (datetime.datetime.utcnow() - self.trade['fingerprint'])
+        else:
+            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']),
+                                                       '%Y-%m-%d %H:%M:%S')
+            diff = (date_time_obj - self.trade['fingerprint'])
+        return round(diff.total_seconds() / 60, 2)
+
+    def trade_variation(self, current):
+        return abs(round((1 - (current / self.trade['value'])) * 100, 2))
+
     @limit(1)
     @async_fn
     def start(self, cid=None):
@@ -70,9 +112,9 @@ class CryptoBot:
             while True:
                 # For all temps
                 try:
-                    current_minute = datetime.datetime.now().minute
-                    if current_minute != self.trades['micro']['1m']['last_minute']:
-                        for size, options in configuration.items():
+                    for size, options in configuration.items():
+                        if self.check_if_update(size):
+                            logging_message("Se actualizo: %s" % size)
                             # Get Data
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
@@ -82,20 +124,19 @@ class CryptoBot:
 
                             last_row = df.iloc[-1, :]
                             self.save_trade(last_row=last_row, size=size)
-                            sleep(2)
-                        self.first_iteration = True
-                        message = "%s %s" % (
-                            self.symbol, convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
-                        message += " 1m   - RSI %s\n" % self.trades['micro']['1m']['trade']['RSI']
-                        message += " 5m  - RSI %s\n" % self.trades['micro']['5m']['trade']['RSI']
-                        message += " 15m - RSI %s\n" % self.trades['short']['15m']['trade']['RSI']
-                        message += " 30m - RSI %s Momentum %s\n" % (
-                            self.trades['short']['30m']['trade']['RSI'],
-                            self.trades['short']['30m']['trade']['Momentum'])
-                        message += " 1h  - RSI %s\n" % self.trades['medium']['1h']['trade']['RSI']
-                        message += " 4h  - RSI %s\n" % self.trades['medium']['4h']['trade']['RSI']
-                        logging_message(message)
-                        self.take_decision(testing=False)
+                            message = "%s %s" % (
+                                self.symbol, convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
+                            message += " 1m   - RSI %s | " % self.trades['micro']['1m']['trade']['RSI']
+                            message += " 5m  - RSI %s | " % self.trades['micro']['5m']['trade']['RSI']
+                            message += " 15m - RSI %s | " % self.trades['short']['15m']['trade']['RSI']
+                            message += " 30m - RSI %s Momentum %s | " % (
+                                self.trades['short']['30m']['trade']['RSI'],
+                                self.trades['short']['30m']['trade']['Momentum'])
+                            message += " 1h  - RSI %s | " % self.trades['medium']['1h']['trade']['RSI']
+                            message += " 4h  - RSI %s\n\n" % self.trades['medium']['4h']['trade']['RSI']
+                            logging_message(message)
+                            self.take_decision(testing=False)
+                    self.first_iteration = True
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -167,21 +208,6 @@ class CryptoBot:
 
         except Exception as e:
             print('Error: ', e)
-
-    def elapsed_time(self, current=True):
-        return round(self.elapsed_minutes(current=current) / 60, 2)
-
-    def elapsed_minutes(self, current=True):
-        if current:
-            diff = (datetime.datetime.utcnow() - self.trade['fingerprint'])
-        else:
-            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']),
-                                                       '%Y-%m-%d %H:%M:%S')
-            diff = (date_time_obj - self.trade['fingerprint'])
-        return round(diff.total_seconds() / 60, 2)
-
-    def trade_variation(self, current):
-        return abs(round((1 - (current / self.trade['value'])) * 100, 2))
 
     def save_operative(self, temp, size, close, operative):
         self.trade['temp'] = temp
