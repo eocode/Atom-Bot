@@ -170,7 +170,7 @@ class CryptoBot:
         return round(diff.total_seconds() / 60, 2)
 
     def trade_variation(self, current):
-        return round((1 - (current / self.trade['value'])) * 100, 2)
+        return abs(round((1 - (current / self.trade['value'])) * 100, 2))
 
     def save_operative(self, temp, size, close, operative):
         self.trade['temp'] = temp
@@ -220,54 +220,6 @@ class CryptoBot:
                             operative)
         self.notify(testing=testing, message=message, action='Abrir')
 
-    def validate_change_temp(self, testing):
-        change = False
-
-        if self.trade['operative'] == 'long':
-            if self.trade['last_time'] == '1m':
-                if self.trades['micro']['5m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '5m'
-                    self.trade['last_temp'] = 'micro'
-                    change = True
-            if self.trade['last_time'] == '5m':
-                if self.trades['short']['15m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '15m'
-                    self.trade['last_temp'] = 'short'
-                    change = True
-            if self.trade['last_time'] == '15m':
-                if self.trades['short']['30m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '30m'
-                    self.trade['last_temp'] = 'short'
-                    change = True
-
-        if self.trade['operative'] == 'short':
-            if self.trade['last_time'] == '1m':
-                if not self.trades['micro']['5m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '5m'
-                    self.trade['last_temp'] = 'micro'
-                    change = True
-            if self.trade['last_time'] == '5m':
-                if not self.trades['short']['15m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '15m'
-                    self.trade['last_temp'] = 'short'
-                    change = True
-            if self.trade['last_time'] == '15m':
-                if not self.trades['short']['30m']['trade']['ema']:
-                    self.trade['risk'] = self.trade['risk'] - 10
-                    self.trade['last_time'] = '30m'
-                    self.trade['last_temp'] = 'short'
-                    change = True
-
-        if change:
-            self.notify(testing=testing, message='Actualización', action='Continua')
-
-        return False
-
     def profit(self):
         if self.trade['operative'] == 'long':
             diff = float(self.trades['micro']['1m']['trade']['close']) - (
@@ -308,7 +260,7 @@ class CryptoBot:
 
     def evaluate_operative(self, testing):
 
-        close = self.validate_change_temp(testing)
+        close = False
 
         # Long
         if self.trade['operative'] == 'long':
@@ -363,36 +315,29 @@ class CryptoBot:
             self.evaluate_operative(testing)
 
     def save_trade(self, size, last_row):
-        # Fingerprint
-        fingerprint = last_row['time']
-
         length = get_type_trade(size, self.trades)
 
-        if self.trades[length][size]['fingerprint'] == fingerprint:
-            return False
-        else:
-            self.trades[length][size]['fingerprint'] = last_row['time']
-            self.trades[length][size]['last_minute'] = datetime.datetime.strptime(
-                str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S').minute
-            self.trades[length][size]['trend'] = last_row['trend']
-            self.trades[length][size]['trade']['high'] = last_row['high']
-            self.trades[length][size]['trade']['low'] = last_row['low']
-            self.trades[length][size]['trade']['close'] = last_row['close']
-            self.trades[length][size]['trade']['RSI'] = last_row['RSIs']
-            self.trades[length][size]['trade']['RSIs'] = last_row['RSI_ups']
-            self.trades[length][size]['trade']['RSI_value'] = last_row['RSI']
-            self.trades[length][size]['trade']['mean_f'] = last_row['fast']
-            self.trades[length][size]['trade']['mean_f_ups'] = last_row['fast_ups']
-            self.trades[length][size]['trade']['Momentum'] = last_row['momentums']
-            self.trades[length][size]['trade']['Momentums'] = last_row['momentum_ups']
-            self.trades[length][size]['trade']['Momentum_value'] = last_row['momentum']
-            self.trades[length][size]['trade']['confirm_dir'] = last_row['avg']
-            self.trades[length][size]['trade']['confirm_dir_ups'] = last_row['price_up']
-            self.trades[length][size]['trade']['variation'] = last_row['close_variation']
-            self.trades[length][size]['trade']['time'] = last_row['mom_t']
-            self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
-            self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_55']
-            return True
+        self.trades[length][size]['fingerprint'] = last_row['time']
+        self.trades[length][size]['last_minute'] = datetime.datetime.strptime(
+            str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S').minute
+        self.trades[length][size]['trend'] = last_row['trend']
+        self.trades[length][size]['trade']['high'] = last_row['high']
+        self.trades[length][size]['trade']['low'] = last_row['low']
+        self.trades[length][size]['trade']['close'] = last_row['close']
+        self.trades[length][size]['trade']['RSI'] = last_row['RSIs']
+        self.trades[length][size]['trade']['RSIs'] = last_row['RSI_ups']
+        self.trades[length][size]['trade']['RSI_value'] = last_row['RSI']
+        self.trades[length][size]['trade']['mean_f'] = last_row['fast']
+        self.trades[length][size]['trade']['mean_f_ups'] = last_row['fast_ups']
+        self.trades[length][size]['trade']['Momentum'] = last_row['momentums']
+        self.trades[length][size]['trade']['Momentums'] = last_row['momentum_ups']
+        self.trades[length][size]['trade']['Momentum_value'] = last_row['momentum']
+        self.trades[length][size]['trade']['confirm_dir'] = last_row['avg']
+        self.trades[length][size]['trade']['confirm_dir_ups'] = last_row['price_up']
+        self.trades[length][size]['trade']['variation'] = last_row['close_variation']
+        self.trades[length][size]['trade']['time'] = last_row['mom_t']
+        self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
+        self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_55']
 
     def get_market_graphs(self, bot=None, cid=None):
 
