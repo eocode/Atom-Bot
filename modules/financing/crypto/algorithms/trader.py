@@ -4,6 +4,7 @@ import pandas as pd
 
 from bot.connect.message_connector import send_message, send_voice
 from bot.connect.thread_connector import limit, async_fn
+from bot.connect.time_connector import convert_utc_to_local
 from modules.core.data.bot_system import system
 from modules.financing.crypto.algorithms.configuration import configuration
 from modules.financing.crypto.algorithms.extractor import get_binance_symbol_data, save_extracted_data, \
@@ -84,7 +85,8 @@ class CryptoBot:
                             sleep(2)
                         self.first_iteration = True
                         self.take_decision(testing=False)
-                        print(self.trades['micro']['1m']['fingerprint'], self.symbol)
+                        print(self.trades['micro']['1m']['fingerprint'],
+                              convert_utc_to_local(self.trades['micro']['1m']['fingerprint']), self.symbol)
                 except Exception as e:
                     print('Error: ', e)
         else:
@@ -126,8 +128,8 @@ class CryptoBot:
                 self.take_decision(testing=True)
 
             df = pd.DataFrame(self.testing,
-                              columns=['time', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result', 'Risk',
-                                       'Time', 'Elapsed', 'Min', 'Max'])
+                              columns=['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
+                                       'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max'])
 
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
             df = df[df['Result'] != 'Iniciado']
@@ -251,11 +253,15 @@ class CryptoBot:
                 message += "Resultado: %s con %s" % (win, self.profit())
             self.send_messages(message=message, play=False, alert=True, runs=3)
         else:
-            row = [self.trades['micro']['1m']['fingerprint'], action,
+            row = [self.trades['micro']['1m']['fingerprint'],
+                   convert_utc_to_local(self.trades['micro']['1m']['fingerprint']), action,
                    self.trade['temp'], self.trade['operative'],
                    self.trades['micro']['1m']['trade']['close'], diff, win,
                    self.trade['risk'],
-                   self.trade['last_time'], self.elapsed_time(current=False), self.trade['min'], self.trade['max']]
+                   self.trade['last_time'], self.elapsed_time(current=False),
+                   round(self.trades['micro']['1m']['trade']['close'] - self.trade['min'], 2),
+                   round(self.trades['micro']['1m']['trade']['close'] - self.trade['max'], 2), self.trade['min'],
+                   self.trade['max']]
             self.testing.append(row)
 
     def evaluate_operative(self, testing):
@@ -286,6 +292,14 @@ class CryptoBot:
     def take_decision(self, testing=False):
         # Micro Trade
         if not self.operative:
+            print('1m', self.trades['micro']['1m']['trade']['RSI'])
+            print('5m', self.trades['micro']['5m']['trade']['RSI'])
+            print('15m', self.trades['short']['15m']['trade']['RSI'])
+            print('30m', self.trades['short']['30m']['trade']['RSI'], 'Momentum',
+                  self.trades['short']['30m']['trade']['Momentum'])
+            print('1h', self.trades['medium']['1h']['trade']['RSI'])
+            print('4h', self.trades['medium']['4h']['trade']['RSI'])
+
             if self.trade_type == 'micro':
                 # Long
                 if (self.trades['micro']['5m']['trade']['RSI'] and

@@ -83,6 +83,9 @@ DB_PASS='your pass'
 DB_NAME='your name'
 DB_HOST='your host'
 
+# Regional settings
+timezone='America/Mexico_City'
+
 # Telegram access
 telegram_users = 'string separated with comma' 
 telegram_token_bot = 'your token'

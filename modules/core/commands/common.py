@@ -29,7 +29,7 @@ def command_start(m):
                 + " versión "
                 + version
                 + ", la última actualización fue hace " + str(user.minutes)
-                + "minutos. La reproducción está " + ("Activada" if user.speak else "Desactivada")
+                + " minutos. La reproducción está " + ("Activada" if user.speak else "Desactivada")
         )
     send_message(
         cid=user.cid,
@@ -87,17 +87,8 @@ def command_start(m):
 def command_help(m):
     user = get_chat_info(m)
 
-    help_text = "Puedo ayudarte a realizar operaciones en el mercado crypto ... \n\n"
-    help_text += "Te comparto los siguientes comandos: \n\n"
-    for key in commands:
-        if key not in ("ayuda", "start"):
-            if key not in (
-                    "simular_trades", "elegir_mercado", "ver_graficos", "trade") or user.is_verified and not \
-                    user.group['group']:
-                if key not in ("simular_trades", "trade") or user.is_admin and not user.group['group']:
-                    if key not in ("alertas") or user.is_verified:
-                        help_text += "/" + key + ": "
-                        help_text += commands[key] + "\n"
+    help_text = "Hola ... \n\n"
+    help_text += "Como asistente puedo apoyarte a operar en el mercado crypto con algunas alertas para el mercado de futuros, solo pidelo"
     send_message(user.cid, help_text, play=False)
 
 
