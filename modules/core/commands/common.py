@@ -24,9 +24,7 @@ def command_start(m):
         )
     else:
         text = (
-                "Hola  grupo "
-                + user.name
-                + " soy "
+                "Hola  grupo soy "
                 + name
                 + " versión "
                 + version
@@ -60,9 +58,8 @@ def command_start(m):
                     )
             else:
                 text = (
-                        "Falta poco! "
-                        + user.name
-                        + ", ahora solo se tiene que verificar la cuenta para acceder a todas las funcionalidades."
+                        user.name
+                        + " tú cuenta es de uso limitado, tiene que adquirir una suscripción para acceder a todas las funcionalidades."
                 )
         else:
             text = (

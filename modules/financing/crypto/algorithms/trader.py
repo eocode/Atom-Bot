@@ -5,11 +5,14 @@ import pandas as pd
 from bot.connect.message_connector import send_message, send_voice
 from bot.connect.thread_connector import limit, async_fn
 from modules.core.data.bot_system import system
+from modules.financing.crypto.algorithms.configuration import configuration
 from modules.financing.crypto.algorithms.extractor import get_binance_symbol_data, save_extracted_data, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
 from time import sleep
 import datetime
+
+from modules.financing.crypto.algorithms.trades import trades
 
 
 class CryptoBot:
@@ -28,6 +31,10 @@ class CryptoBot:
         self.first_iteration = False
         self.trade_type = 'micro'
         self.operative = False
+        self.indicators = ['timestamp', 'fast', 'fast_ups', 'avg',
+                           'price_up', 'price_ups', 'momentums', 'momentum',
+                           'momentum_ups', 'buy_ema', 'RSI', 'RSIs', 'RSI_ups',
+                           'close', 'open', 'close_variation']
         self.trade = {
             'temp': '',
             'operative': '',
@@ -37,202 +44,7 @@ class CryptoBot:
             'risk': 0,
             'action': ''
         }
-        self.trades = {
-            'large': {
-                '1w': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-                '1d': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-            },
-            'medium': {
-                '4h': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-                '1h': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-            },
-            'short': {
-                '30m': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-                '15m': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-            },
-            'micro': {
-                '5m': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                },
-                '1m': {
-                    'trade': {
-                        'high': 0,
-                        'low': 0,
-                        'close': 0,
-                        'RSI': False,
-                        'Momentum': False,
-                        'ema': False
-                    },
-                    'trend': False,
-                    'fingerprint': 0,
-                    'support': [],
-                    'resistance': [],
-                }
-            }
-        }
-        self.configuration = {
-            "1w": {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 1095,
-                'days_s': 2000,
-                'days_t': 1095,
-                'plot': 90
-            },
-            '1d': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 270,
-                'days_s': 45,
-                'days_t': 90,
-                'plot': 90
-            },
-            '4h': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 60,
-                'days_s': 15,
-                'days_t': 60,
-                'plot': 90
-            },
-            '1h': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 30,
-                'days_s': 15,
-                'days_t': 60,
-                'plot': 90
-            },
-            '30m': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 3,
-                'days_s': 1,
-                'days_t': 30,
-                'plot': 90
-            },
-            '15m': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 3,
-                'days_s': 1,
-                'days_t': 30,
-                'plot': 90
-            },
-            '5m': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 3,
-                'days_s': 1,
-                'days_t': 30,
-                'plot': 90
-            },
-            '1m': {
-                'smas': [9, 55],
-                'sma_s': 55,
-                'sma_f': 9,
-                'days': 3,
-                'days_s': 1,
-                'days_t': 15,
-                'plot': 90
-            },
-        }
+        self.trades = trades[self.crypto]
         self.testing = []
         self.cids = []
 
@@ -254,22 +66,21 @@ class CryptoBot:
             self.make_simulation(download=True)
             self.send_messages(message="Monitoreando %s " % self.crypto)
             self.process_is_started = True
-            while (True):
+            while True:
                 # For all temps
                 try:
                     current_minute = datetime.datetime.now().minute
                     if current_minute != self.trades['micro']['1m']['last_minute']:
-                        for time, options in self.configuration.items():
+                        for size, options in configuration.items():
                             # Get Data
-                            data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
+                            data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
                             # Analyse
-                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
-                                                       mas=options['smas'], time=time)
+                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
                             df = options['data'].tail(365)
 
                             last_row = df.iloc[-1, :]
-                            self.save_trade(last_row=last_row, time=time)
+                            self.save_trade(last_row=last_row, size=size)
                             sleep(2)
                         self.first_iteration = True
                         self.take_decision(testing=False)
@@ -284,15 +95,12 @@ class CryptoBot:
         try:
 
             if download:
-                download_test_data(self.symbol, self.configuration.items())
+                download_test_data(self.symbol, configuration.items(), self.indicators)
 
             # Get Test Data
-            load_test_data(self.configuration.items(), self.trades, self.symbol)
+            load_test_data(configuration.items(), self.trades, self.symbol)
 
             main = self.trades[get_type_trade('1m', self.trades)]['1m']['data']
-
-            # open = pd.read_csv('backtesting/trades_%s.csv' % self.symbol)
-            # timestamp = open[open['Action'] == 'Open'].reset_index().loc[3, 'time']
 
             tod = datetime.datetime.now()
             d = datetime.timedelta(days=15)
@@ -305,16 +113,16 @@ class CryptoBot:
             self.first_iteration = True
 
             for index, row in main.iterrows():
-                self.save_trade(last_row=row, time='1m')
-                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '5m', row['timestamp']), time='5m')
+                self.save_trade(last_row=row, size='1m')
+                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '5m', row['timestamp']), size='5m')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '15m', row['timestamp']),
-                                time='15m')
+                                size='15m')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '30m', row['timestamp']),
-                                time='30m')
-                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1h', row['timestamp']), time='1h')
-                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '4h', row['timestamp']), time='4h')
-                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), time='1d')
-                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), time='1w')
+                                size='30m')
+                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1h', row['timestamp']), size='1h')
+                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '4h', row['timestamp']), size='4h')
+                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), size='1d')
+                self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), size='1w')
                 self.take_decision(testing=True)
 
             df = pd.DataFrame(self.testing,
@@ -333,17 +141,17 @@ class CryptoBot:
             df_new.to_csv('backtesting/result_%s.csv' % self.symbol, index=False)
 
             gain = df_new[df_new['Result'] == 'Ganado']
-            trades = gain['%_price'].sum()
+            gains = gain['%_price'].sum()
             variation = gain['sum'].sum()
             prices = gain['%_by_price'].sum()
             message = "Eficiencia %s: \n\n%s Ganados: \ntrades: %s margen: %s \n" % (
-                self.crypto, round(variation, 2), int(round(trades, 0)), int(round(prices, 0)))
+                self.crypto, round(variation, 2), int(round(gains, 0)), int(round(prices, 0)))
             loss = df_new[df_new['Result'] == 'Perdido']
             variation = loss['sum'].sum()
-            trades = loss['%_price'].sum()
+            losses = loss['%_price'].sum()
             prices = loss['%_by_price'].sum()
             message += "%s Perdidos: \ntrades: %s margen: %s" % (
-                round(variation, 2), int(round(trades, 0)), int(round(prices, 0)))
+                round(variation, 2), int(round(losses, 0)), int(round(prices, 0)))
             self.send_messages(message=message)
 
         except Exception as e:
@@ -356,17 +164,18 @@ class CryptoBot:
         if current:
             diff = (datetime.datetime.utcnow() - self.trade['fingerprint'])
         else:
-            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']),
+                                                       '%Y-%m-%d %H:%M:%S')
             diff = (date_time_obj - self.trade['fingerprint'])
         return round(diff.total_seconds() / 60, 2)
 
     def trade_variation(self, current):
         return round((1 - (current / self.trade['value'])) * 100, 2)
 
-    def save_operative(self, temp, time, close, operative):
+    def save_operative(self, temp, size, close, operative):
         self.trade['temp'] = temp
         self.trade['operative'] = operative
-        self.trade['last_time'] = time
+        self.trade['last_time'] = size
         self.trade['last_temp'] = temp
         self.trade['value'] = close
         self.trade['risk'] = 100
@@ -404,12 +213,12 @@ class CryptoBot:
             message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
         self.send_messages(message=message)
 
-    def show_results(self, message, testing, temp, time, operative):
+    def show_results(self, message, testing, temp, size, operative):
         self.operative = True
-        self.save_operative(temp, time,
-                            self.trades[temp][time]['trade']['close'],
+        self.save_operative(temp, size,
+                            self.trades[temp][size]['trade']['close'],
                             operative)
-        self.notify(testing=testing, message=message, action='Open')
+        self.notify(testing=testing, message=message, action='Abrir')
 
     def validate_change_temp(self, testing):
         change = False
@@ -455,7 +264,7 @@ class CryptoBot:
                     change = True
 
         if change:
-            self.notify(testing=testing, message='Actualización', action='Update')
+            self.notify(testing=testing, message='Actualización', action='Continua')
 
         return False
 
@@ -469,7 +278,7 @@ class CryptoBot:
         return round(diff, 2)
 
     def notify(self, testing, message, action):
-        if action == 'Open':
+        if action == 'Abrir':
             diff = 0
             win = message
         else:
@@ -478,14 +287,14 @@ class CryptoBot:
 
         if not testing:
             self.trade['action'] = action
-            if action == 'Open':
+            if action == 'Abrir':
                 message = "Inicia %s %s en %s" % (
                     ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'), self.crypto,
                     round(self.trades['micro']['1m']['trade']['close'], 0))
-            if action == 'Update':
+            if action == 'Continua':
                 message = "Continua %s %s en %s" % (
                     self.crypto, self.trade['operative'], round(self.trades['micro']['1m']['trade']['close'], 0))
-            if action == 'Close':
+            if action == 'Cerrar':
                 message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
                 message += "Resultado: %s con %s" % (win, self.profit())
             self.send_messages(message=message, play=False, alert=True, runs=3)
@@ -520,7 +329,7 @@ class CryptoBot:
 
         if close:
             self.operative = False
-            self.notify(testing=testing, message='Cierre', action='Close')
+            self.notify(testing=testing, message='Cierre', action='Cerrar')
 
     def take_decision(self, testing=False):
         # Micro Trade
@@ -553,64 +362,61 @@ class CryptoBot:
                                  self.trade['min'])
             self.evaluate_operative(testing)
 
-    def save_trade(self, time, last_row):
+    def save_trade(self, size, last_row):
         # Fingerprint
         fingerprint = last_row['time']
 
-        type = get_type_trade(time, self.trades)
+        length = get_type_trade(size, self.trades)
 
-        if self.trades[type][time]['fingerprint'] == fingerprint:
+        if self.trades[length][size]['fingerprint'] == fingerprint:
             return False
         else:
-            self.trades[type][time]['fingerprint'] = last_row['time']
-            self.trades[type][time]['last_minute'] = datetime.datetime.strptime(
+            self.trades[length][size]['fingerprint'] = last_row['time']
+            self.trades[length][size]['last_minute'] = datetime.datetime.strptime(
                 str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S').minute
-            self.trades[type][time]['trend'] = last_row['trend']
-            self.trades[type][time]['trade']['high'] = last_row['high']
-            self.trades[type][time]['trade']['low'] = last_row['low']
-            self.trades[type][time]['trade']['close'] = last_row['close']
-            self.trades[type][time]['trade']['RSI'] = last_row['positive_RSI']
-            self.trades[type][time]['trade']['RSI_value'] = last_row['RSI']
-            self.trades[type][time]['trade']['last_RSI_value'] = last_row['RSI_rv']
-            self.trades[type][time]['trade']['RSIs'] = last_row['RSI_ups']
-            self.trades[type][time]['trade']['mean_f'] = last_row['mean_f_diff_res']
-            self.trades[type][time]['trade']['mean_f_ups'] = last_row['ema_f_ups']
-            self.trades[type][time]['trade']['Momentum'] = last_row['positive_momentum']
-            self.trades[type][time]['trade']['Momentums'] = last_row['momentum_ups']
-            self.trades[type][time]['trade']['Momentum_value'] = last_row['momentum']
-            self.trades[type][time]['trade']['confirm_dir'] = last_row['DIFF']
-            self.trades[type][time]['trade']['confirm_dir_ups'] = last_row['ups']
-            self.trades[type][time]['trade']['variation'] = last_row['close_variation']
-            self.trades[type][time]['trade']['time'] = last_row['mom_t']
-            self.trades[type][time]['trade']['ema'] = last_row['buy_ema']
-            self.trades[type][time]['trade']['ema_value'] = last_row['mean_close_55']
+            self.trades[length][size]['trend'] = last_row['trend']
+            self.trades[length][size]['trade']['high'] = last_row['high']
+            self.trades[length][size]['trade']['low'] = last_row['low']
+            self.trades[length][size]['trade']['close'] = last_row['close']
+            self.trades[length][size]['trade']['RSI'] = last_row['RSIs']
+            self.trades[length][size]['trade']['RSIs'] = last_row['RSI_ups']
+            self.trades[length][size]['trade']['RSI_value'] = last_row['RSI']
+            self.trades[length][size]['trade']['mean_f'] = last_row['fast']
+            self.trades[length][size]['trade']['mean_f_ups'] = last_row['fast_ups']
+            self.trades[length][size]['trade']['Momentum'] = last_row['momentums']
+            self.trades[length][size]['trade']['Momentums'] = last_row['momentum_ups']
+            self.trades[length][size]['trade']['Momentum_value'] = last_row['momentum']
+            self.trades[length][size]['trade']['confirm_dir'] = last_row['avg']
+            self.trades[length][size]['trade']['confirm_dir_ups'] = last_row['price_up']
+            self.trades[length][size]['trade']['variation'] = last_row['close_variation']
+            self.trades[length][size]['trade']['time'] = last_row['mom_t']
+            self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
+            self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_55']
             return True
 
     def get_market_graphs(self, bot=None, cid=None):
 
-        for time, options in self.configuration.items():
+        for size, options in configuration.items():
             try:
                 # Get Data
-                data = get_binance_symbol_data(symbol=self.symbol, kline_size=time, auto_increment=False,
+                data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                save=True, sma=options['days'])
                 # Analyse
-                options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
-                                           mas=options['smas'], time=time)
+                options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
                 save_extracted_data(symbol=self.symbol, df=options['data'], form='sma-%s' % options['days'],
-                                    size=time)
+                                    size=size)
                 # options['min_max'] = get_stats(df=self.data)
                 df = options['data'].tail(120)
                 if len(df.index) > options['plot']:
                     options['support'], options['resistance'] = supres(df['close'].to_numpy(), options['plot'])
                     # Visualize data
-                    plot_df(values=options['plot'], size=time, form='sma-%s' % options['days'],
-                            symbol=self.symbol, support=options['support'], resistence=options['resistance'],
-                            smas=options['smas'])
+                    plot_df(values=options['plot'], size=size, form='sma-%s' % options['days'],
+                            symbol=self.symbol, support=options['support'], resistence=options['resistance'])
 
                     # Send results
-                    photo = open(get_file_name(self.symbol, time, 'sma-%s' % options['days'], 'png'), 'rb')
+                    photo = open(get_file_name(self.symbol, size, 'sma-%s' % options['days'], 'png'), 'rb')
                     if bot is not None:
-                        send_message(cid=cid, text=time, play=False)
+                        send_message(cid=cid, text=size, play=False)
                         bot.send_photo(cid, photo)
             except Exception as e:
                 print('Error PLOT: ', e)

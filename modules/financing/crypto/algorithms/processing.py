@@ -33,40 +33,25 @@ def round_minutes(minutes, base=5):
 
 
 def supres(ltp, n):
-    """
-    This function takes a numpy array of last traded price
-    and returns a list of support and resistance levels
-    respectively. n is the number of entries to be scanned.
-    """
     from scipy.signal import savgol_filter as smooth
 
-    # converting n to a nearest even number
     if n % 2 != 0:
         n += 1
 
-    n_ltp = ltp.shape[0]  # length of ltp
+    n_ltp = ltp.shape[0]
 
-    # smoothening the curve
-    # scipy.signal.savgol_filter(x, window_length, polyorder, deriv=0, delta=1.0, axis=- 1, mode='interp', cval=0.0)
-    # window_lengthint
-    #   The length of the filter window (i.e., the number of coefficients).
-    # polyorderint
-    #   The order of the polynomial used to fit the samples.
     ltp_s = smooth(ltp, (n + 1), 3)  # the polynomial is 3 in this sample
-    # print('length of ltp_s: {}'.format(len(ltp_s)))
 
-    # taking a simple derivative
     ltp_d = np.zeros(n_ltp)
     ltp_d[1:] = np.subtract(ltp_s[1:], ltp_s[:-1])
-    # print('length of ltp_d: {}'.format(len(ltp_d)))
 
     resistance = []
     support = []
 
     for i in range(n_ltp - n):
         arr_sl = ltp_d[i:(i + n)]
-        first = arr_sl[:int((n / 2))]  # first half
-        last = arr_sl[int((n / 2)):]  # second half
+        first = arr_sl[:int((n / 2))]
+        last = arr_sl[int((n / 2)):]
 
         r_1 = np.sum(first > 0)
         r_2 = np.sum(last < 0)
@@ -74,11 +59,9 @@ def supres(ltp, n):
         s_1 = np.sum(first < 0)
         s_2 = np.sum(last > 0)
 
-        # local maxima detection
         if (r_1 == (n / 2)) and (r_2 == (n / 2)):
             resistance.append(ltp[i + (int(n / 2) - 1)])
 
-        # local minima detection
         if (s_1 == (n / 2)) and (s_2 == (n / 2)):
             support.append(ltp[i + (int(n / 2) - 1)])
 
@@ -106,84 +89,78 @@ def get_stats(df):
     return max_mins
 
 
-def analysis(df, ma_f, ma_s, mas, time):
-    df['last_close'] = df['close'].shift(1)
-    df['close_variation'] = df['close'] - df['last_close']
+def analysis(df, ma_f, ma_s):
+    period = 9
 
-    for ma in mas:
-        df = simple_moving_average(ma, df, 'close')
+    df['close_variation'] = df['close'] - df['close'].shift(1)
 
-    df['mean_close_%s_rv' % ma_f] = df['mean_close_%s' % ma_f].shift(1)
-    df['mean_close_%s_rv' % ma_s] = df['mean_close_%s' % ma_s].shift(1)
+    df = ema(df, ma_f, ma_s)
+    df = rsi(df, period)
+    df = momentum(df)
 
-    df['mean_f_diff'] = df['mean_close_%s' % ma_f] - df['mean_close_%s_rv' % ma_f]
-    df['mean_s_diff'] = df['mean_close_%s' % ma_s] - df['mean_close_%s_rv' % ma_s]
+    df.dropna(inplace=True)
 
-    df['mean_s_diff_res'] = df['mean_s_diff'] >= 0
-    df['mean_f_diff_res'] = df['mean_f_diff'] >= 0
+    df['trend'] = df['momentums'] & df['RSIs']
 
-    df['ema_f_ups'] = df.groupby((df['mean_f_diff_res'] != df['mean_f_diff_res'].shift(1)).cumsum()).cumcount() + 1
+    return df
+
+
+def ema(df, ma_f, ma_s):
+    df = simple_moving_average(ma_f, df, 'close')
+    df = simple_moving_average(ma_s, df, 'close')
+
+    df['slow'] = (df['mean_close_%s' % ma_s] - df['mean_close_%s' % ma_s].shift(1)) >= 0
+    df['fast'] = (df['mean_close_%s' % ma_f] - df['mean_close_%s' % ma_f].shift(1)) >= 0
+
+    df['fast_ups'] = df.groupby((df['fast'] != df['fast'].shift(1)).cumsum()).cumcount() + 1
 
     df['buy_ema'] = df['mean_close_%s' % ma_f] > df['mean_close_%s' % ma_s]
     df['sell_ema'] = df['mean_close_%s' % ma_f] <= df['mean_close_%s' % ma_s]
 
-    df['last_buy_ema'] = df['buy_ema'].shift(1)
-    df['last_sell_ema'] = df['sell_ema'].shift(1)
+    df['buy_ema_change'] = (df['buy_ema'] != df['buy_ema'].shift(1)) & df['buy_ema']
+    df['sell_ema_change'] = (df['sell_ema'] != df['sell_ema'].shift(1)) & df['sell_ema']
 
-    df['buy_ema_change'] = (df['buy_ema'] != df['last_buy_ema']) & df['buy_ema']
-    df['sell_ema_change'] = (df['sell_ema'] != df['last_sell_ema']) & df['sell_ema']
+    return df
 
-    df['prev_buy_ema_change'] = df['buy_ema_change'].shift(1)
-    df['prev_sell_ema_change'] = df['sell_ema_change'].shift(1)
 
-    df['ema_s_ups'] = df.groupby((df['mean_s_diff_res'] != df['mean_s_diff_res'].shift(1)).cumsum()).cumcount() + 1
-    df['ema_f_ups'] = df.groupby((df['mean_f_diff_res'] != df['mean_f_diff_res'].shift(1)).cumsum()).cumcount() + 1
-
-    df = simple_moving_average(5, df, 'close')
-    df['mean_close_5_rv'] = df['mean_close_5'].shift(1)
-    df['mean_5_diff'] = df['mean_close_5'] - df['mean_close_5_rv']
-    df['mean_5_diff_res'] = df['mean_5_diff'] >= 0
-
-    df['ema_5_ups'] = df.groupby((df['mean_5_diff_res'] != df['mean_5_diff_res'].shift(1)).cumsum()).cumcount() + 1
-
-    df['diff'] = df.close - df.open
+def rsi(df, period):
+    df['avg'] = df.close - df.open
     df['diffh'] = df.high - df.open
     df['diffl'] = df.low - df.open
-    df['DIFF'] = df['diff'] >= 0
+    df['price_up'] = df['avg'] >= 0
 
-    df['ups'] = df.groupby((df['DIFF'] != df['DIFF'].shift(1)).cumsum()).cumcount() + 1
+    df['price_ups'] = df.groupby((df['price_up'] != df['price_up'].shift(1)).cumsum()).cumcount() + 1
 
-    df['up'] = df['diff'][df['diff'] >= 0]
-    df['down'] = abs(df['diff'][df['diff'] < 0])
+    df['up'] = df['avg'][df['avg'] >= 0]
+    df['down'] = abs(df['avg'][df['avg'] < 0])
 
     df.fillna(value=0, inplace=True)
 
-    df = simple_moving_average(14, df, 'up')
-    df = simple_moving_average(14, df, 'down')
-    df['RSI'] = 100 - (100 / (1 + df['mean_up_%s' % 14] / df['mean_down_%s' % 14]))
+    df = simple_moving_average(period, df, 'up')
+    df = simple_moving_average(period, df, 'down')
+    df['RSI'] = 100 - (100 / (1 + df['mean_up_%s' % period] / df['mean_down_%s' % period]))
 
-    convert_columns_to_float(df, ['diff'])
-    convert_columns_to_float(df, ['diffh'])
-    convert_columns_to_float(df, ['diffl'])
+    convert_columns_to_float(df, ['avg'])
     convert_columns_to_float(df, ['up'])
     convert_columns_to_float(df, ['down'])
     convert_columns_to_float(df, ['RSI'])
 
-    df['RSI_rv'] = df['RSI'].shift(1)
-    df['RSI_diff'] = df['RSI'] - df['RSI_rv']
-    df['positive_RSI'] = df['RSI_diff'] >= 0
+    df['RSI_avg'] = df['RSI'] - df['RSI'].shift(1)
+    df['RSIs'] = df['RSI_avg'] >= 0
     df['RSI_ups'] = df.groupby(
-        (df['positive_RSI'] != df['positive_RSI'].shift(1)).cumsum()).cumcount() + 1
+        (df['RSIs'] != df['RSIs'].shift(1)).cumsum()).cumcount() + 1
 
+    df.drop(columns=['mean_up_%s' % period, 'mean_down_%s' % period],
+            inplace=True)
+    return df
+
+
+def momentum(df):
     length = 20
-    # mult = 2
     length_KC = 20
-    # mult_KC = 1.5
 
-    # # calculate BB
     m_avg = df['close'].rolling(window=length).mean()
 
-    # calculate bar value
     highest = df['high'].rolling(window=length_KC).max()
     lowest = df['low'].rolling(window=length_KC).min()
     m1 = (highest + lowest) / 2
@@ -193,27 +170,43 @@ def analysis(df, ma_f, ma_s, mas, time):
                                                                     np.polyfit(fit_y, x, 1)[0] * (length_KC - 1) +
                                                                     np.polyfit(fit_y, x, 1)[1], raw=True)
 
-    df['momentum_rv'] = df['momentum'].shift(1)
-    df['momentum_diff'] = df['momentum'] - df['momentum_rv']
-    df['positive_momentum'] = df['momentum_diff'] >= 0
+    df['momentums'] = (df['momentum'] - df['momentum'].shift(1)) >= 0
     df['momentum_ups'] = df.groupby(
-        (df['positive_momentum'] != df['positive_momentum'].shift(1)).cumsum()).cumcount() + 1
+        (df['momentums'] != df['momentums'].shift(1)).cumsum()).cumcount() + 1
 
     df['mom_t'] = df['momentum'] >= 0
 
-    df['trend'] = df['positive_momentum'] & df['positive_RSI']
-
     convert_columns_to_float(df, ['momentum'])
-
-    df.drop(columns=['mean_up_%s' % 14, 'mean_down_%s' % 14],
-            inplace=True)
-
-    df.dropna(inplace=True)
-
     return df
 
 
-def plot_df(size, form, values, symbol, support, resistence, smas):
+def mfi(df, period):
+    df['typical_price'] = (df['close'] + df['high'] + df['low']) / 3
+    df['money_flow'] = df['typical_price'] * df['volume']
+    df['last_typical_price'] = df['typical_price'].shift(1)
+    df['positive_typical_price'] = df['typical_price'] > df['last_typical_price']
+
+    df['mfi_up'] = df['money_flow'].where(df['typical_price'] > df['last_typical_price'], 0)
+    df['mfi_down'] = df['money_flow'].where(df['typical_price'] < df['last_typical_price'], 0)
+
+    df = simple_moving_average(period, df, 'mfi_up')
+    df = simple_moving_average(period, df, 'mfi_down')
+    df['MFI'] = 100 * (
+            df['mean_mfi_up_%s' % period] / (df['mean_mfi_up_%s' % period] + df['mean_mfi_down_%s' % period]))
+    df['MFIs'] = df['MFI'] > df['MFI'].shift(1)
+
+    df['MFI_ups'] = df.groupby(
+        (df['MFIs'] != df['MFIs'].shift(1)).cumsum()).cumcount() + 1
+
+    df.drop(
+        columns=['mean_mfi_up_%s' % period, 'mean_mfi_down_%s' % period, 'typical_price', 'money_flow',
+                 'last_typical_price',
+                 'positive_typical_price', 'mfi_up', 'mfi_down'],
+        inplace=True)
+    return df
+
+
+def plot_df(size, form, values, symbol, support, resistence):
     try:
         df = pd.read_csv(get_file_name(symbol=symbol, size=size, form=form))
 
@@ -241,7 +234,7 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         plt.title('RSI')
 
         plt.subplot(grid[1, 0])
-        plt.bar(df.index.values, df['volume'], width=0.9, color=df.DIFF.map({True: 'g', False: 'r'}))
+        plt.bar(df.index.values, df['volume'], width=0.9, color=df.price_up.map({True: 'g', False: 'r'}))
         plt.title('Volume')
 
         plt.subplot(grid[0:2, 1])
@@ -253,9 +246,9 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         plt.title('Momentum')
 
         plt.subplot(grid[3, :])
-        plt.bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
-        plt.bar(df.index.values, df['diffh'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
-        plt.bar(df.index.values, df['diffl'], width=0.3, bottom=df.open, color=df.DIFF.map({True: 'y', False: 'y'}))
+        plt.bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.price_up.map({True: 'y', False: 'y'}))
+        plt.bar(df.index.values, df['diffh'], width=0.3, bottom=df.open, color=df.price_up.map({True: 'y', False: 'y'}))
+        plt.bar(df.index.values, df['diffl'], width=0.3, bottom=df.open, color=df.price_up.map({True: 'y', False: 'y'}))
         plt.scatter(df[(df.buy_trend == True)].index.values,
                     df[(df.buy_trend == True)]['close'].tolist(),
                     marker=markers.TICKUP, color='g', s=22 ** 2)
@@ -268,16 +261,8 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         for res in resistence:
             plt.axhline(y=res, linewidth='1.0', color='blue')
 
-        colors = ['b', 'm', 'c']
-
-        legends = []
-        for idx, sma in enumerate(smas):
-            plt.plot(df['mean_close_%s' % sma], colors[idx])
-            legends.append('SMA %s' % sma)
-
         plt.title(symbol)
         plt.ylabel('Price')
-        plt.legend(legends)
         plt.grid(True)
 
         plt.savefig(get_file_name(symbol=symbol, form=form, size=size, data_type='png'))
@@ -285,7 +270,7 @@ def plot_df(size, form, values, symbol, support, resistence, smas):
         print(e)
 
 
-def download_test_data(symbol, items):
+def download_test_data(symbol, items, indicators):
     try:
         for time, options in items:
             # Get Data
@@ -293,11 +278,10 @@ def download_test_data(symbol, items):
                                            save=True, sma=options['days_t'])
             # Analyse
             options['data'] = analysis(df=data, ma_f=options['sma_f'],
-                                       ma_s=options['sma_s'],
-                                       mas=options['smas'], time=time)
+                                       ma_s=options['sma_s'])
             save_extracted_data(symbol=symbol, df=options['data'], form='sma-%s' % options['days_t'],
                                 size=time)
-            save_clean_result(symbol, time, options['days_t'])
+            save_clean_result(symbol, time, options['days_t'], indicators)
     except Exception as e:
         print('Error: ', e)
 

@@ -15,11 +15,11 @@ binance_order_books = {
         'pair': 'USDT',
         'symbol': 'ETHUSDT'
     },
-    "Sol": {
-        'crypto': 'SOL',
-        'pair': 'USDT',
-        'symbol': 'SOLUSDT'
-    },
+    # "Sol": {
+    #     'crypto': 'SOL',
+    #     'pair': 'USDT',
+    #     'symbol': 'SOLUSDT'
+    # },
     # "Chiliz": {
     #     'crypto': 'CHZ',
     #     'pair': 'USDT',

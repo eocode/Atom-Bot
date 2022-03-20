@@ -83,14 +83,10 @@ def save_extracted_data(symbol, size, df, form='all'):
     df.to_csv(get_file_name(symbol, size, form))
 
 
-def save_clean_result(symbol, time, days):
+def save_clean_result(symbol, time, days, indicators):
     df = pd.read_csv(get_file_name(symbol, time,
                                    'sma-%s' % days))
-    new_df = df[
-        ['timestamp', 'mean_f_diff_res', 'ema_f_ups', 'DIFF', 'ups', 'positive_momentum', 'momentum',
-         'momentum_ups', 'buy_ema',
-         'RSI', 'positive_RSI', 'RSI_ups',
-         'close', 'open', 'last_close', 'close_variation']].copy()
+    new_df = df[indicators].copy()
 
     new_df.to_csv(get_processing_file_name(symbol, time), index=False)
 
