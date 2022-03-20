@@ -292,13 +292,15 @@ class CryptoBot:
     def take_decision(self, testing=False):
 
         if not testing:
-            print('1m', self.trades['micro']['1m']['trade']['RSI'])
-            print('5m', self.trades['micro']['5m']['trade']['RSI'])
-            print('15m', self.trades['short']['15m']['trade']['RSI'])
-            print('30m', self.trades['short']['30m']['trade']['RSI'], 'Momentum',
-                  self.trades['short']['30m']['trade']['Momentum'])
-            print('1h', self.trades['medium']['1h']['trade']['RSI'])
-            print('4h', self.trades['medium']['4h']['trade']['RSI'])
+            message = "%s\n" % self.crypto
+            message += "1m - RSI %s" % self.trades['micro']['1m']['trade']['RSI']
+            message += "5m - RSI %s" % self.trades['micro']['5m']['trade']['RSI']
+            message += "15m - RSI %s" % self.trades['short']['15m']['trade']['RSI']
+            message += "30m - RSI %s Momentum %s" % (
+                self.trades['short']['30m']['trade']['RSI'], self.trades['short']['30m']['trade']['Momentum'])
+            message += "1h - RSI %s" % self.trades['medium']['1h']['trade']['RSI']
+            message += "4h - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
+            print(message)
 
         # Micro Trade
         if not self.operative:
