@@ -34,6 +34,11 @@ def send_voice(text):
                        stderr=subprocess.DEVNULL)
     os.remove(file)
 
+@limit(1)
+@async_fn
+def logging_message(text):
+    print(text)
+
 
 def bot_message(close_markup, cid, text):
     if close_markup:

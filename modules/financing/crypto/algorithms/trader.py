@@ -2,7 +2,7 @@ import time
 
 import pandas as pd
 
-from bot.connect.message_connector import send_message, send_voice
+from bot.connect.message_connector import send_message, send_voice, logging_message
 from bot.connect.thread_connector import limit, async_fn
 from bot.connect.time_connector import convert_utc_to_local
 from modules.core.data.bot_system import system
@@ -84,17 +84,18 @@ class CryptoBot:
                             self.save_trade(last_row=last_row, size=size)
                             sleep(2)
                         self.first_iteration = True
-                        self.take_decision(testing=False)
-                        print(self.symbol, convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
-                        message = " 1m - RSI %s\n" % self.trades['micro']['1m']['trade']['RSI']
-                        message += " 5m - RSI %s\n" % self.trades['micro']['5m']['trade']['RSI']
+                        message = "%s %s" % (
+                            self.symbol, convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
+                        message += " 1m   - RSI %s\n" % self.trades['micro']['1m']['trade']['RSI']
+                        message += " 5m  - RSI %s\n" % self.trades['micro']['5m']['trade']['RSI']
                         message += " 15m - RSI %s\n" % self.trades['short']['15m']['trade']['RSI']
                         message += " 30m - RSI %s Momentum %s\n" % (
                             self.trades['short']['30m']['trade']['RSI'],
                             self.trades['short']['30m']['trade']['Momentum'])
-                        message += " 1h - RSI %s\n" % self.trades['medium']['1h']['trade']['RSI']
-                        message += " 4h - RSI %s\n" % self.trades['medium']['4h']['trade']['RSI']
-                        print(message)
+                        message += " 1h  - RSI %s\n" % self.trades['medium']['1h']['trade']['RSI']
+                        message += " 4h  - RSI %s\n" % self.trades['medium']['4h']['trade']['RSI']
+                        logging_message(message)
+                        self.take_decision(testing=False)
                 except Exception as e:
                     print('Error: ', e)
         else:
