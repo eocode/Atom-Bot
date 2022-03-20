@@ -86,7 +86,7 @@ class CryptoBot:
                         self.first_iteration = True
                         self.take_decision(testing=False)
                         print(self.trades['micro']['1m']['fingerprint'],
-                              convert_utc_to_local(self.trades['micro']['1m']['fingerprint']), self.symbol)
+                              convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])), self.symbol)
                 except Exception as e:
                     print('Error: ', e)
         else:
