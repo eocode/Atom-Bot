@@ -290,8 +290,8 @@ class CryptoBot:
             self.notify(testing=testing, message='Cierre', action='Cerrar')
 
     def take_decision(self, testing=False):
-        # Micro Trade
-        if not self.operative:
+
+        if not testing:
             print('1m', self.trades['micro']['1m']['trade']['RSI'])
             print('5m', self.trades['micro']['5m']['trade']['RSI'])
             print('15m', self.trades['short']['15m']['trade']['RSI'])
@@ -300,6 +300,8 @@ class CryptoBot:
             print('1h', self.trades['medium']['1h']['trade']['RSI'])
             print('4h', self.trades['medium']['4h']['trade']['RSI'])
 
+        # Micro Trade
+        if not self.operative:
             if self.trade_type == 'micro':
                 # Long
                 if (self.trades['micro']['5m']['trade']['RSI'] and
