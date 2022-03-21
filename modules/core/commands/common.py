@@ -1,13 +1,13 @@
 from bot.bot import bot
 from bot.connect.message_connector import send_voice, name, send_message, get_chat_info
-from bot.connect.resources_connector import prepare_trading, get_monitor, show_operatives
+from bot.connect.resources_connector import get_monitor, show_operatives
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.data.user import get_user_info
 from modules.core.model.account import update_settings
 import unidecode
 
-from modules.financing.data.dictionary import binance_order_books
+from modules.financing.crypto.data.dictionary import binance_order_books
 
 
 @bot.message_handler(commands=["acerca"])
@@ -93,20 +93,6 @@ def command_help(m):
     send_message(user.cid, help_text, play=False)
 
 
-@bot.message_handler(commands=["iniciar"])
-def command_init(m):
-    user = get_chat_info(m)
-
-    if user.group['group']:
-        if user.group['is_admin']:
-            send_message(user.cid, "Analizando con la versión %s" % version, play=False)
-            prepare_trading(user.cid)
-        else:
-            send_message(user.cid, "No tiene permiso de ejecutar está opción")
-    else:
-        send_message(user.cid, "Solo se permite usar en grupos")
-
-
 @bot.message_handler(commands=["alertas"])
 def command_alerts(m):
     user = get_chat_info(m)
@@ -135,11 +121,8 @@ def echo_message(m):
             if text.lower() == "ayuda":
                 command_help(m)
             else:
-                if text.lower() == "iniciar":
-                    command_init(m)
-                else:
-                    if text.lower() == "alertas":
-                        command_alerts(m)
+                if text.lower() == "alertas":
+                    command_alerts(m)
 
 
 @bot.message_handler(commands=["alertas"])

@@ -80,3 +80,7 @@ def say_hello(init_type="init"):
         send_voice("Iniciando ... " + name)
     if init_type == "update":
         send_voice(name + " " + version)
+
+
+def send_initial_message(chat_id, text):
+    bot_message(close_markup=False, cid=chat_id, text=text)

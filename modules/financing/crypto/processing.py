@@ -1,12 +1,9 @@
-import sys
-
 import numpy as np
 import pandas as pd
 import matplotlib
 from datetime import datetime
 
-from bot.connect.time_connector import convert_utc_to_local
-from modules.financing.crypto.algorithms.extractor import get_file_name, convert_columns_to_float, \
+from modules.financing.crypto.extractor import get_file_name, convert_columns_to_float, \
     get_binance_symbol_data, save_extracted_data, save_clean_result, get_type_trade
 import math
 

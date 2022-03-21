@@ -1,12 +1,11 @@
 from bot.connect.message_connector import logging_message, send_message, send_voice
 from bot.connect.time_connector import convert_utc_to_local
-from modules.financing.crypto.algorithms.trades import trades
-from modules.financing.crypto.algorithms.utilities import elapsed_time
+from modules.financing.crypto.trades import trades
+from modules.financing.crypto.utilities import elapsed_time, profit
 import time
 
 
 def logging_changes(size, crypto):
-    logging_message("%s actualizado en %s" % (crypto, size))
     if size == '1m':
         message = "-------------------------------------------------------------------\n" \
                   "%s actualizado:" % crypto
@@ -17,7 +16,7 @@ def logging_changes(size, crypto):
         message += "\n1h %s " % convert_utc_to_local(str(trades[crypto]['medium']['1h']['fingerprint']), size)
         message += "\n4h %s \n" % convert_utc_to_local(str(trades[crypto]['medium']['4h']['fingerprint']), size)
         logging_message(message)
-    message = " 1m   - RSI %s  | " % trades[crypto]['micro']['1m']['trade']['RSI']
+    message = "1m   - RSI %s  | " % trades[crypto]['micro']['1m']['trade']['RSI']
     message += "5m  - RSI %s | " % trades[crypto]['micro']['5m']['trade']['RSI']
     message += "15m - RSI %s | " % trades[crypto]['short']['15m']['trade']['RSI']
     message += "30m - RSI %s Momentum %s \n" % (
@@ -26,9 +25,10 @@ def logging_changes(size, crypto):
     message += "1h   - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
     message += "4h  - RSI %s" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
+    logging_message("%s actualizado en %s" % (crypto, size))
 
 
-def notify(testing, message, action, trade, crypto, profit, save):
+def notify(testing, message, action, trade, crypto, profit, save, chat_ids):
     if action == 'Abrir':
         diff = 0
         win = message
@@ -49,7 +49,7 @@ def notify(testing, message, action, trade, crypto, profit, save):
         if action == 'Cerrar':
             message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
-        send_messages(message=message, play=False, alert=True, runs=3)
+        send_messages(trade=trade, cids=chat_ids, message=message, play=False, alert=True, runs=3)
     else:
         row = [trades[crypto]['micro']['1m']['fingerprint'],
                convert_utc_to_local(trades[crypto]['micro']['1m']['fingerprint'], '1m'), action,
@@ -64,11 +64,11 @@ def notify(testing, message, action, trade, crypto, profit, save):
         save.append(row)
 
 
-def send_messages(trade, cids, message, play=False, alert=False, runs=1):
+def send_messages(trade, chat_ids, message, play=False, alert=False, runs=1):
     print('ALERT')
     print(message)
     for i in range(runs):
-        for cid in cids:
+        for cid in chat_ids:
             send_message(cid=cid, text=message, play=play)
             time.sleep(runs)
         if alert:

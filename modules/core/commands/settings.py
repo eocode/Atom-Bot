@@ -2,7 +2,6 @@ from bot.bot import bot
 from modules.core.model.account import update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
-from modules.financing.data.dictionary import bitso_order_books, binance_order_books
 from modules.core.data.user import User, user_data
 from bot.connect.message_connector import send_message
 

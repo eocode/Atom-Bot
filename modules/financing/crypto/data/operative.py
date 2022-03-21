@@ -1,5 +1,5 @@
-from modules.financing.crypto.algorithms.trader import CryptoBot
-from modules.financing.data.dictionary import binance_order_books
+from modules.financing.crypto.trader import CryptoBot
+from modules.financing.crypto.data.dictionary import binance_order_books
 
 operatives = {}
 
@@ -19,6 +19,7 @@ def initialize_operatives():
     print('All prepared')
 
 
-def start_operatives(cid):
+def start_operatives(chat_ids):
+    print('Monitoring')
     for key, value in binance_order_books.items():
-        operatives[value['crypto'] + value['pair']].monitor.start(cid)
+        operatives[value['crypto'] + value['pair']].monitor.start(chat_ids)

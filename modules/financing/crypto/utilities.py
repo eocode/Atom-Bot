@@ -1,34 +1,39 @@
 import datetime
 from datetime import timedelta
 
-from modules.financing.crypto.algorithms.extractor import get_type_trade
-from modules.financing.crypto.algorithms.trades import trades
+from modules.financing.crypto.extractor import get_type_trade
+from modules.financing.crypto.trades import trades
 
 
 def check_if_update(size, crypto):
-    current_time = datetime.datetime.utcnow()
-    period = size[-1]
-    t = int(size[:-1])
-    delta = None
-    full = True
-    if period == 'm':
+    try:
+        current_time = datetime.datetime.utcnow()
+        period = size[-1]
+        t = int(size[:-1])
+        delta = None
         full = True
-        delta = timedelta(minutes=t)
-    if period == 'h':
-        full = True
-        delta = timedelta(hours=t)
-    if period == 'd':
-        full = False
-        delta = timedelta(days=t)
-    if period == 'w':
-        full = False
-        delta = timedelta(weeks=t)
-    lt = str(trades[crypto][get_type_trade(size, trades[crypto])][size]['fingerprint'])
-    if full:
-        last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
-    else:
-        last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
-    updatable = current_time - delta
+        if period == 'm':
+            full = True
+            delta = timedelta(minutes=t)
+        if period == 'h':
+            full = True
+            delta = timedelta(hours=t)
+        if period == 'd':
+            full = False
+            delta = timedelta(days=t)
+        if period == 'w':
+            full = False
+            delta = timedelta(weeks=t)
+        lt = str(trades[crypto][get_type_trade(size, trades[crypto])][size]['fingerprint'])
+        if full:
+            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
+        else:
+            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
+        updatable = current_time - delta
+    except Exception as e:
+        print("Error al revisar actualizaciones")
+        print(e)
+        return False
     return True if updatable >= last_time else False
 
 

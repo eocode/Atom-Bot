@@ -70,7 +70,18 @@ def get_accounts():
         return system('sql').session.query(Account).filter(Account.is_verified == 1).all()
     except Exception as e:
         system('sql').session.rollback()
-        print("Error al consultar datos de la cuenta")
+        print("Error al consultar cuentas activas")
+        print(e)
+    return None
+
+
+def get_groups():
+    try:
+        system('sql').session.expire_all()
+        return system('sql').session.query(Account).filter(Account.is_group == 1, Account.is_verified == 1).all()
+    except Exception as e:
+        system('sql').session.rollback()
+        print("Error al consultar grupos activos")
         print(e)
     return None
 
