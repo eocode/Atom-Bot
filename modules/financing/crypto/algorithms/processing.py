@@ -1,7 +1,11 @@
+import sys
+
 import numpy as np
 import pandas as pd
 import matplotlib
 from datetime import datetime
+
+from bot.connect.time_connector import convert_utc_to_local
 from modules.financing.crypto.algorithms.extractor import get_file_name, convert_columns_to_float, \
     get_binance_symbol_data, save_extracted_data, save_clean_result, get_type_trade
 import math
@@ -288,6 +292,5 @@ def download_test_data(symbol, items, indicators):
 
 def load_test_data(items, trades, symbol):
     for time, options in items:
-        trades[get_type_trade(time, trades)][time]['data'] = pd.read_csv(get_file_name(symbol, time,
-                                                                                       'sma-%s' % options[
-                                                                                           'days_t']))
+        df = pd.read_csv(get_file_name(symbol, time, 'sma-%s' % options['days_t']))
+        trades[get_type_trade(time, trades)][time]['data'] = df

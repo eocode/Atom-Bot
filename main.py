@@ -7,8 +7,7 @@ from bot.bot import init
 
 # Load all available commands with modules
 from bot import *
-
-from modules.financing.data.operative import initialize_operatives
+from bot.connect.resources_connector import init_operatives
 
 if __name__ == "__main__":
     args = sys.argv
@@ -30,7 +29,7 @@ if __name__ == "__main__":
 
     try:
         # Configure initial data
-        initialize_operatives()
+        init_operatives()
 
         # Show user message
         print("Server started")

@@ -59,8 +59,8 @@ image_path = 'images'
 
 def get_file_name(symbol, size, form='all', data_type='csv'):
     if data_type == 'csv':
-        if not os.path.exists(image_path):
-            os.mkdir(image_path)
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
         return folder_path + '/' + '%s-%s-%s.csv' % (symbol, size, form)
     if data_type == 'png':
         if not os.path.exists(image_path):

@@ -1,20 +1,18 @@
-import time
+import sys
 
 import pandas as pd
-
-from bot.connect.message_connector import send_message, send_voice, logging_message
+from bot.connect.message_connector import send_message
 from bot.connect.thread_connector import limit, async_fn
-from bot.connect.time_connector import convert_utc_to_local
 from modules.core.data.bot_system import system
 from modules.financing.crypto.algorithms.configuration import configuration
 from modules.financing.crypto.algorithms.extractor import get_binance_symbol_data, save_extracted_data, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
+from modules.financing.crypto.algorithms.logging import logging_changes, send_messages, notify
 from modules.financing.crypto.algorithms.processing import analysis, plot_df, supres, download_test_data, load_test_data
-from time import sleep
 import datetime
-from datetime import timedelta
 
 from modules.financing.crypto.algorithms.trades import trades
+from modules.financing.crypto.algorithms.utilities import check_if_update, trade_variation, elapsed_time, profit
 
 
 class CryptoBot:
@@ -46,60 +44,11 @@ class CryptoBot:
             'risk': 0,
             'action': ''
         }
+        self.result_indicators = ['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
+                                  'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max']
         self.trades = trades[self.crypto]
         self.testing = []
         self.cids = []
-
-    def send_messages(self, message, play=False, alert=False, runs=1):
-        print('ALERT')
-        print(message)
-        for i in range(runs):
-            for cid in self.cids:
-                send_message(cid=cid, text=message, play=play)
-                time.sleep(runs)
-            if alert:
-                send_voice(self.trade['action'])
-
-    def check_if_update(self, size):
-        current_time = datetime.datetime.utcnow()
-        period = size[-1]
-        t = int(size[:-1])
-        delta = None
-        full = True
-        if period == 'm':
-            full = True
-            delta = timedelta(minutes=t)
-        if period == 'h':
-            full = True
-            delta = timedelta(hours=t)
-        if period == 'd':
-            full = False
-            delta = timedelta(days=t)
-        if period == 'w':
-            full = False
-            delta = timedelta(weeks=t)
-        lt = str(self.trades[get_type_trade(size, self.trades)][size]['fingerprint'])
-        if full:
-            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
-        else:
-            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
-        updatable = current_time - delta
-        return True if updatable >= last_time else False
-
-    def elapsed_time(self, current=True):
-        return round(self.elapsed_minutes(current=current) / 60, 2)
-
-    def elapsed_minutes(self, current=True):
-        if current:
-            diff = (datetime.datetime.utcnow() - self.trade['fingerprint'])
-        else:
-            date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']),
-                                                       '%Y-%m-%d %H:%M:%S')
-            diff = (date_time_obj - self.trade['fingerprint'])
-        return round(diff.total_seconds() / 60, 2)
-
-    def trade_variation(self, current):
-        return abs(round((1 - (current / self.trade['value'])) * 100, 2))
 
     @limit(1)
     @async_fn
@@ -107,45 +56,25 @@ class CryptoBot:
         if not self.process_is_started:
             self.cids.append(cid)
             self.make_simulation(download=True)
-            self.send_messages(message="Monitoreando %s " % self.crypto)
+            send_messages(trade=self.trade, cids=self.cids, message="Monitoreando %s " % self.crypto)
             self.process_is_started = True
             while True:
-                # For all temps
                 try:
                     for size, options in configuration.items():
-                        if self.check_if_update(size):
-                            logging_message("%s actualizado en %s" % (self.crypto, size))
-                            # Get Data
+                        if check_if_update(size, self.crypto):
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
-                            # Analyse
                             options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
                             df = options['data'].tail(365)
-
                             last_row = df.iloc[-1, :]
                             self.save_trade(last_row=last_row, size=size)
-                            if size == '1m':
-                                message = "-------------------------------------------------------------------\n" \
-                                          "%s actualizado el %s" % (
-                                              self.symbol,
-                                              convert_utc_to_local(str(self.trades['micro']['1m']['fingerprint'])))
-                                logging_message(message)
-                            message = " 1m   - RSI %s | " % self.trades['micro']['1m']['trade']['RSI']
-                            message += " 5m  - RSI %s | " % self.trades['micro']['5m']['trade']['RSI']
-                            message += " 15m - RSI %s | " % self.trades['short']['15m']['trade']['RSI']
-                            message += " 30m - RSI %s Momentum %s \n" % (
-                                self.trades['short']['30m']['trade']['RSI'],
-                                self.trades['short']['30m']['trade']['Momentum'])
-                            message += " 1h   - RSI %s | " % self.trades['medium']['1h']['trade']['RSI']
-                            message += " 4h   - RSI %s" % self.trades['medium']['4h']['trade']['RSI']
-                            logging_message(message)
+                            logging_changes(size, self.crypto)
                             self.take_decision(testing=False)
-
                     self.first_iteration = True
                 except Exception as e:
                     print('Error: ', e)
         else:
-            self.send_messages(message="Monitoreando %s " % self.crypto)
+            send_messages(trade=self.trade, cids=self.cids, message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
 
     def make_simulation(self, download=False):
@@ -156,7 +85,6 @@ class CryptoBot:
 
             # Get Test Data
             load_test_data(configuration.items(), self.trades, self.symbol)
-
             main = self.trades[get_type_trade('1m', self.trades)]['1m']['data']
 
             tod = datetime.datetime.now()
@@ -181,10 +109,7 @@ class CryptoBot:
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1d', row['timestamp']), size='1d')
                 self.save_trade(last_row=get_last_row_dataframe_by_time(self.trades, '1w', row['timestamp']), size='1w')
                 self.take_decision(testing=True)
-
-            df = pd.DataFrame(self.testing,
-                              columns=['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
-                                       'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max'])
+            df = pd.DataFrame(self.testing, columns=self.result_indicators)
 
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
             df = df[df['Result'] != 'Iniciado']
@@ -209,100 +134,10 @@ class CryptoBot:
             prices = loss['%_by_price'].sum()
             message += "%s Perdidos: \ntrades: %s margen: %s" % (
                 round(variation, 2), int(round(losses, 0)), int(round(prices, 0)))
-            self.send_messages(message=message)
+            send_messages(trade=self.trade, cids=self.cids, message=message)
 
         except Exception as e:
             print('Error: ', e)
-
-    def save_operative(self, temp, size, close, operative):
-        self.trade['temp'] = temp
-        self.trade['operative'] = operative
-        self.trade['last_time'] = size
-        self.trade['last_temp'] = temp
-        self.trade['value'] = close
-        self.trade['risk'] = 100
-        date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
-        self.trade['fingerprint'] = date_time_obj
-        self.trade['max'] = close
-        self.trade['min'] = close
-
-    @limit(1)
-    @async_fn
-    def show_operative(self):
-        if self.process_is_started:
-            if self.operative:
-                message = "%s\n" % self.symbol
-                message += "%s - %s - Riesgo: %s \n" % (
-                    self.trade['last_time'], ' 🟢 ' if self.trade['operative'] == 'long' else ' 🔴 ',
-                    self.trade['risk'])
-                message += "Inicial: %s - Actual: %s \n" % (
-                    self.trade['value'], self.trades['micro']['1m']['trade']['close'])
-                message += "Resultado: %s con %s\n\nStats\n" % (
-                    self.profit(), self.trade_variation(self.trades['micro']['1m']['trade']['close']))
-
-                message += "Tiempo: %s hrs\n" % (self.elapsed_time(current=True))
-                message += "Máximo: %s con %s\n" % (
-                    round(self.trade['max']), self.trade_variation(round(self.trade['max'])))
-                message += "Minimo: %s con %s\n\n" % (
-                    round(self.trade['min']), self.trade_variation(round(self.trade['min'])))
-                message += "%s de %s hrs con %s periodos" % (
-                    ('Long' if self.trades['short']['30m']['trade']['Momentum'] else 'Short'),
-                    ((self.trades['short']['30m']['trade']['Momentums']) * 30) / 60,
-                    self.trades['short']['30m']['trade']['Momentums'])
-            else:
-                message = "No hay ninguna operativa para %s actualmente" % self.symbol
-        else:
-            message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
-        self.send_messages(message=message)
-
-    def show_results(self, message, testing, temp, size, operative):
-        self.operative = True
-        self.save_operative(temp, size,
-                            self.trades[temp][size]['trade']['close'],
-                            operative)
-        self.notify(testing=testing, message=message, action='Abrir')
-
-    def profit(self):
-        if self.trade['operative'] == 'long':
-            diff = float(self.trades['micro']['1m']['trade']['close']) - (
-                float(self.trade['value']))
-        else:
-            diff = (float(self.trade['value'])) - float(
-                self.trades['micro']['1m']['trade']['close'])
-        return round(diff, 2)
-
-    def notify(self, testing, message, action):
-        if action == 'Abrir':
-            diff = 0
-            win = message
-        else:
-            diff = self.profit()
-            win = 'Ganado' if diff >= 0 else 'Perdido'
-
-        if not testing:
-            self.trade['action'] = action
-            if action == 'Abrir':
-                message = "Inicia %s %s en %s" % (
-                    ('COMPRA' if self.trade['operative'] == 'long' else 'VENTA'), self.crypto,
-                    round(self.trades['micro']['1m']['trade']['close'], 0))
-            if action == 'Continua':
-                message = "Continua %s %s en %s" % (
-                    self.crypto, self.trade['operative'], round(self.trades['micro']['1m']['trade']['close'], 0))
-            if action == 'Cerrar':
-                message = "Cierra %s en %s\n" % (self.crypto, self.trades['micro']['1m']['trade']['close'])
-                message += "Resultado: %s con %s" % (win, self.profit())
-            self.send_messages(message=message, play=False, alert=True, runs=3)
-        else:
-            row = [self.trades['micro']['1m']['fingerprint'],
-                   convert_utc_to_local(self.trades['micro']['1m']['fingerprint']), action,
-                   self.trade['temp'], self.trade['operative'],
-                   self.trades['micro']['1m']['trade']['close'], diff, win,
-                   self.trade['risk'],
-                   self.trade['last_time'], self.elapsed_time(current=False),
-                   round(self.trades['micro']['1m']['trade']['close'] - self.trade['min'], 2),
-                   round(self.trades['micro']['1m']['trade']['close'] - self.trade['max'], 2), self.trade['min'],
-                   self.trade['max']]
-            self.testing.append(row)
 
     def evaluate_operative(self, testing):
 
@@ -327,7 +162,8 @@ class CryptoBot:
 
         if close:
             self.operative = False
-            self.notify(testing=testing, message='Cierre', action='Cerrar')
+            notify(testing=testing, message='Cierre', action='Cerrar', trade=self.trade, crypto=self.crypto,
+                   profit=profit(self.trade, self.crypto), save=self.testing)
 
     def take_decision(self, testing=False):
         # Micro Trade
@@ -384,6 +220,59 @@ class CryptoBot:
         self.trades[length][size]['trade']['time'] = last_row['mom_t']
         self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
         self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_55']
+
+    def save_operative(self, temp, size, close, operative):
+        self.trade['temp'] = temp
+        self.trade['operative'] = operative
+        self.trade['last_time'] = size
+        self.trade['last_temp'] = temp
+        self.trade['value'] = close
+        self.trade['risk'] = 100
+        date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
+        self.trade['fingerprint'] = date_time_obj
+        self.trade['max'] = close
+        self.trade['min'] = close
+
+    @limit(1)
+    @async_fn
+    def show_operative(self):
+        if self.process_is_started:
+            if self.operative:
+                message = "%s\n" % self.symbol
+                message += "%s - %s - Riesgo: %s \n" % (
+                    self.trade['last_time'],
+                    ' 🟢 ' if self.trade['operative'] == 'long' else ' 🔴 ',
+                    self.trade['risk'])
+                message += "Inicial: %s - Actual: %s \n" % (
+                    self.trade['value'], self.trades['micro']['1m']['trade']['close'])
+                message += "Resultado: %s con %s\n\nStats\n" % (
+                    profit(trade=self.trade, crypto=self.crypto),
+                    trade_variation(current=self.trades['micro']['1m']['trade']['close'], trade=self.trade))
+
+                message += "Tiempo: %s hrs\n" % (elapsed_time(trade=self.trade, crypto=self.crypto, current=True))
+                message += "Máximo: %s con %s\n" % (
+                    round(self.trade['max']),
+                    trade_variation(trade=self.trade, current=round(self.trade['max'])))
+                message += "Minimo: %s con %s\n\n" % (
+                    round(self.trade['min']),
+                    trade_variation(trade=self.trade, current=round(self.trade['min'])))
+                message += "%s de %s hrs con %s periodos" % (
+                    ('Long' if self.trades['short']['30m']['trade']['Momentum'] else 'Short'),
+                    ((self.trades['short']['30m']['trade']['Momentums']) * 30) / 60,
+                    self.trades['short']['30m']['trade']['Momentums'])
+            else:
+                message = "No hay ninguna operativa para %s actualmente" % self.symbol
+        else:
+            message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
+        send_messages(trade=self.trade, cids=self.cids, message=message)
+
+    def show_results(self, message, testing, temp, size, operative):
+        self.operative = True
+        self.save_operative(temp, size,
+                            self.trades[temp][size]['trade']['close'],
+                            operative)
+        notify(testing=testing, message=message, action='Abrir', trade=self.trade, crypto=self.crypto,
+               profit=profit(self.trade, self.crypto), save=self.testing)
 
     def get_market_graphs(self, bot=None, cid=None):
 

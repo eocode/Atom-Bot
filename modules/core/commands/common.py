@@ -1,12 +1,13 @@
-from bot.bot import bot, commands
+from bot.bot import bot
 from bot.connect.message_connector import send_voice, name, send_message, get_chat_info
+from bot.connect.resources_connector import prepare_trading, get_monitor, show_operatives
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
+from modules.core.data.user import get_user_info
 from modules.core.model.account import update_settings
 import unidecode
 
 from modules.financing.data.dictionary import binance_order_books
-from modules.financing.data.operative import start_operatives, operatives
 
 
 @bot.message_handler(commands=["acerca"])
@@ -99,7 +100,7 @@ def command_init(m):
     if user.group['group']:
         if user.group['is_admin']:
             send_message(user.cid, "Analizando con la versión %s" % version, play=False)
-            start_operatives(user.cid)
+            prepare_trading(user.cid)
         else:
             send_message(user.cid, "No tiene permiso de ejecutar está opción")
     else:
@@ -112,12 +113,9 @@ def command_alerts(m):
 
     if user.group['group']:
         for key, value in binance_order_books.items():
-            operatives[value['crypto'] + value['pair']].monitor.show_operative()
+            get_monitor(value['crypto'] + value['pair']).show_operative()
     else:
-        if user.market in operatives:
-            operatives[user.market].monitor.show_operative()
-        else:
-            send_message(user.cid, 'Necesita preparar la operativa antes')
+        get_monitor(user.market)
 
 
 @bot.message_handler(func=lambda m: True)
@@ -142,6 +140,26 @@ def echo_message(m):
                 else:
                     if text.lower() == "alertas":
                         command_alerts(m)
+
+
+@bot.message_handler(commands=["alertas"])
+def command_operation(m):
+    user = get_chat_info(m)
+    if user.group['group']:
+        for key, value in binance_order_books.items():
+            get_monitor(value['crypto'] + value['pair']).show_operative()
+    else:
+        user = get_user_info(user.cid)
+        show_operatives(user.market)
+
+
+# @bot.message_handler(commands=["ver_graficos"])
+# def command_operation(m):
+#     user = get_chat_info(m)
+#     if user.market in operatives:
+#         operatives[user.market].monitor.get_market_graphs(bot, user.cid)
+#     else:
+#         send_message(user.cid, 'Necesita preparar la operativa antes')
 
 
 def say_something(m):

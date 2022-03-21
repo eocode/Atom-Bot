@@ -4,7 +4,7 @@
       alt="Atom"/>
   </div>
   <h3 align="center">Atom (Assistant)</h3>
-  <p>A simple bot with a finance module</p>
+  <p>Your intelligent assistant</p>
   <p align="center">
     <a href="https://github.com/eocode/Queens/blob/master/LICENSE" target="__blank">
       	<img src="https://img.shields.io/badge/License-GPLV3-blue.svg"  alt="license badge"/>
@@ -17,30 +17,31 @@
 </div>
 
 ## Features
+
 * Nutritional assistant
-  * Work in Progress
+    * Work in Progress
 * Personalized Chat responses
 * Telegram messages by users and groups
 * Speak messages
 * RaspberryPI compatibility connected by bluetooth with Alexa echo DOT
-* Crypto Trading
-  * Supported cryptos
-    * BTC
-    * ETH
-    * ADA
-    * SOL
-  * Smart alerts and monitor
-    * Based in Bayes Theorem
-  * Market Analyze
-    * Calculate main trading indicators
-      * Moving Average
-      * Squeeze Momentum
-      * RSI
-  * Graphs
-    * Visualize indicators
-  * Simulations and backtesting
-    * Scan back 15 days
-    * 91% - 99% gains adjusting simulation for best start point
+* Crypto Trading **(Use at your own risk)**
+    * Supported cryptos
+        * BTC
+        * ETH
+        * ADA
+        * SOL
+    * Smart alerts and monitor
+        * Based in Bayes Theorem
+    * Market Analyze
+        * Calculate main trading indicators
+            * Moving Average
+            * Squeeze Momentum
+            * RSI
+    * Graphs
+        * Visualize indicators
+    * Simulations and backtesting
+        * Scan back 15 days
+        * 91% - 99% gains adjusting simulation for best start point
 
 ### Bot Versions
 
@@ -49,7 +50,7 @@ The project is based in the next convention:
 Version: 1.2.3`
 
 * 1.- Important changes
-* 2.- Continous Improves 
+* 2.- Continous Improves
 * 3.- Bug fixes
 
 ### Require
@@ -126,7 +127,7 @@ Contribute to make the best virtual assistant bot for raspberry pi and python
 * Clone this project and add your contributions
 * Send me a pull request
 
-## LICENSE 
+## LICENSE
 
 GNU GENERAL PUBLIC LICENSE
 
