@@ -85,8 +85,10 @@ class CryptoBot:
             self.process_is_started = True
             while True:
                 try:
+                    updatable = False
                     for size, options in configuration.items():
-                        if check_if_update(size=size, crypto=self.crypto):
+                        update = check_if_update(size=size, crypto=self.crypto)
+                        if update or updatable:
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
                             options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
@@ -95,6 +97,8 @@ class CryptoBot:
                             self.update_indicators(last_row=last_row, size=size)
                             logging_changes(size, self.crypto)
                             self.decide(testing=False)
+                            if size == self.strategy['size']:
+                                updatable = True
                     self.first_iteration = True
                 except Exception as e:
                     print('Error: ', e)
