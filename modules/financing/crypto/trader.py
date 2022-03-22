@@ -9,11 +9,12 @@ from modules.financing.crypto.logging import logging_changes, send_messages, not
 from modules.financing.crypto.processing import analysis, plot_df, supres, download_test_data, load_test_data, \
     save_result
 import datetime
-
+import os
+from dotenv import load_dotenv
 from modules.financing.crypto.strategies.strategy_configuration import strategy_selector
 from modules.financing.crypto.trades import trades
 from modules.financing.crypto.utilities import check_if_update, trade_variation, elapsed_time, profit
-
+load_dotenv()
 
 class CryptoBot:
 
@@ -70,7 +71,7 @@ class CryptoBot:
 
         self.result_indicators = ['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
                                   'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max']
-        self.strategy = strategy_selector['rc_15']
+        self.strategy = strategy_selector[os.environ["strategy"]]
         self.trades = trades[self.crypto]
         self.testing = []
         self.chat_ids = []

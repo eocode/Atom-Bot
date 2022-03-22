@@ -84,6 +84,9 @@ DB_PASS='your pass'
 DB_NAME='your name'
 DB_HOST='your host'
 
+# Strategy
+strategy='rc_15'
+
 # Regional settings
 timezone='America/Mexico_City'
 
