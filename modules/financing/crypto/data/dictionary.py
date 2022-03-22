@@ -5,11 +5,11 @@ bitso_order_books = {
 }
 
 binance_order_books = {
-    "Bitcoin": {
-        'crypto': 'BTC',
-        'pair': 'USDT',
-        'symbol': 'BTCUSDT'
-    },
+    # "Bitcoin": {
+    #     'crypto': 'BTC',
+    #     'pair': 'USDT',
+    #     'symbol': 'BTCUSDT'
+    # },
     "Etherium": {
         'crypto': 'ETH',
         'pair': 'USDT',

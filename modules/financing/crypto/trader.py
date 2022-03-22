@@ -85,11 +85,8 @@ class CryptoBot:
             self.process_is_started = True
             while True:
                 try:
-                    updatable = False
                     for size, options in configuration.items():
-                        update = check_if_update(size=size, crypto=self.crypto)
-                        updatable = True if (size == self.strategy['size'] and update) else False
-                        if update or (updatable and size in self.strategy['reload_with_sizes']):
+                        if check_if_update(size=size, crypto=self.crypto):
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
                             options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
@@ -145,8 +142,7 @@ class CryptoBot:
             df = pd.DataFrame(self.testing, columns=self.result_indicators)
 
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
-            m = save_result(df=df, symbol=self.symbol, crypto=self.crypto)
-            send_messages(trade=self.trade, chat_ids=self.chat_ids, message=m)
+            save_result(df=df, symbol=self.symbol, crypto=self.crypto)
             self.show_stats()
 
         except Exception as e:
@@ -248,9 +244,29 @@ class CryptoBot:
         send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
 
     def show_stats(self):
-        message = "Ganados %s con %s" % (
-            self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations'],
-            self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['long']['difference'])
+        total_operations = (
+                (self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations']) -
+                (self.effectivity['lose']['short']['operations'] + self.effectivity['lose']['long']['operations']))
+        total_variation = (
+                (self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['short']['difference']) -
+                (self.effectivity['lose']['short']['difference'] + self.effectivity['lose']['long']['difference']))
+        earn_operations = (
+                self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations'])
+        earn_differences = (
+                self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['short']['difference'])
+        lose_operations = (
+                self.effectivity['lose']['long']['operations'] + self.effectivity['lose']['short']['operations'])
+        lose_differences = (
+                self.effectivity['lose']['long']['difference'] + self.effectivity['lose']['short']['difference'])
+        message = "Eficiencia en %s\n\n" % self.crypto
+        message += "Ganancias:\nTrades %s con %s\n" % (
+            round(earn_operations, 2), round((earn_operations * 100) / total_operations, 2))
+        message += "Variación: %s con %s\n" % (
+            round(earn_differences, 2), round((earn_differences * 100) / total_variation, 2))
+        message += "Perdidas:\nTrades %s con %s\n" % (
+            round(lose_operations, 2), round((lose_operations * 100) / total_operations, 2))
+        message += "Variación: %s con %s\n" % (
+            round(lose_differences, 2), round((lose_differences * 100) / total_variation, 2))
 
         send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
 
