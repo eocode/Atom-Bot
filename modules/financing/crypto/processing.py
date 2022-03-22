@@ -291,3 +291,29 @@ def load_test_data(items, trades, symbol):
     for time, options in items:
         df = pd.read_csv(get_file_name(symbol, time, 'sma-%s' % options['days_t']))
         trades[get_type_trade(time, trades)][time]['data'] = df
+
+
+def save_result(df, symbol, crypto):
+    df = df[df['Result'] != 'Iniciado']
+    df = df[df['Result'] != 'Actualización']
+    df_new = df.groupby(['Operative', 'Result'])['Profit'].agg(['sum', 'count']).reset_index(drop=False)
+    total = df_new['count'].sum()
+    total_price = df_new['sum'].abs().sum()
+    df_new['%_price'] = (df_new['count'] * 100) / total
+    df_new['%_by_price'] = (df_new['sum'] * 100) / total_price
+    df_new = df_new.round(2)
+    df_new.to_csv('backtesting/result_%s.csv' % symbol, index=False)
+
+    gain = df_new[df_new['Result'] == 'Ganado']
+    gains = gain['%_price'].sum()
+    variation = gain['sum'].sum()
+    prices = gain['%_by_price'].sum()
+    message = "Eficiencia %s: \n\n%s Ganados: \ntrades: %s margen: %s \n" % (
+        crypto, round(variation, 2), int(round(gains, 0)), int(round(prices, 0)))
+    loss = df_new[df_new['Result'] == 'Perdido']
+    variation = loss['sum'].sum()
+    losses = loss['%_price'].sum()
+    prices = loss['%_by_price'].sum()
+    message += "%s Perdidos: \ntrades: %s margen: %s" % (
+        round(variation, 2), int(round(losses, 0)), int(round(prices, 0)))
+    return message

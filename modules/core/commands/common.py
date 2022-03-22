@@ -97,11 +97,11 @@ def command_help(m):
 def command_alerts(m):
     user = get_chat_info(m)
 
-    if user.group['group']:
+    if (not user.group['group'] and user.is_verified) or user.is_admin:
         for key, value in binance_order_books.items():
             get_monitor(value['crypto'] + value['pair']).show_operative()
     else:
-        get_monitor(user.market)
+        send_message(user.cid, "Operación inválida")
 
 
 @bot.message_handler(func=lambda m: True)

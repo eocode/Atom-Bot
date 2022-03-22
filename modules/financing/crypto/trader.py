@@ -6,10 +6,10 @@ from modules.financing.crypto.configuration import configuration
 from modules.financing.crypto.extractor import get_binance_symbol_data, save_extracted_data, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
 from modules.financing.crypto.logging import logging_changes, send_messages, notify
-from modules.financing.crypto.processing import analysis, plot_df, supres, download_test_data, load_test_data
+from modules.financing.crypto.processing import analysis, plot_df, supres, download_test_data, load_test_data, \
+    save_result
 import datetime
 
-from modules.financing.crypto.strategies.roller_coaster_30 import rc_30, rc_30_evaluate
 from modules.financing.crypto.strategies.strategy_configuration import strategy_selector
 from modules.financing.crypto.trades import trades
 from modules.financing.crypto.utilities import check_if_update, trade_variation, elapsed_time, profit
@@ -44,6 +44,30 @@ class CryptoBot:
             'risk': 0,
             'action': ''
         }
+
+        self.effectivity = {
+            'earn': {
+                'long': {
+                    'operations': 0,
+                    'difference': 0,
+                },
+                'short': {
+                    'operations': 0,
+                    'difference': 0,
+                }
+            },
+            'lose': {
+                'long': {
+                    'operations': 0,
+                    'difference': 0,
+                },
+                'short': {
+                    'operations': 0,
+                    'difference': 0,
+                }
+            }
+        }
+
         self.result_indicators = ['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
                                   'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max']
         self.strategy = strategy_selector['rc_30']
@@ -121,29 +145,9 @@ class CryptoBot:
             df = pd.DataFrame(self.testing, columns=self.result_indicators)
 
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
-            df = df[df['Result'] != 'Iniciado']
-            df = df[df['Result'] != 'Actualización']
-            df_new = df.groupby(['Operative', 'Result'])['Profit'].agg(['sum', 'count']).reset_index(drop=False)
-            total = df_new['count'].sum()
-            total_price = df_new['sum'].abs().sum()
-            df_new['%_price'] = (df_new['count'] * 100) / total
-            df_new['%_by_price'] = (df_new['sum'] * 100) / total_price
-            df_new = df_new.round(2)
-            df_new.to_csv('backtesting/result_%s.csv' % self.symbol, index=False)
-
-            gain = df_new[df_new['Result'] == 'Ganado']
-            gains = gain['%_price'].sum()
-            variation = gain['sum'].sum()
-            prices = gain['%_by_price'].sum()
-            message = "Eficiencia %s: \n\n%s Ganados: \ntrades: %s margen: %s \n" % (
-                self.crypto, round(variation, 2), int(round(gains, 0)), int(round(prices, 0)))
-            loss = df_new[df_new['Result'] == 'Perdido']
-            variation = loss['sum'].sum()
-            losses = loss['%_price'].sum()
-            prices = loss['%_by_price'].sum()
-            message += "%s Perdidos: \ntrades: %s margen: %s" % (
-                round(variation, 2), int(round(losses, 0)), int(round(prices, 0)))
-            send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
+            m = save_result(df=df, symbol=self.symbol, crypto=self.crypto)
+            send_messages(trade=self.trade, chat_ids=self.chat_ids, message=m)
+            self.show_stats()
 
         except Exception as e:
             print('Error: ', e)
@@ -157,7 +161,8 @@ class CryptoBot:
                                 self.trades['micro']['1m']['trade']['close'],
                                 trade_operative)
                 notify(testing=testing, message='Iniciado', action='Abrir', trade=self.trade, crypto=self.crypto,
-                       profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids)
+                       profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids,
+                       effectivity=self.effectivity)
         else:
             self.trade['max'] = (self.trades['micro']['1m']['trade']['close'] if (
                     self.trades['micro']['1m']['trade']['close'] > self.trade['max']) else
@@ -169,7 +174,8 @@ class CryptoBot:
             if close:
                 self.operative = False
                 notify(testing=testing, message='Cierre', action='Cerrar', trade=self.trade, crypto=self.crypto,
-                       profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids)
+                       profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids,
+                       effectivity=self.effectivity)
 
     def update_indicators(self, size, last_row):
         length = get_type_trade(size, self.trades)
@@ -239,6 +245,13 @@ class CryptoBot:
                 message = "No hay ninguna operativa para %s actualmente" % self.symbol
         else:
             message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
+        send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
+
+    def show_stats(self):
+        message = "Ganados %s con %s" % (
+            self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations'],
+            self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['long']['difference'])
+
         send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
 
     def get_market_graphs(self, bot=None, cid=None):

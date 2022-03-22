@@ -28,7 +28,7 @@ def logging_changes(size, crypto):
     logging_message("%s actualizado en %s" % (crypto, size))
 
 
-def notify(testing, message, action, trade, crypto, profit, save, chat_ids):
+def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effectivity):
     if action == 'Abrir':
         diff = 0
         win = message
@@ -49,7 +49,7 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids):
         if action == 'Cerrar':
             message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
-        send_messages(trade=trade, cids=chat_ids, message=message, play=False, alert=True, runs=3)
+        send_messages(trade=trade, chat_ids=chat_ids, message=message, play=False, alert=True, runs=3)
     else:
         row = [trades[crypto]['micro']['1m']['fingerprint'],
                convert_utc_to_local(trades[crypto]['micro']['1m']['fingerprint'], '1m'), action,
@@ -62,6 +62,19 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids):
                trade['min'],
                trade['max']]
         save.append(row)
+    if action == 'Cerrar':
+        generate_stats(operative=trade['operative'], result=win, diff=diff, effectivity=effectivity)
+
+
+def generate_stats(operative, result, diff, effectivity):
+    # Earn
+    if result == 'Ganado':
+        effectivity['earn'][operative]['operations'] += 1
+        effectivity['earn'][operative]['difference'] += diff
+    # Lose
+    else:
+        effectivity['lose'][operative]['operations'] += 1
+        effectivity['lose'][operative]['difference'] += diff
 
 
 def send_messages(trade, chat_ids, message, play=False, alert=False, runs=1):
