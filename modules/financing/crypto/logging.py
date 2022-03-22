@@ -41,13 +41,13 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effe
         if action == 'Abrir':
             message = "Inicia %s %s en %s" % (
                 ('COMPRA' if trade['operative'] == 'long' else 'VENTA'), crypto,
-                trade['value'])
+                trades[crypto]['micro']['1m']['trade']['close'])
         if action == 'Continua':
             message = "Continua %s %s en %s" % (
                 crypto, trade['operative'],
-                trade['value'])
+                trades[crypto]['micro']['1m']['trade']['close'])
         if action == 'Cerrar':
-            message = "Cierra %s en %s\n" % (crypto, trade['value'])
+            message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
         send_messages(trade=trade, chat_ids=chat_ids, message=message, play=False, alert=True, runs=3)
     else:

@@ -49,6 +49,12 @@ trades = {
                 },
                 'fingerprint': 0,
             },
+            '3m': {
+                'trade': {
+                    'close': 0,
+                },
+                'fingerprint': 0,
+            },
             '1m': {
                 'trade': {
                     'close': 0,
@@ -102,6 +108,12 @@ trades = {
         },
         'micro': {
             '5m': {
+                'trade': {
+                    'close': 0,
+                },
+                'fingerprint': 0,
+            },
+            '3m': {
                 'trade': {
                     'close': 0,
                 },

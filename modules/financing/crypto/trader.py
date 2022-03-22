@@ -70,7 +70,7 @@ class CryptoBot:
 
         self.result_indicators = ['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
                                   'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max']
-        self.strategy = strategy_selector['rc_30']
+        self.strategy = strategy_selector['rc_15']
         self.trades = trades[self.crypto]
         self.testing = []
         self.chat_ids = []
@@ -128,6 +128,8 @@ class CryptoBot:
 
             for index, row in main.iterrows():
                 self.update_indicators(last_row=row, size='1m')
+                self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '3m', row['timestamp']),
+                                       size='3m')
                 self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '5m', row['timestamp']),
                                        size='5m')
                 self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '15m', row['timestamp']),
