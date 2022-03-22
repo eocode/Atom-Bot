@@ -104,6 +104,17 @@ def command_alerts(m):
         send_message(user.cid, "Operación inválida")
 
 
+@bot.message_handler(commands=["resultados"])
+def command_results(m):
+    user = get_chat_info(m)
+
+    if (not user.group['group'] and user.is_verified) or user.is_admin:
+        for key, value in binance_order_books.items():
+            get_monitor(value['crypto'] + value['pair']).show_stats()
+    else:
+        send_message(user.cid, "Operación inválida")
+
+
 @bot.message_handler(func=lambda m: True)
 def echo_message(m):
     user = get_chat_info(m)
@@ -123,6 +134,9 @@ def echo_message(m):
             else:
                 if text.lower() == "alertas":
                     command_alerts(m)
+                else:
+                    if text.lower() == "resultados":
+                        command_results(m)
 
 
 @bot.message_handler(commands=["alertas"])

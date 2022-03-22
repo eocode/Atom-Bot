@@ -243,9 +243,11 @@ class CryptoBot:
             message = "Primero se debe iniciar el proceso de monitoreo para %s" % self.symbol
         send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
 
+    @limit(1)
+    @async_fn
     def show_stats(self):
         total_operations = (
-                (self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations']) -
+                (self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations']) +
                 (self.effectivity['lose']['short']['operations'] + self.effectivity['lose']['long']['operations']))
         total_variation = (
                 (self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['short']['difference']) -
@@ -261,7 +263,7 @@ class CryptoBot:
         message = "Eficiencia en %s\n\n" % self.crypto
         message += "Ganancias:\nTrades %s con %s\n" % (
             round(earn_operations, 2), round((earn_operations * 100) / total_operations, 2))
-        message += "Variación: %s con %s\n" % (
+        message += "Variación: %s con %s\n\n" % (
             round(earn_differences, 2), round((earn_differences * 100) / total_variation, 2))
         message += "Perdidas:\nTrades %s con %s\n" % (
             round(lose_operations, 2), round((lose_operations * 100) / total_operations, 2))
