@@ -41,6 +41,7 @@ def load_user(m):
     cid = m.chat.id
     if cid in user_data:
         usr = user_data[cid]
+        print(usr)
         if usr.check_if_reload() or usr.cid is None:
             return save_user_info(cid=cid, user=load_user_data(m, cid))
         else:

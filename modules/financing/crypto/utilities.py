@@ -29,6 +29,7 @@ def check_if_update(size, crypto):
             last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
         else:
             last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
+            current_time = datetime.datetime(current_time.year, current_time.month, current_time.day)
         updatable = current_time - delta
     except Exception as e:
         print("Error al revisar actualizaciones")

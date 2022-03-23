@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from bot.connect.message_connector import send_message
 from bot.connect.thread_connector import limit, async_fn
@@ -9,12 +11,14 @@ from modules.financing.crypto.logging import logging_changes, send_messages, not
 from modules.financing.crypto.processing import analysis, plot_df, supres, download_test_data, load_test_data, \
     save_result
 import datetime
-import os
-from dotenv import load_dotenv
 from modules.financing.crypto.strategies.strategy_configuration import strategy_selector
 from modules.financing.crypto.trades import trades
 from modules.financing.crypto.utilities import check_if_update, trade_variation, elapsed_time, profit
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
+
 
 class CryptoBot:
 
@@ -97,9 +101,10 @@ class CryptoBot:
                             last_row = df.iloc[-1, :]
                             self.update_indicators(last_row=last_row, size=size)
                             logging_changes(size, self.crypto)
-                            self.decide(testing=False)
-                            if size == self.strategy['size']:
+                            if size == self.strategy['update_size']:
                                 updatable = True
+                        time.sleep(2)
+                    self.decide(testing=False)
                     self.first_iteration = True
                 except Exception as e:
                     print('Error: ', e)
@@ -151,6 +156,7 @@ class CryptoBot:
             df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
             save_result(df=df, symbol=self.symbol, crypto=self.crypto)
             self.show_stats()
+            self.show_operative()
 
         except Exception as e:
             print('Error: ', e)

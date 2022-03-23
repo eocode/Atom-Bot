@@ -1,5 +1,6 @@
 from modules.financing.crypto.strategies.roller_coaster_15 import rc_15, rc_15_evaluate
 from modules.financing.crypto.strategies.roller_coaster_30 import rc_30, rc_30_evaluate
+from modules.financing.crypto.strategies.roller_coaster_5 import rc_5, rc_5_evaluate
 
 strategy_selector = {
     'rc_30': {
@@ -7,6 +8,7 @@ strategy_selector = {
         'size': '30m',
         'temp': 'short',
         'base': 30,
+        'update_size': 15,
         'execute': rc_30,
         'evaluate': rc_30_evaluate,
         'available_sizes': ['1m', '5m', '15m', '30m'],
@@ -17,9 +19,21 @@ strategy_selector = {
         'size': '15m',
         'temp': 'short',
         'base': 15,
+        'update_size': 5,
         'execute': rc_15,
         'evaluate': rc_15_evaluate,
         'available_sizes': ['1m', '5m', '15m'],
         'reload_with_sizes': ['30m', '1h', '4h']
+    },
+    'rc_5': {
+        'name': 'Roller Coaster 5',
+        'size': '5m',
+        'temp': 'micro',
+        'base': 5,
+        'update_size': 3,
+        'execute': rc_5,
+        'evaluate': rc_5_evaluate,
+        'available_sizes': ['1m', '3m', '5m'],
+        'reload_with_sizes': ['15m', '30m', '1h', '4h']
     }
 }

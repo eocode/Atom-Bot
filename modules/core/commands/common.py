@@ -1,9 +1,8 @@
 from bot.bot import bot
 from bot.connect.message_connector import send_voice, name, send_message, get_chat_info
-from bot.connect.resources_connector import get_monitor, show_operatives
+from bot.connect.resources_connector import get_monitor
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
-from modules.core.data.user import get_user_info
 from modules.core.model.account import update_settings
 import unidecode
 
@@ -106,13 +105,8 @@ def command_alerts(m):
 
 @bot.message_handler(commands=["resultados"])
 def command_results(m):
-    user = get_chat_info(m)
-
-    if (not user.group['group'] and user.is_verified) or user.is_admin:
-        for key, value in binance_order_books.items():
-            get_monitor(value['crypto'] + value['pair']).show_stats()
-    else:
-        send_message(user.cid, "Operación inválida")
+    for key, value in binance_order_books.items():
+        get_monitor(value['crypto'] + value['pair']).show_stats()
 
 
 @bot.message_handler(func=lambda m: True)
@@ -141,13 +135,8 @@ def echo_message(m):
 
 @bot.message_handler(commands=["alertas"])
 def command_operation(m):
-    user = get_chat_info(m)
-    if user.group['group']:
-        for key, value in binance_order_books.items():
-            get_monitor(value['crypto'] + value['pair']).show_operative()
-    else:
-        user = get_user_info(user.cid)
-        show_operatives(user.market)
+    for key, value in binance_order_books.items():
+        get_monitor(value['crypto'] + value['pair']).show_operative()
 
 
 # @bot.message_handler(commands=["ver_graficos"])
