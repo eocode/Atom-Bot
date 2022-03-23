@@ -10,6 +10,7 @@ def logging_changes(size, crypto):
         message = "-------------------------------------------------------------------\n" \
                   "%s actualizado:" % crypto
         message += "\n1m %s " % convert_utc_to_local(str(trades[crypto]['micro']['1m']['fingerprint']), size)
+        message += "\n3m %s " % convert_utc_to_local(str(trades[crypto]['micro']['3m']['fingerprint']), size)
         message += "\n5m %s " % convert_utc_to_local(str(trades[crypto]['micro']['5m']['fingerprint']), size)
         message += "\n15m %s " % convert_utc_to_local(str(trades[crypto]['short']['15m']['fingerprint']), size)
         message += "\n30m %s " % convert_utc_to_local(str(trades[crypto]['short']['30m']['fingerprint']), size)
@@ -17,15 +18,16 @@ def logging_changes(size, crypto):
         message += "\n4h %s \n" % convert_utc_to_local(str(trades[crypto]['medium']['4h']['fingerprint']), size)
         logging_message(message)
     message = "1m   - RSI %s  | " % trades[crypto]['micro']['1m']['trade']['RSI']
+    message += "3m  - RSI %s | " % trades[crypto]['micro']['3m']['trade']['RSI']
     message += "5m  - RSI %s | " % trades[crypto]['micro']['5m']['trade']['RSI']
-    message += "15m - RSI %s | " % trades[crypto]['short']['15m']['trade']['RSI']
-    message += "30m - RSI %s Momentum %s \n" % (
+    message += "15m - RSI %s | \n" % trades[crypto]['short']['15m']['trade']['RSI']
+    message += "30m - RSI %s Momentum %s | " % (
         trades[crypto]['short']['30m']['trade']['RSI'],
         trades[crypto]['short']['30m']['trade']['Momentum'])
-    message += "1h   - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
+    message += "1h  - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
     message += "4h  - RSI %s" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
-    logging_message("%s actualizado en %s" % (crypto, size))
+    logging_message("---------------------------------------------------------------->%s actualizado en %s" % (crypto, size))
 
 
 def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effectivity):
