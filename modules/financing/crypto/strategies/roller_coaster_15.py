@@ -36,7 +36,8 @@ def rc_15_evaluate(trade, crypto):
     if trade['operative'] == 'long':
         if (not trades[crypto]['micro']['5m']['trade']['RSI'] and
             not trades[crypto]['micro']['3m']['trade']['RSI'] and
-            not trades[crypto]['micro']['5m']['trade']['mean_f']) or (
+            not trades[crypto]['micro']['1m']['trade']['RSI'] and
+            not trades[crypto]['micro']['1m']['trade']['mean_f']) or (
                 not trades[crypto]['short']['15m']['trade']['Momentum']):
             close = True
 
@@ -44,8 +45,9 @@ def rc_15_evaluate(trade, crypto):
     else:
         if ((trades[crypto]['micro']['5m']['trade']['RSI'] and
              trades[crypto]['micro']['3m']['trade']['RSI'] and
-             trades[crypto]['micro']['3m']['trade']['Momentum'] and
-             trades[crypto]['micro']['5m']['trade']['mean_f']) or (
+             trades[crypto]['micro']['1m']['trade']['RSI'] and
+             trades[crypto]['micro']['1m']['trade']['Momentum'] and
+             trades[crypto]['micro']['1m']['trade']['mean_f']) or (
                 trades[crypto]['short']['15m']['trade']['Momentum'])):
             close = True
 
