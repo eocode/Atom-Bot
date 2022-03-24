@@ -99,8 +99,8 @@ class CryptoBot:
                             last_row = df.iloc[-1, :]
                             self.update_indicators(last_row=last_row, size=size)
                             logging_changes(size, self.crypto)
+                            self.decide(testing=False)
                         time.sleep(2)
-                    self.decide(testing=False)
                     self.first_iteration = True
                 except Exception as e:
                     print('Error: ', e)
