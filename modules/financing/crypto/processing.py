@@ -91,7 +91,7 @@ def get_stats(df):
 
 
 def analysis(df, ma_f, ma_s):
-    period = 9
+    period = 14
 
     df['close_variation'] = df['close'] - df['close'].shift(1)
 

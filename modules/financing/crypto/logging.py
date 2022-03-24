@@ -25,9 +25,9 @@ def logging_changes(size, crypto):
         trades[crypto]['short']['30m']['trade']['RSI'],
         trades[crypto]['short']['30m']['trade']['Momentum'])
     message += "1h  - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
-    message += "4h  - RSI %s" % trades[crypto]['medium']['4h']['trade']['RSI']
+    message += "4h  - RSI %s\n" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
-    logging_message("---------------------------------------------------------------->%s actualizado en %s" % (crypto, size))
+    logging_message("-------------------------------------------------------------------> %s actualizado en %s" % (crypto, size))
 
 
 def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effectivity):

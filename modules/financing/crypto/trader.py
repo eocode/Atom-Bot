@@ -91,7 +91,7 @@ class CryptoBot:
             while True:
                 try:
                     for size, options in configuration.items():
-                        if check_if_update(size=size, crypto=self.crypto):
+                        if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
                             options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
@@ -205,7 +205,7 @@ class CryptoBot:
         self.trades[length][size]['trade']['variation'] = last_row['close_variation']
         self.trades[length][size]['trade']['time'] = last_row['mom_t']
         self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
-        self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_55']
+        self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_%s' % (configuration[size]['sma_s'])]
 
     def save_trade(self, temp, size, close, operative):
         self.trade['temp'] = temp

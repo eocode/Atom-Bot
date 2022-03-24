@@ -5,8 +5,12 @@ from modules.financing.crypto.extractor import get_type_trade
 from modules.financing.crypto.trades import trades
 
 
-def check_if_update(size, crypto):
+def check_if_update(size, crypto, strategy):
     try:
+
+        if size in strategy['reload_sizes']:
+            size = '1m'
+
         current_time = datetime.datetime.utcnow()
         period = size[-1]
         t = int(size[:-1])

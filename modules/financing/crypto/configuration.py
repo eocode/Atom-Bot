@@ -48,24 +48,24 @@ configuration = {
         'plot': 90
     },
     '5m': {
-        'sma_s': 55,
-        'sma_f': 9,
+        'sma_s': 24,
+        'sma_f': 12,
         'days': 3,
         'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
     '3m': {
-        'sma_s': 55,
-        'sma_f': 9,
+        'sma_s': 24,
+        'sma_f': 12,
         'days': 3,
         'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
     '1m': {
-        'sma_s': 55,
-        'sma_f': 9,
+        'sma_s': 24,
+        'sma_f': 12,
         'days': 3,
         'days_s': 1,
         'days_t': 15,

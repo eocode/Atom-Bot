@@ -34,6 +34,6 @@ strategy_selector = {
         'execute': rc_5,
         'evaluate': rc_5_evaluate,
         'available_sizes': ['1m', '3m', '5m'],
-        'reload_with_sizes': ['15m', '30m', '1h', '4h']
+        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w']
     }
 }
