@@ -90,9 +90,7 @@ def get_stats(df):
     return max_mins
 
 
-def analysis(df, ma_f, ma_s):
-    period = 14
-
+def analysis(df, ma_f, ma_s, period):
     df['close_variation'] = df['close'] - df['close'].shift(1)
 
     df = ema(df, ma_f, ma_s)
@@ -102,6 +100,51 @@ def analysis(df, ma_f, ma_s):
     df.dropna(inplace=True)
 
     df['trend'] = df['momentums'] & df['RSIs']
+
+    return df
+
+
+def adx(data: pd.DataFrame, period: int):
+    df = data.copy()
+    alpha = 1 / period
+
+    # TR
+    df['H-L'] = df['high'] - df['low']
+    df['H-C'] = np.abs(df['high'] - df['close'].shift(1))
+    df['L-C'] = np.abs(df['low'] - df['close'].shift(1))
+    df['TR'] = df[['H-L', 'H-C', 'L-C']].max(axis=1)
+    del df['H-L'], df['H-C'], df['L-C']
+
+    # ATR
+    df['ATR'] = df['TR'].ewm(alpha=alpha, adjust=False).mean()
+
+    # +-DX
+    df['H-pH'] = df['high'] - df['high'].shift(1)
+    df['pL-L'] = df['low'].shift(1) - df['low']
+    df['+DX'] = np.where(
+        (df['H-pH'] > df['pL-L']) & (df['H-pH'] > 0),
+        df['H-pH'],
+        0.0
+    )
+    df['-DX'] = np.where(
+        (df['H-pH'] < df['pL-L']) & (df['pL-L'] > 0),
+        df['pL-L'],
+        0.0
+    )
+    del df['H-pH'], df['pL-L']
+
+    # +- DMI
+    df['S+DM'] = df['+DX'].ewm(alpha=alpha, adjust=False).mean()
+    df['S-DM'] = df['-DX'].ewm(alpha=alpha, adjust=False).mean()
+    df['+DMI'] = (df['S+DM'] / df['ATR']) * 100
+    df['-DMI'] = (df['S-DM'] / df['ATR']) * 100
+    del df['S+DM'], df['S-DM']
+
+    # ADX
+    df['DX'] = (np.abs(df['+DMI'] - df['-DMI']) / (df['+DMI'] + df['-DMI'])) * 100
+    df['adx'] = df['DX'].ewm(alpha=alpha, adjust=False).mean()
+    df['adxs'] = (df['RSI'] - df['RSI'].shift(1)) >= 0
+    del df['DX'], df['ATR'], df['TR'], df['-DX'], df['+DX'], df['+DMI'], df['-DMI']
 
     return df
 
@@ -271,7 +314,7 @@ def plot_df(size, form, values, symbol, support, resistence):
         print(e)
 
 
-def download_test_data(symbol, items, indicators):
+def download_test_data(symbol, items, indicators, period):
     try:
         for time, options in items:
             # Get Data
@@ -279,7 +322,7 @@ def download_test_data(symbol, items, indicators):
                                            save=True, sma=options['days_t'])
             # Analyse
             options['data'] = analysis(df=data, ma_f=options['sma_f'],
-                                       ma_s=options['sma_s'])
+                                       ma_s=options['sma_s'], period=period)
             save_extracted_data(symbol=symbol, df=options['data'], form='sma-%s' % options['days_t'],
                                 size=time)
             save_clean_result(symbol, time, options['days_t'], indicators)

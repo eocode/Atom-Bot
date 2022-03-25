@@ -16,3 +16,4 @@ matplotlib
 requests
 scipy
 pymysql
+pandas-ta

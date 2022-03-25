@@ -38,8 +38,8 @@ class CryptoBot:
         self.operative = False
         self.indicators = ['timestamp', 'fast', 'fast_ups', 'avg',
                            'price_up', 'price_ups', 'momentums', 'momentum',
-                           'momentum_ups', 'buy_ema', 'RSI', 'RSIs', 'RSI_ups',
-                           'close', 'open', 'close_variation']
+                           'momentum_ups', 'buy_ema', 'RSI', 'RSIs',
+                           'RSI_ups', 'close', 'open', 'close_variation']
         self.trade = {
             'temp': '',
             'operative': '',
@@ -94,7 +94,8 @@ class CryptoBot:
                         if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                            save=False, sma=options['days_s'])
-                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
+                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
+                                                       period=self.strategy['period'][self.crypto])
                             df = options['data'].tail(365)
                             last_row = df.iloc[-1, :]
                             self.update_indicators(last_row=last_row, size=size)
@@ -112,7 +113,8 @@ class CryptoBot:
         try:
 
             if download:
-                download_test_data(self.symbol, configuration.items(), self.indicators)
+                download_test_data(self.symbol, configuration.items(), self.indicators,
+                                   period=self.strategy['period'][self.crypto])
 
             # Get Test Data
             load_test_data(configuration.items(), self.trades, self.symbol)
@@ -289,7 +291,8 @@ class CryptoBot:
                 data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                save=True, sma=options['days'])
                 # Analyse
-                options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'])
+                options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
+                                           period=self.strategy['period'][self.crypto])
                 save_extracted_data(symbol=self.symbol, df=options['data'], form='sma-%s' % options['days'],
                                     size=size)
                 # options['min_max'] = get_stats(df=self.data)

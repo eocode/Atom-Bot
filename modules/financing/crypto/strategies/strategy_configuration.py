@@ -12,7 +12,11 @@ strategy_selector = {
         'execute': rc_30,
         'evaluate': rc_30_evaluate,
         'available_sizes': ['1m', '5m', '15m', '30m'],
-        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w']
+        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
+        'period': {
+            'BTC': 9,
+            'ETH': 48
+        }
     },
     'rc_15': {
         'name': 'Roller Coaster 15',
@@ -23,7 +27,11 @@ strategy_selector = {
         'execute': rc_15,
         'evaluate': rc_15_evaluate,
         'available_sizes': ['1m', '5m', '15m'],
-        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w']
+        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
+        'period': {
+            'BTC': 24,
+            'ETH': 48
+        }
     },
     'rc_5': {
         'name': 'Roller Coaster 5',
@@ -34,6 +42,10 @@ strategy_selector = {
         'execute': rc_5,
         'evaluate': rc_5_evaluate,
         'available_sizes': ['1m', '3m', '5m'],
-        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w']
+        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
+        'period': {
+            'BTC': 9,
+            'ETH': 48
+        }
     }
 }
