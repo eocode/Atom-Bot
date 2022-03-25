@@ -29,7 +29,7 @@ strategy_selector = {
         'available_sizes': ['1m', '5m', '15m'],
         'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
         'period': {
-            'BTC': 24,
+            'BTC': 14,
             'ETH': 48
         }
     },
