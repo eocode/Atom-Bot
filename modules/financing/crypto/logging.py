@@ -51,7 +51,7 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effe
         if action == 'Cerrar':
             message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
-        send_messages(trade=trade, chat_ids=chat_ids, message=message, play=False, alert=True, runs=3)
+        send_messages(trade=trade, chat_ids=chat_ids, message=message, play=False, alert=True, runs=2)
     else:
         row = [trades[crypto]['micro']['1m']['fingerprint'],
                convert_utc_to_local(trades[crypto]['micro']['1m']['fingerprint'], '1m'), action,

@@ -38,14 +38,14 @@ strategy_selector = {
         'size': '5m',
         'temp': 'micro',
         'base': 5,
-        'update_size': 3,
+        'update_size': 5,
         'execute': rc_5,
         'evaluate': rc_5_evaluate,
         'available_sizes': ['1m', '3m', '5m'],
         'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
         'period': {
-            'BTC': 9,
-            'ETH': 48
+            'BTC': 72,
+            'ETH': 72
         }
     }
 }
