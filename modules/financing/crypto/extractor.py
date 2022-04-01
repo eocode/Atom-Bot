@@ -204,6 +204,7 @@ def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_incre
     data.drop(['close_time', 'ignore', 'tb_base_av', 'quote_av', 'tb_quote_av'], axis='columns', inplace=True)
 
     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+
     data['time'] = data['timestamp']
     data.set_index('timestamp', inplace=True, drop=False)
 

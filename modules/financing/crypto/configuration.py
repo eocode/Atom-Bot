@@ -17,7 +17,7 @@ configuration = {
     },
     '4h': {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 14,
         'days': 60,
         'days_s': 15,
         'days_t': 60,

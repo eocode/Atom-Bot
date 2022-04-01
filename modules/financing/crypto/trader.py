@@ -1,3 +1,4 @@
+import sys
 import time
 
 import pandas as pd
@@ -36,10 +37,16 @@ class CryptoBot:
         self.first_iteration = False
         self.trade_type = 'micro'
         self.operative = False
-        self.indicators = ['timestamp', 'fast', 'fast_ups', 'avg',
-                           'price_up', 'price_ups', 'momentums', 'momentum',
-                           'momentum_ups', 'buy_ema', 'RSI', 'RSIs',
-                           'RSI_ups', 'close', 'open', 'close_variation']
+        # self.indicators = ['timestamp', 'fast', 'fast_ups', 'avg',
+        #                    'price_up', 'price_ups', 'momentums', 'momentum',
+        #                    'momentum_ups', 'buy_ema', 'RSI', 'RSIs',
+        #                    'RSI_ups', 'close', 'open', 'close_variation']
+        self.indicators = [
+            'timestamp', 'high', 'low', 'open', 'close', 'volume', 'ema_f', 'ema_s', 'f', 's', 'buy_ema', 'sell_ema',
+            'buy_change', 'sell_change', 'RSI', 'RSIs', 'RSI_ups', 'adx', 'adx_s', 'adx_ups', 'ATR', 'momentum',
+            'momentum_s',
+            'momentum_ups', 'momentum_t'
+        ]
         self.trade = {
             'temp': '',
             'operative': '',
@@ -47,7 +54,9 @@ class CryptoBot:
             'last_temp': '',
             'last_time': '',
             'risk': 0,
-            'action': ''
+            'action': '',
+            'max': 0,
+            'min': 0
         }
 
         self.effectivity = {
@@ -101,10 +110,10 @@ class CryptoBot:
                             self.update_indicators(last_row=last_row, size=size)
                             logging_changes(size, self.crypto)
                             self.decide(testing=False)
-                        time.sleep(2)
+                        time.sleep(5)
                     self.first_iteration = True
                 except Exception as e:
-                    print('Error: ', e)
+                    print('Error: ' + e)
         else:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
@@ -180,6 +189,8 @@ class CryptoBot:
             close = self.strategy['evaluate'](trade=self.trade, crypto=self.crypto)
             if close:
                 self.operative = False
+                if not testing:
+                    print('notify')
                 notify(testing=testing, message='Cierre', action='Cerrar', trade=self.trade, crypto=self.crypto,
                        profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids,
                        effectivity=self.effectivity)
@@ -197,17 +208,13 @@ class CryptoBot:
         self.trades[length][size]['trade']['RSI'] = last_row['RSIs']
         self.trades[length][size]['trade']['RSIs'] = last_row['RSI_ups']
         self.trades[length][size]['trade']['RSI_value'] = last_row['RSI']
-        self.trades[length][size]['trade']['mean_f'] = last_row['fast']
-        self.trades[length][size]['trade']['mean_f_ups'] = last_row['fast_ups']
-        self.trades[length][size]['trade']['Momentum'] = last_row['momentums']
+        self.trades[length][size]['trade']['mean_f'] = last_row['f']
+        self.trades[length][size]['trade']['Momentum'] = last_row['momentum_s']
         self.trades[length][size]['trade']['Momentums'] = last_row['momentum_ups']
         self.trades[length][size]['trade']['Momentum_value'] = last_row['momentum']
-        self.trades[length][size]['trade']['confirm_dir'] = last_row['avg']
-        self.trades[length][size]['trade']['confirm_dir_ups'] = last_row['price_up']
         self.trades[length][size]['trade']['variation'] = last_row['close_variation']
-        self.trades[length][size]['trade']['time'] = last_row['mom_t']
+        self.trades[length][size]['trade']['time'] = last_row['momentum_t']
         self.trades[length][size]['trade']['ema'] = last_row['buy_ema']
-        self.trades[length][size]['trade']['ema_value'] = last_row['mean_close_%s' % (configuration[size]['sma_s'])]
 
     def save_trade(self, temp, size, close, operative):
         self.trade['temp'] = temp
@@ -245,7 +252,8 @@ class CryptoBot:
                     round(self.trade['min']),
                     trade_variation(trade=self.trade, current=round(self.trade['min'])))
                 message += "%s de %s hrs con %s periodos" % (
-                    ('Long' if self.trades[self.strategy['temp']][self.strategy['size']]['trade']['Momentum'] else 'Short'),
+                    ('Long' if self.trades[self.strategy['temp']][self.strategy['size']]['trade'][
+                        'Momentum'] else 'Short'),
                     ((self.trades[self.strategy['temp']][self.strategy['size']]['trade']['Momentums']) * 30) / 60,
                     self.trades[self.strategy['temp']][self.strategy['size']]['trade']['Momentums'])
             else:

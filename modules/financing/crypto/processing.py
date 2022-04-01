@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib
 from datetime import datetime
+import pandas_ta as ta
 
 from modules.financing.crypto.extractor import get_file_name, convert_columns_to_float, \
     get_binance_symbol_data, save_extracted_data, save_clean_result, get_type_trade
@@ -91,15 +92,37 @@ def get_stats(df):
 
 
 def analysis(df, ma_f, ma_s, period):
-    df['close_variation'] = df['close'] - df['close'].shift(1)
+    df["ema_f"] = ta.ema(high=df.high, low=df.low, close=df.close, length=ma_f)
+    df["ema_s"] = ta.ema(high=df.high, low=df.low, close=df.close, length=ma_s)
 
-    df = ema(df, ma_f, ma_s)
-    df = rsi(df, period)
+    df.fillna(0, inplace=True)
+
+    df['s'] = (df['ema_s'] - df['ema_s'].shift(1)) >= 0
+    df['f'] = (df['ema_f'] - df['ema_f'].shift(1)) >= 0
+
+    df['buy_ema'] = df['ema_f'] > df['ema_s']
+    df['sell_ema'] = df['ema_f'] <= df['ema_s']
+
+    df['buy_change'] = (df['buy_ema'] != df['buy_ema'].shift(1)) & df['buy_ema']
+    df['sell_change'] = (df['sell_ema'] != df['sell_ema'].shift(1)) & df['sell_ema']
+
+    df["RSI"] = ta.rsi(high=df.high, low=df.low, close=df.close, length=period)
+    df['RSIs'] = (df['RSI'] - df['RSI'].shift(1)) >= 0
+    df['RSI_ups'] = df.groupby(
+        (df['RSIs'] != df['RSIs'].shift(1)).cumsum()).cumcount() + 1
+    df['adx'] = ta.adx(high=df.high, low=df.low, close=df.close, length=period)['ADX_%s' % period]
+    df['adx_s'] = (df['adx'] - df['adx'].shift(1)) >= 0
+    df['adx_ups'] = df.groupby(
+        (df['adx_s'] != df['adx_s'].shift(1)).cumsum()).cumcount() + 1
+    df['ATR'] = df.ta.atr()
+
+    df['close_variation'] = df['close'] - df['close'].shift(1)
+    #
+    # df = ema(df, ma_f, ma_s)
+    # df = rsi(df, period)
     df = momentum(df)
 
-    df.dropna(inplace=True)
-
-    df['trend'] = df['momentums'] & df['RSIs']
+    df['trend'] = df['momentum_s'] & df['RSIs']
 
     return df
 
@@ -214,11 +237,11 @@ def momentum(df):
                                                                     np.polyfit(fit_y, x, 1)[0] * (length_KC - 1) +
                                                                     np.polyfit(fit_y, x, 1)[1], raw=True)
 
-    df['momentums'] = (df['momentum'] - df['momentum'].shift(1)) >= 0
+    df['momentum_s'] = (df['momentum'] - df['momentum'].shift(1)) >= 0
     df['momentum_ups'] = df.groupby(
-        (df['momentums'] != df['momentums'].shift(1)).cumsum()).cumcount() + 1
+        (df['momentum_s'] != df['momentum_s'].shift(1)).cumsum()).cumcount() + 1
 
-    df['mom_t'] = df['momentum'] >= 0
+    df['momentum_t'] = df['momentum'] >= 0
 
     convert_columns_to_float(df, ['momentum'])
     return df
@@ -323,6 +346,7 @@ def download_test_data(symbol, items, indicators, period):
             # Analyse
             options['data'] = analysis(df=data, ma_f=options['sma_f'],
                                        ma_s=options['sma_s'], period=period)
+
             save_extracted_data(symbol=symbol, df=options['data'], form='sma-%s' % options['days_t'],
                                 size=time)
             save_clean_result(symbol, time, options['days_t'], indicators)

@@ -42,10 +42,10 @@ strategy_selector = {
         'execute': rc_5,
         'evaluate': rc_5_evaluate,
         'available_sizes': ['1m', '3m', '5m'],
-        'reload_sizes': ['15m', '30m', '1h', '4h', '1d', '1w'],
+        'reload_sizes': ['5m', '15m', '30m', '1h'],
         'period': {
-            'BTC': 72,
-            'ETH': 72
+            'BTC': 14,
+            'ETH': 14
         }
     }
 }
