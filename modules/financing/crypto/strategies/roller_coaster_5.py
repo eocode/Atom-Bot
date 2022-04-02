@@ -5,7 +5,6 @@ def rc_5(crypto):
     # Long
     if (
             trades[crypto]['micro']['1m']['trade']['mean_f'] and
-            trades[crypto]['micro']['1m']['trade']['RSI'] and
             trades[crypto]['micro']['5m']['trade']['RSI'] and
             trades[crypto]['short']['15m']['trade']['RSI'] and
             trades[crypto]['short']['30m']['trade']['RSI'] and
@@ -14,7 +13,6 @@ def rc_5(crypto):
     # Short
     if (
             not trades[crypto]['micro']['1m']['trade']['mean_f'] and
-            not trades[crypto]['micro']['1m']['trade']['RSI'] and
             not trades[crypto]['micro']['5m']['trade']['RSI'] and
             not trades[crypto]['short']['15m']['trade']['RSI'] and
             not trades[crypto]['short']['30m']['trade']['RSI'] and
@@ -29,7 +27,6 @@ def rc_5_evaluate(trade, crypto):
     # Long
     if trade['operative'] == 'long':
         if (not trades[crypto]['micro']['1m']['trade']['mean_f'] and
-                not trades[crypto]['micro']['1m']['trade']['RSI'] and
                 not trades[crypto]['micro']['5m']['trade']['RSI'] and
                 not trades[crypto]['short']['15m']['trade']['RSI'] and
                 not trades[crypto]['short']['30m']['trade']['RSI'] and
@@ -39,7 +36,6 @@ def rc_5_evaluate(trade, crypto):
     # Short
     else:
         if (trades[crypto]['micro']['1m']['trade']['mean_f'] and
-                trades[crypto]['micro']['1m']['trade']['RSI'] and
                 trades[crypto]['micro']['5m']['trade']['RSI'] and
                 trades[crypto]['short']['15m']['trade']['RSI'] and
                 trades[crypto]['short']['30m']['trade']['RSI'] and
