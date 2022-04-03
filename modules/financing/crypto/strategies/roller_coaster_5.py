@@ -8,7 +8,8 @@ def rc_5(crypto):
             trades[crypto]['micro']['5m']['trade']['RSI'] and
             trades[crypto]['short']['15m']['trade']['RSI'] and
             trades[crypto]['short']['30m']['trade']['RSI'] and
-            trades[crypto]['medium']['1h']['trade']['RSI']):
+            trades[crypto]['medium']['1h']['trade']['RSI'] and
+            trades[crypto]['medium']['4h']['trade']['RSI']):
         return 'long', True
     # Short
     if (
@@ -16,7 +17,8 @@ def rc_5(crypto):
             not trades[crypto]['micro']['5m']['trade']['RSI'] and
             not trades[crypto]['short']['15m']['trade']['RSI'] and
             not trades[crypto]['short']['30m']['trade']['RSI'] and
-            not trades[crypto]['medium']['1h']['trade']['RSI']):
+            not trades[crypto]['medium']['1h']['trade']['RSI'] and
+            not trades[crypto]['medium']['4h']['trade']['RSI']):
         return 'short', True
     return None, False
 

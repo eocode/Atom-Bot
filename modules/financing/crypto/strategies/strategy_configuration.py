@@ -41,8 +41,8 @@ strategy_selector = {
         'update_size': 1,
         'execute': rc_5,
         'evaluate': rc_5_evaluate,
-        'available_sizes': ['1m', '5m', '15m', '30', '1h'],
-        'reload_sizes': ['5m', '15m', '30m', '1h'],
+        'available_sizes': ['1m', '5m', '15m', '30', '1h', '4h'],
+        'reload_sizes': ['5m', '15m', '30m', '1h', '4h'],
         'period': {
             'BTC': 14,
             'ETH': 14
