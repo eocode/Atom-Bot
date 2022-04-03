@@ -56,7 +56,9 @@ class CryptoBot:
             'risk': 0,
             'action': '',
             'max': 0,
-            'min': 0
+            'min': 0,
+            'long': 0,
+            'short': 0
         }
 
         self.effectivity = {
@@ -251,11 +253,8 @@ class CryptoBot:
                 message += "Minimo: %s con %s\n\n" % (
                     round(self.trade['min']),
                     trade_variation(trade=self.trade, current=round(self.trade['min'])))
-                message += "%s de %s hrs con %s periodos" % (
-                    ('Long' if self.trades[self.strategy['temp']][self.strategy['size']]['trade'][
-                        'Momentum'] else 'Short'),
-                    ((self.trades[self.strategy['temp']][self.strategy['size']]['trade']['Momentums']) * 30) / 60,
-                    self.trades[self.strategy['temp']][self.strategy['size']]['trade']['Momentums'])
+                message += "Longs %s - Shorts %s - %s Tendencia" % (
+                    self.trade['long'], self.trade['short'], trades[self.crypto]['medium']['4h']['trade']['RSI'])
             else:
                 message = "No hay ninguna operativa para %s actualmente" % self.symbol
         else:

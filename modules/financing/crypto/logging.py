@@ -1,7 +1,7 @@
 from bot.connect.message_connector import logging_message, send_message, send_voice
 from bot.connect.time_connector import convert_utc_to_local
 from modules.financing.crypto.trades import trades
-from modules.financing.crypto.utilities import elapsed_time, profit
+from modules.financing.crypto.utilities import elapsed_time
 import time
 
 
@@ -21,9 +21,7 @@ def logging_changes(size, crypto):
     message += "3m  - RSI %s | " % trades[crypto]['micro']['3m']['trade']['RSI']
     message += "5m  - RSI %s | " % trades[crypto]['micro']['5m']['trade']['RSI']
     message += "15m - RSI %s | \n" % trades[crypto]['short']['15m']['trade']['RSI']
-    message += "30m - RSI %s Momentum %s | " % (
-        trades[crypto]['short']['30m']['trade']['RSI'],
-        trades[crypto]['short']['30m']['trade']['Momentum'])
+    message += "30m - RSI %s" % (trades[crypto]['short']['30m']['trade']['RSI'])
     message += "1h  - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
     message += "4h  - RSI %s\n" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
@@ -66,10 +64,18 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effe
                trade['max']]
         save.append(row)
     if action == 'Cerrar':
-        generate_stats(operative=trade['operative'], result=win, diff=diff, effectivity=effectivity)
+        generate_stats(trade=trade, operative=trade['operative'], result=win, diff=diff, effectivity=effectivity)
 
 
-def generate_stats(operative, result, diff, effectivity):
+def generate_stats(trade, operative, result, diff, effectivity):
+    # Log Operations
+    if operative == 'long':
+        trade['long'] += 1
+        trade['short'] = 0
+    else:
+        trade['short'] += 1
+        trade['long'] = 0
+
     # Earn
     if result == 'Ganado':
         effectivity['earn'][operative]['operations'] += 1
