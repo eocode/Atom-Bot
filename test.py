@@ -13,4 +13,5 @@ df['adx'] = ta.adx(high=df.high, low=df.low, close=df.close, length=14)['ADX_14'
 vp = ta.vp(close=df.close, volume=df.volume, width=24, sort_close=True)
 print(vp)
 vp['mean_close'] = round(vp['mean_close'], 2)
+vp.to_csv('vp.csv')
 df.to_csv('test.csv')
