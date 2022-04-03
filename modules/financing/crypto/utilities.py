@@ -6,40 +6,43 @@ from modules.financing.crypto.trades import trades
 
 
 def check_if_update(size, crypto, strategy):
-    try:
-
-        if size in strategy['reload_sizes']:
-            size = '1m'
-
-        current_time = datetime.datetime.utcnow()
-        period = size[-1]
-        t = int(size[:-1])
-        delta = None
-        full = True
-        if period == 'm':
-            full = True
-            delta = timedelta(minutes=t)
-        if period == 'h':
-            full = True
-            delta = timedelta(hours=t)
-        if period == 'd':
-            full = False
-            delta = timedelta(days=t)
-        if period == 'w':
-            full = False
-            delta = timedelta(weeks=t)
-        lt = str(trades[crypto][get_type_trade(size, trades[crypto])][size]['fingerprint'])
-        if full:
-            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
-        else:
-            last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
-            current_time = datetime.datetime(current_time.year, current_time.month, current_time.day)
-        updatable = current_time - delta
-    except Exception as e:
-        print("Error al revisar actualizaciones")
-        print(e)
+    if size not in strategy['available_sizes']:
         return False
-    return True if updatable >= last_time else False
+    else:
+        try:
+
+            if size in strategy['reload_sizes']:
+                size = '1m'
+
+            current_time = datetime.datetime.utcnow()
+            period = size[-1]
+            t = int(size[:-1])
+            delta = None
+            full = True
+            if period == 'm':
+                full = True
+                delta = timedelta(minutes=t)
+            if period == 'h':
+                full = True
+                delta = timedelta(hours=t)
+            if period == 'd':
+                full = False
+                delta = timedelta(days=t)
+            if period == 'w':
+                full = False
+                delta = timedelta(weeks=t)
+            lt = str(trades[crypto][get_type_trade(size, trades[crypto])][size]['fingerprint'])
+            if full:
+                last_time = datetime.datetime.strptime(lt, '%Y-%m-%d %H:%M:%S')
+            else:
+                last_time = datetime.datetime.strptime(lt, '%Y-%m-%d')
+                current_time = datetime.datetime(current_time.year, current_time.month, current_time.day)
+            updatable = current_time - delta
+            return True if updatable >= last_time else False
+        except Exception as e:
+            print("Error al revisar actualizaciones")
+            print(e)
+            return False
 
 
 def elapsed_time(crypto, trade, current=True):
