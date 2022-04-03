@@ -27,7 +27,8 @@ def logging_changes(size, crypto):
     message += "1h  - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
     message += "4h  - RSI %s\n" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
-    logging_message("-------------------------------------------------------------------> %s actualizado en %s" % (crypto, size))
+    logging_message(
+        "-------------------------------------------------------------------> %s actualizado en %s" % (crypto, size))
 
 
 def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effectivity):
@@ -51,7 +52,7 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effe
         if action == 'Cerrar':
             message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
-        send_messages(trade=trade, chat_ids=chat_ids, message=message, play=False, alert=True, runs=2)
+        send_messages(trade=trade, chat_ids=chat_ids, message=message, crypto=crypto, play=False, alert=True, runs=2)
     else:
         row = [trades[crypto]['micro']['1m']['fingerprint'],
                convert_utc_to_local(trades[crypto]['micro']['1m']['fingerprint'], '1m'), action,
@@ -79,7 +80,7 @@ def generate_stats(operative, result, diff, effectivity):
         effectivity['lose'][operative]['difference'] += diff
 
 
-def send_messages(trade, chat_ids, message, play=False, alert=False, runs=1):
+def send_messages(trade, chat_ids, message, crypto='', play=False, alert=False, runs=1):
     print('ALERT')
     print(message)
     for i in range(runs):
@@ -87,4 +88,7 @@ def send_messages(trade, chat_ids, message, play=False, alert=False, runs=1):
             send_message(cid=cid, text=message, play=play)
             time.sleep(runs)
         if alert:
-            send_voice(trade['action'])
+            if trade['action'] == 'Abrir':
+                send_voice(trade['operative'] + ' ' + crypto)
+            if trade['action'] == 'Cerrar':
+                send_voice(trade['action'])
