@@ -91,4 +91,4 @@ def send_messages(trade, chat_ids, message, crypto='', play=False, alert=False, 
             if trade['action'] == 'Abrir':
                 send_voice(trade['operative'] + ' ' + crypto)
             if trade['action'] == 'Cerrar':
-                send_voice(trade['action'])
+                send_voice(trade['action'] + ' ' + crypto)
