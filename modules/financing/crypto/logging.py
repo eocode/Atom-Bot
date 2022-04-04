@@ -19,7 +19,7 @@ def logging_changes(size, crypto):
     message = "1m   - RSI %s  | " % trades[crypto]['micro']['1m']['trade']['RSI']
     message += "5m  - RSI %s | " % trades[crypto]['micro']['5m']['trade']['RSI']
     message += "15m - RSI %s | \n" % trades[crypto]['short']['15m']['trade']['RSI']
-    message += "30m - RSI %s" % (trades[crypto]['short']['30m']['trade']['RSI'])
+    message += "30m - RSI %s | " % (trades[crypto]['short']['30m']['trade']['RSI'])
     message += "1h  - RSI %s | " % trades[crypto]['medium']['1h']['trade']['RSI']
     message += "4h  - RSI %s\n" % trades[crypto]['medium']['4h']['trade']['RSI']
     logging_message(message)
