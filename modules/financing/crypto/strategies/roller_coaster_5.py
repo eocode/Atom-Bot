@@ -32,8 +32,7 @@ def rc_5_evaluate(trade, crypto):
                 not trades[crypto]['micro']['5m']['trade']['RSI'] and
                 not trades[crypto]['short']['15m']['trade']['RSI'] and
                 not trades[crypto]['short']['30m']['trade']['RSI'] and
-                not trades[crypto]['medium']['1h']['trade']['RSI'] or
-                not trades[crypto]['medium']['4h']['trade']['RSI']):
+                not trades[crypto]['medium']['1h']['trade']['RSI']):
             close = True
 
     # Short
@@ -42,8 +41,7 @@ def rc_5_evaluate(trade, crypto):
                 trades[crypto]['micro']['5m']['trade']['RSI'] and
                 trades[crypto]['short']['15m']['trade']['RSI'] and
                 trades[crypto]['short']['30m']['trade']['RSI'] and
-                trades[crypto]['medium']['1h']['trade']['RSI'] or
-                trades[crypto]['medium']['4h']['trade']['RSI']):
+                trades[crypto]['medium']['1h']['trade']['RSI']):
             close = True
 
     return close
