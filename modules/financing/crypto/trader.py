@@ -182,12 +182,14 @@ class CryptoBot:
                        profit=profit(self.trade, self.crypto), save=self.testing, chat_ids=self.chat_ids,
                        effectivity=self.effectivity)
         else:
-            self.trade['max'] = (self.trades['micro']['1m']['trade']['close'] if (
-                    self.trades['micro']['1m']['trade']['close'] > self.trade['max']) else
-                                 self.trade['max'])
-            self.trade['min'] = (self.trades['micro']['1m']['trade']['close'] if (
-                    self.trades['micro']['1m']['trade']['close'] < self.trade['min']) else
-                                 self.trade['min'])
+            if self.trades['micro']['1m']['trade']['close'] > self.trade['max']:
+                self.trade['max'] = self.trades['micro']['1m']['trade']['close']
+                send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Nuevo máximo")
+
+            if self.trades['micro']['1m']['trade']['close'] < self.trade['min']:
+                self.trade['min'] = self.trades['micro']['1m']['trade']['close']
+                send_messages(trade=self.trade, chat_ids=self.chat_ids, message='Nuevo minimo')
+
             close = self.strategy['evaluate'](trade=self.trade, crypto=self.crypto)
             if close:
                 self.operative = False
