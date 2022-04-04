@@ -100,7 +100,7 @@ class CryptoBot:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             self.process_is_started = True
             while True:
-                try:
+                # try:
                     for size, options in configuration.items():
                         if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
                             data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
@@ -114,8 +114,8 @@ class CryptoBot:
                             self.decide(testing=False)
                         time.sleep(5)
                     self.first_iteration = True
-                except Exception as e:
-                    print('Error: ' + e)
+                # except Exception as e:
+                #     print('Error: %s' % e)
         else:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
@@ -143,8 +143,6 @@ class CryptoBot:
 
             for index, row in main.iterrows():
                 self.update_indicators(last_row=row, size='1m')
-                self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '3m', row['timestamp']),
-                                       size='3m')
                 self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '5m', row['timestamp']),
                                        size='5m')
                 self.update_indicators(last_row=get_last_row_dataframe_by_time(self.trades, '15m', row['timestamp']),
@@ -186,13 +184,13 @@ class CryptoBot:
                 self.trade['max'] = self.trades['micro']['1m']['trade']['close']
                 if not testing:
                     send_messages(trade=self.trade, chat_ids=self.chat_ids,
-                              message="Nuevo máximo %s" % self.trades['micro']['1m']['trade']['close'])
+                                  message="Nuevo máximo %s" % self.trades['micro']['1m']['trade']['close'])
 
             if self.trades['micro']['1m']['trade']['close'] < self.trade['min']:
                 self.trade['min'] = self.trades['micro']['1m']['trade']['close']
                 if not testing:
                     send_messages(trade=self.trade, chat_ids=self.chat_ids,
-                              message='Nuevo minimo %s' % self.trades['micro']['1m']['trade']['close'])
+                                  message='Nuevo minimo %s' % self.trades['micro']['1m']['trade']['close'])
 
             close = self.strategy['evaluate'](trade=self.trade, crypto=self.crypto)
             if close:

@@ -7,7 +7,7 @@ load_dotenv()
 
 
 def convert_utc_to_local(utc_dt, size):
-    if size in ('1m', '3m', '5m', '15m', '30m', '1h', '4h'):
+    if size in ('1m', '5m', '15m', '30m', '1h', '4h'):
         utc_dt = datetime.strptime(utc_dt, '%Y-%m-%d %H:%M:%S')
     else:
         utc_dt = datetime.strptime(utc_dt, '%Y-%m-%d')

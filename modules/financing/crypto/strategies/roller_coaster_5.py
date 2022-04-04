@@ -6,7 +6,7 @@ def rc_5(crypto):
     if (
             trades[crypto]['micro']['1m']['trade']['mean_f'] and
             trades[crypto]['micro']['5m']['trade']['RSI'] and
-            trades[crypto]['short']['15m']['trade']['RSI'] and
+            #trades[crypto]['short']['15m']['trade']['RSI'] and
             trades[crypto]['short']['30m']['trade']['RSI'] and
             trades[crypto]['medium']['1h']['trade']['RSI'] and
             trades[crypto]['medium']['4h']['trade']['RSI']):
@@ -15,7 +15,7 @@ def rc_5(crypto):
     if (
             not trades[crypto]['micro']['1m']['trade']['mean_f'] and
             not trades[crypto]['micro']['5m']['trade']['RSI'] and
-            not trades[crypto]['short']['15m']['trade']['RSI'] and
+            #not trades[crypto]['short']['15m']['trade']['RSI'] and
             not trades[crypto]['short']['30m']['trade']['RSI'] and
             not trades[crypto]['medium']['1h']['trade']['RSI'] and
             not trades[crypto]['medium']['4h']['trade']['RSI']):
