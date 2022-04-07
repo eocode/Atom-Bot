@@ -1,4 +1,6 @@
 # Load DB configuration
+from time import sleep
+
 from bot.connect.message_connector import say_hello
 import sys
 
@@ -28,11 +30,13 @@ if __name__ == "__main__":
     say_hello(say)
 
     try:
-        # Configure initial data
-        init_operatives()
-        # Show user message
-        print("Server started")
-        # Run the bot
-        bot.infinity_polling(timeout=60, long_polling_timeout=10)
+        while True:
+            # Configure initial data
+            init_operatives()
+            # Show user message
+            print("Server started")
+            # Run the bot
+            bot.polling(timeout=123, long_polling_timeout=300, skip_pending=True, allowed_updates=True)
+            sleep(2)
     except Exception as e:
         print("Error:", e)

@@ -54,6 +54,7 @@ class CryptoBot:
             'last_temp': '',
             'last_time': '',
             'risk': 0,
+            'trend': 0,
             'action': '',
             'max': 0,
             'min': 0,
@@ -101,21 +102,22 @@ class CryptoBot:
             self.process_is_started = True
             while True:
                 # try:
-                    for size, options in configuration.items():
-                        if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
-                            data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
-                                                           save=False, sma=options['days_s'])
-                            options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
-                                                       period=self.strategy['period'][self.crypto])
-                            df = options['data'].tail(365)
-                            last_row = df.iloc[-1, :]
-                            self.update_indicators(last_row=last_row, size=size)
-                            logging_changes(size, self.crypto)
-                            self.decide(testing=False)
-                        time.sleep(5)
-                    self.first_iteration = True
-                # except Exception as e:
-                #     print('Error: %s' % e)
+                for size, options in configuration.items():
+                    if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
+                        data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
+                                                       save=False, sma=options['days_s'])
+                        options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
+                                                   period=self.strategy['period'][self.crypto])
+                        df = options['data'].tail(365)
+                        last_row = df.iloc[-1, :]
+                        self.update_indicators(last_row=last_row, size=size)
+                        logging_changes(size, self.crypto)
+                        self.decide(testing=False)
+                    time.sleep(1)
+                time.sleep(2)
+                self.first_iteration = True
+            # except Exception as e:
+            #     print('Error: %s' % e)
         else:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
@@ -170,7 +172,7 @@ class CryptoBot:
 
     def decide(self, testing=False):
         if not self.operative:
-            trade_operative, start = self.strategy['execute'](self.crypto)
+            trade_operative, start = self.strategy['execute'](trade=self.trade, crypto=self.crypto)
             if start:
                 self.operative = True
                 self.save_trade('micro', '1m',
@@ -240,8 +242,8 @@ class CryptoBot:
         if self.process_is_started:
             if self.operative:
                 message = "%s\n" % self.symbol
-                message += "%s - %s - Riesgo: %s \n" % (
-                    self.trade['last_time'],
+                message += "Trend %s - %s - Riesgo: %s \n" % (
+                    self.trade['trend'],
                     ' 🟢 ' if self.trade['operative'] == 'long' else ' 🔴 ',
                     self.trade['risk'])
                 message += "Inicial: %s - Actual: %s \n" % (

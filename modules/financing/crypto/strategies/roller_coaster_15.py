@@ -1,7 +1,7 @@
 from modules.financing.crypto.trades import trades
 
 
-def rc_15(crypto):
+def rc_15(trade, crypto):
     # Long
     if ((
             trades[crypto]['micro']['1m']['trade']['RSI'] and

@@ -1,3 +1,4 @@
+import requests
 from gtts import gTTS
 import hashlib
 from platform import system
@@ -53,6 +54,13 @@ def bot_message(close_markup, cid, text):
             cid,
             text
         )
+
+
+def send_messsage_by_rest(cid, text):
+    message = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s" % (os.environ["telegram_token_bot"], cid, text)
+    res = requests.get(message)
+    print(res.text)
+    print(res.status_code)
 
 
 def send_message(cid, text, play=True, close_markup=False):
