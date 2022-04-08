@@ -22,8 +22,6 @@ def get_chat_info(m):
     return usr
 
 
-@limit(1)
-@async_fn
 def send_voice(text):
     file = hashlib.md5(text.encode()).hexdigest() + str(random.randint(1, 100000)) + ".wav"
     tts = gTTS(text, lang="es", tld="com.mx")
@@ -36,8 +34,6 @@ def send_voice(text):
     os.remove(file)
 
 
-@limit(1)
-@async_fn
 def logging_message(text):
     print(text)
 
