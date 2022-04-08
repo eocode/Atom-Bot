@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 .idea/
 
-test.csv
+labs/test.csv
 result.csv
 processing.csv
 
