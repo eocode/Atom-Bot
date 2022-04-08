@@ -2,7 +2,8 @@ import sys
 import time
 
 import pandas as pd
-from bot.connect.message_connector import send_message
+
+from bot.connect.message_connector import send_messsage_by_rest
 from bot.connect.thread_connector import limit, async_fn
 from modules.core.data.bot_system import system
 from modules.financing.crypto.configuration import configuration
@@ -317,7 +318,7 @@ class CryptoBot:
                     # Send results
                     photo = open(get_file_name(self.symbol, size, 'sma-%s' % options['days'], 'png'), 'rb')
                     if bot is not None:
-                        send_message(cid=cid, text=size, play=False)
+                        send_messsage_by_rest(cid=cid, text=size)
                         bot.send_photo(cid, photo)
             except Exception as e:
                 print('Error PLOT: ', e)

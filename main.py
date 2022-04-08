@@ -32,7 +32,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Configure initial data
-            init_operatives()
+            # init_operatives()
             # Show user message
             print("Server started")
             # Run the bot

@@ -1,4 +1,4 @@
-from bot.connect.message_connector import logging_message, send_message, send_voice
+from bot.connect.message_connector import logging_message, send_voice, send_messsage_by_rest
 from bot.connect.time_connector import convert_utc_to_local
 from modules.financing.crypto.trades import trades
 from modules.financing.crypto.utilities import elapsed_time
@@ -48,7 +48,7 @@ def notify(testing, message, action, trade, crypto, profit, save, chat_ids, effe
         if action == 'Cerrar':
             message = "Cierra %s en %s\n" % (crypto, trades[crypto]['micro']['1m']['trade']['close'])
             message += "Resultado: %s con %s" % (win, profit)
-        send_messages(trade=trade, chat_ids=chat_ids, message=message, crypto=crypto, play=False, alert=True, runs=2)
+        send_messages(trade=trade, chat_ids=chat_ids, message=message, crypto=crypto, alert=True, runs=2)
     else:
         row = [trades[crypto]['micro']['1m']['fingerprint'],
                convert_utc_to_local(trades[crypto]['micro']['1m']['fingerprint'], '1m'), action,
@@ -84,12 +84,12 @@ def generate_stats(trade, operative, result, diff, effectivity):
         effectivity['lose'][operative]['difference'] += diff
 
 
-def send_messages(trade, chat_ids, message, crypto='', play=False, alert=False, runs=1):
+def send_messages(trade, chat_ids, message, crypto='', alert=False, runs=1):
     print('ALERT')
     print(message)
     for i in range(runs):
         for cid in chat_ids:
-            send_message(cid=cid, text=message, play=play)
+            send_messsage_by_rest(cid=cid, text=message)
             time.sleep(runs)
         if alert:
             if trade['action'] == 'Abrir':

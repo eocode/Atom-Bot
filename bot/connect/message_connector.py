@@ -22,6 +22,8 @@ def get_chat_info(m):
     return usr
 
 
+@limit(10)
+@async_fn
 def send_voice(text):
     file = hashlib.md5(text.encode()).hexdigest() + str(random.randint(1, 100000)) + ".wav"
     tts = gTTS(text, lang="es", tld="com.mx")
@@ -52,11 +54,17 @@ def bot_message(close_markup, cid, text):
         )
 
 
-def send_messsage_by_rest(cid, text):
-    message = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s" % (os.environ["telegram_token_bot"], cid, text)
+def send_rest(cid, text):
+    message = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s" % (
+        os.environ["telegram_token_bot"], cid, text)
     res = requests.get(message)
-    print(res.text)
-    print(res.status_code)
+    return False if res.status_code == 200 else True
+
+
+def send_messsage_by_rest(cid, text):
+    result = True
+    while result:
+        result = send_rest(cid, text)
 
 
 def send_message(cid, text, play=True, close_markup=False):
