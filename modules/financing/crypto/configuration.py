@@ -1,7 +1,7 @@
 configuration = {
     "1w": {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 10,
         'days': 1095,
         'days_s': 2000,
         'days_t': 1095,
@@ -9,7 +9,7 @@ configuration = {
     },
     '1d': {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 10,
         'days': 270,
         'days_s': 45,
         'days_t': 90,
@@ -17,7 +17,7 @@ configuration = {
     },
     '4h': {
         'sma_s': 55,
-        'sma_f': 14,
+        'sma_f': 10,
         'days': 60,
         'days_s': 15,
         'days_t': 60,
@@ -25,7 +25,7 @@ configuration = {
     },
     '1h': {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 10,
         'days': 30,
         'days_s': 15,
         'days_t': 60,
@@ -33,7 +33,7 @@ configuration = {
     },
     '30m': {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 10,
         'days': 3,
         'days_s': 1,
         'days_t': 30,
@@ -41,23 +41,23 @@ configuration = {
     },
     '15m': {
         'sma_s': 55,
-        'sma_f': 9,
+        'sma_f': 10,
         'days': 3,
         'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
     '5m': {
-        'sma_s': 24,
-        'sma_f': 12,
+        'sma_s': 55,
+        'sma_f': 10,
         'days': 3,
         'days_s': 1,
         'days_t': 30,
         'plot': 90
     },
     '1m': {
-        'sma_s': 24,
-        'sma_f': 12,
+        'sma_s': 55,
+        'sma_f': 10,
         'days': 3,
         'days_s': 1,
         'days_t': 15,

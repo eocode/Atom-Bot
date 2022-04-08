@@ -36,7 +36,7 @@ if __name__ == "__main__":
             # Show user message
             print("Server started")
             # Run the bot
-            bot.polling(timeout=123, long_polling_timeout=300, skip_pending=True, allowed_updates=True)
+            bot.polling(timeout=3000, long_polling_timeout=3000, skip_pending=True, allowed_updates=True)
             sleep(2)
     except Exception as e:
         print("Error:", e)

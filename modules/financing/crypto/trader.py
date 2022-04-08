@@ -101,7 +101,6 @@ class CryptoBot:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             self.process_is_started = True
             while True:
-                # try:
                 for size, options in configuration.items():
                     if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
                         data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
@@ -116,8 +115,6 @@ class CryptoBot:
                     time.sleep(1)
                 time.sleep(2)
                 self.first_iteration = True
-            # except Exception as e:
-            #     print('Error: %s' % e)
         else:
             send_messages(trade=self.trade, chat_ids=self.chat_ids, message="Monitoreando %s " % self.crypto)
             print('Ya se ha iniciado el monitoreo de %s' % self.symbol)
@@ -186,13 +183,15 @@ class CryptoBot:
                 self.trade['max'] = self.trades['micro']['1m']['trade']['close']
                 if not testing:
                     send_messages(trade=self.trade, chat_ids=self.chat_ids,
-                                  message="Nuevo máximo %s" % self.trades['micro']['1m']['trade']['close'])
+                                  message="Nuevo máximo %s con %s" % (
+                                      self.trades['micro']['1m']['trade']['close'], self.trade['risk']))
 
             if self.trades['micro']['1m']['trade']['close'] < self.trade['min']:
                 self.trade['min'] = self.trades['micro']['1m']['trade']['close']
                 if not testing:
                     send_messages(trade=self.trade, chat_ids=self.chat_ids,
-                                  message='Nuevo minimo %s' % self.trades['micro']['1m']['trade']['close'])
+                                  message='Nuevo minimo %s con %s' % (
+                                      self.trades['micro']['1m']['trade']['close'], self.trade['risk']))
 
             close = self.strategy['evaluate'](trade=self.trade, crypto=self.crypto)
             if close:
@@ -230,7 +229,6 @@ class CryptoBot:
         self.trade['last_time'] = size
         self.trade['last_temp'] = temp
         self.trade['value'] = close
-        self.trade['risk'] = 100
         date_time_obj = datetime.datetime.strptime(str(self.trades['micro']['1m']['fingerprint']), '%Y-%m-%d %H:%M:%S')
         self.trade['fingerprint'] = date_time_obj
         self.trade['max'] = close
