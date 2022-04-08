@@ -3,38 +3,27 @@ from modules.financing.crypto.trades import trades
 
 def rc_1(trade, crypto):
     risk = 0
-    result = ''
+
     # Long
     if (
-            trades[crypto]['micro']['1m']['trade']['mean_f'] and
+            trades[crypto]['micro']['1m']['trade']['RSI'] and
             trades[crypto]['micro']['5m']['trade']['RSI'] and
             trades[crypto]['short']['15m']['trade']['RSI'] and
             trades[crypto]['short']['30m']['trade']['RSI'] and
             trades[crypto]['medium']['1h']['trade']['RSI']):
-        result = 'long'
+        set_risk(crypto, trades, trade)
+        return 'long', True
     # Short
     if (
-            not trades[crypto]['micro']['1m']['trade']['mean_f'] and
+            not trades[crypto]['micro']['1m']['trade']['RSI'] and
             not trades[crypto]['micro']['5m']['trade']['RSI'] and
             not trades[crypto]['short']['15m']['trade']['RSI'] and
             not trades[crypto]['short']['30m']['trade']['RSI'] and
             not trades[crypto]['medium']['1h']['trade']['RSI']):
-        result = 'short'
+        set_risk(crypto, trades, trade)
+        return 'short', True
 
-    if result != '':
-        if trades[crypto]['micro']['1m']['trade']['ema']:
-            risk += 10
-        if trades[crypto]['short']['15m']['trade']['ema']:
-            risk += 30
-        if trades[crypto]['short']['15m']['trade']['ema']:
-            risk += 30
-        if trades[crypto]['short']['30m']['trade']['ema']:
-            risk += 30
-
-        trade['risk'] = risk
-        return result, True
-    else:
-        return None, False
+    return None, False
 
 
 def rc_1_evaluate(trade, crypto):
@@ -44,7 +33,7 @@ def rc_1_evaluate(trade, crypto):
 
     # Long
     if trade['operative'] == 'long':
-        if (not trades[crypto]['micro']['1m']['trade']['mean_f'] and
+        if (not trades[crypto]['micro']['1m']['trade']['RSI'] and
                 not trades[crypto]['micro']['5m']['trade']['RSI'] and
                 not trades[crypto]['short']['15m']['trade']['RSI'] and
                 not trades[crypto]['short']['30m']['trade']['RSI']):
@@ -52,21 +41,21 @@ def rc_1_evaluate(trade, crypto):
 
     # Short
     else:
-        if (trades[crypto]['micro']['1m']['trade']['mean_f'] and
+        if (trades[crypto]['micro']['1m']['trade']['RSI'] and
                 trades[crypto]['micro']['5m']['trade']['RSI'] and
                 trades[crypto]['short']['15m']['trade']['RSI'] and
                 trades[crypto]['short']['30m']['trade']['RSI']):
             close = True
 
-    if trades[crypto]['micro']['1m']['trade']['ema']:
-        risk += 10
-    if trades[crypto]['short']['15m']['trade']['ema']:
-        risk += 30
-    if trades[crypto]['short']['15m']['trade']['ema']:
-        risk += 30
-    if trades[crypto]['short']['30m']['trade']['ema']:
-        risk += 30
-
-    trade['risk'] = risk
+    set_risk(crypto, trades, trade)
 
     return close
+
+
+def set_risk(crypto, trades, trade):
+    risk = round(
+        (trades[crypto]['micro']['1m']['trade']['RSI_value'] + trades[crypto]['short']['15m']['trade']['RSI_value'] +
+         trades[crypto]['short']['15m']['trade']['RSI_value'] + trades[crypto]['short']['30m']['trade'][
+             'RSI_value']) / 4, 2)
+
+    trade['risk'] = risk

@@ -14,8 +14,8 @@ for key, value in binance_order_books.items():
 chat_ids = []
 for group in get_groups():
     chat_ids.append(group.id)
-    send_messsage_by_rest(cid=group.id,
-                          text="Actualizando a la versión %s\n" % version)
+    msg = "Actualizando a la versión %s\n" % version
+    send_messsage_by_rest(cid=group.id, text=msg)
 
 for key, value in binance_order_books.items():
     operatives[value['crypto'] + value['pair']].monitor.start(chat_ids)

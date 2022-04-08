@@ -113,6 +113,9 @@ class CryptoBot:
                         self.update_indicators(last_row=last_row, size=size)
                         logging_changes(size, self.crypto)
                         self.decide(testing=False)
+                    if check_if_update(size='10m', crypto=self.crypto, strategy=self.strategy):
+                        self.show_stats()
+                        self.show_operative()
                     time.sleep(1)
                 time.sleep(2)
                 self.first_iteration = True

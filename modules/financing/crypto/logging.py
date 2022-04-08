@@ -6,16 +6,6 @@ import time
 
 
 def logging_changes(size, crypto):
-    if size == '1m':
-        message = "-------------------------------------------------------------------\n" \
-                  "%s actualizado:" % crypto
-        message += "\n1m %s " % convert_utc_to_local(str(trades[crypto]['micro']['1m']['fingerprint']), size)
-        message += "\n5m %s " % convert_utc_to_local(str(trades[crypto]['micro']['5m']['fingerprint']), size)
-        message += "\n15m %s " % convert_utc_to_local(str(trades[crypto]['short']['15m']['fingerprint']), size)
-        message += "\n30m %s " % convert_utc_to_local(str(trades[crypto]['short']['30m']['fingerprint']), size)
-        message += "\n1h %s " % convert_utc_to_local(str(trades[crypto]['medium']['1h']['fingerprint']), size)
-        message += "\n4h %s \n" % convert_utc_to_local(str(trades[crypto]['medium']['4h']['fingerprint']), size)
-        logging_message(message)
     message = "1m   - RSI %s  | " % trades[crypto]['micro']['1m']['trade']['RSI']
     message += "5m  - RSI %s | " % trades[crypto]['micro']['5m']['trade']['RSI']
     message += "15m - RSI %s | \n" % trades[crypto]['short']['15m']['trade']['RSI']

@@ -35,16 +35,14 @@ def rc_0_evaluate(trade, crypto):
     if trade['operative'] == 'long':
         if (not trades[crypto]['micro']['1m']['trade']['RSI'] and
                 not trades[crypto]['micro']['5m']['trade']['RSI'] and
-                not trades[crypto]['short']['15m']['trade']['RSI'] and
-                not trades[crypto]['short']['30m']['trade']['RSI']):
+                not trades[crypto]['short']['15m']['trade']['RSI']):
             close = True
 
     # Short
     else:
         if (trades[crypto]['micro']['1m']['trade']['RSI'] and
                 trades[crypto]['micro']['5m']['trade']['RSI'] and
-                trades[crypto]['short']['15m']['trade']['RSI'] and
-                trades[crypto]['short']['30m']['trade']['RSI']):
+                trades[crypto]['short']['15m']['trade']['RSI']):
             close = True
 
     set_risk(crypto, trades, trade)
