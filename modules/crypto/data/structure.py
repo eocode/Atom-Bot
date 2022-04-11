@@ -78,8 +78,8 @@ class TraderOPS:
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 3,
-                'days_s': 15,
-                'days_t': 15,
+                'days_s': 10,
+                'days_t': 10,
                 'plot': 90
             }
         }

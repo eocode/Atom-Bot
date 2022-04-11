@@ -28,6 +28,34 @@ def logging_changes(temporalities, available_sizes, crypto):
     logging_message(message)
 
 
+def show_stats(effectivity, crypto, trade, chat_ids):
+    total_operations = (
+            (effectivity['earn']['long']['operations'] + effectivity['earn']['short']['operations']) +
+            (effectivity['lose']['short']['operations'] + effectivity['lose']['long']['operations']))
+    total_variation = (
+            (effectivity['earn']['long']['difference'] + effectivity['earn']['short']['difference']) -
+            (effectivity['lose']['short']['difference'] + effectivity['lose']['long']['difference']))
+    earn_operations = (
+            effectivity['earn']['long']['operations'] + effectivity['earn']['short']['operations'])
+    earn_differences = (
+            effectivity['earn']['long']['difference'] + effectivity['earn']['short']['difference'])
+    lose_operations = (
+            effectivity['lose']['long']['operations'] + effectivity['lose']['short']['operations'])
+    lose_differences = (
+            effectivity['lose']['long']['difference'] + effectivity['lose']['short']['difference'])
+    message = "Eficiencia en %s\n\n" % crypto
+    message += "Ganancias:\nTrades %s con %s\n" % (
+        round(earn_operations, 2), round((earn_operations * 100) / total_operations, 2))
+    message += "Variación: %s con %s\n\n" % (
+        round(earn_differences, 2), round((earn_differences * 100) / total_variation, 2))
+    message += "Perdidas:\nTrades %s con %s\n" % (
+        round(lose_operations, 2), round((lose_operations * 100) / total_operations, 2))
+    message += "Variación: %s con %s\n" % (
+        round(lose_differences, 2), round((lose_differences * 100) / total_variation, 2))
+
+    send_messages(trade=trade, chat_ids=chat_ids, message=message)
+
+
 def show_operative(trade, process_is_started, symbol, operative, chat_ids, temporalities):
     if process_is_started:
         if operative:

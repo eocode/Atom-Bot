@@ -7,7 +7,7 @@ from connect.thread_connector import limit, async_fn
 from modules.core.data.bot_system import system
 from modules.crypto.extractor import get_binance_symbol_data, save_extracted_data, \
     get_file_name, get_type_trade, get_last_row_dataframe_by_time
-from modules.crypto.logging import show_operative, logging_changes, notify
+from modules.crypto.logging import show_operative, logging_changes, notify, show_stats
 from modules.crypto.processing import analysis, plot_df, supres, download_test_data, load_test_data, \
     save_result, get_volume_profile, get_volume_analisys
 import datetime
@@ -106,9 +106,14 @@ class CryptoBot:
     @async_fn
     def backtesting(self, chat_ids, download=True):
         self.chat_ids = chat_ids
+
+        print('Obteniendo Datos de %s' % self.crypto)
+
         if download:
             download_test_data(self.symbol, self.configuration.items(), self.indicators,
                                period=self.strategy['period'][self.crypto])
+
+        print('Cargando datos de %s' % self.crypto)
 
         # Get Test Data
         load_test_data(self.configuration.items(), self.temporalities, self.symbol)
@@ -125,6 +130,7 @@ class CryptoBot:
         self.first_iteration = True
 
         for index, row in main.iterrows():
+            print(self.temporalities['micro']['1m']['fingerprint'])
             self.update_indicators(last_row=row, size='1m')
             self.temporalities['micro']['1m']['analysis'] = get_volume_analisys(
                 self.temporalities['micro']['1m']['data_vp'],
@@ -176,7 +182,7 @@ class CryptoBot:
         print('Saved results')
         df.to_csv('backtesting/trades_%s.csv' % self.symbol, index=False)
         save_result(df=df, symbol=self.symbol, crypto=self.crypto)
-        self.show_stats()
+        show_stats(effectivity=self.effectivity, crypto=self.crypto, trade=self.trade, chat_ids=self.chat_ids)
         show_operative(trade=self.trade, process_is_started=self.process_is_started, symbol=self.symbol,
                        operative=self.operative, chat_ids=self.chat_ids, temporalities=self.temporalities)
         self.operative = False
@@ -257,35 +263,6 @@ class CryptoBot:
         self.trade['fingerprint'] = date_time_obj
         self.trade['max'] = close
         self.trade['min'] = close
-
-    @limit(1)
-    @async_fn
-    def show_stats(self):
-        total_operations = (
-                (self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations']) +
-                (self.effectivity['lose']['short']['operations'] + self.effectivity['lose']['long']['operations']))
-        total_variation = (
-                (self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['short']['difference']) -
-                (self.effectivity['lose']['short']['difference'] + self.effectivity['lose']['long']['difference']))
-        earn_operations = (
-                self.effectivity['earn']['long']['operations'] + self.effectivity['earn']['short']['operations'])
-        earn_differences = (
-                self.effectivity['earn']['long']['difference'] + self.effectivity['earn']['short']['difference'])
-        lose_operations = (
-                self.effectivity['lose']['long']['operations'] + self.effectivity['lose']['short']['operations'])
-        lose_differences = (
-                self.effectivity['lose']['long']['difference'] + self.effectivity['lose']['short']['difference'])
-        message = "Eficiencia en %s\n\n" % self.crypto
-        message += "Ganancias:\nTrades %s con %s\n" % (
-            round(earn_operations, 2), round((earn_operations * 100) / total_operations, 2))
-        message += "Variación: %s con %s\n\n" % (
-            round(earn_differences, 2), round((earn_differences * 100) / total_variation, 2))
-        message += "Perdidas:\nTrades %s con %s\n" % (
-            round(lose_operations, 2), round((lose_operations * 100) / total_operations, 2))
-        message += "Variación: %s con %s\n" % (
-            round(lose_differences, 2), round((lose_differences * 100) / total_variation, 2))
-
-        # send_messages(trade=self.trade, chat_ids=self.chat_ids, message=message)
 
     def get_market_graphs(self, bot=None, cid=None):
 

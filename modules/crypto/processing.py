@@ -101,35 +101,52 @@ def get_volume_analisys(vp, ref_value):
     vp['dir'] = vp.dist_high > vp.dist_low
     vp['profit'] = np.where(vp['dir'], ref_value + ((vp.dist_high * 90) / 100), ref_value - (vp.dist_low * 90) / 100)
     vp['profit_value'] = np.where(vp['dir'], vp.dist_high, vp.dist_low)
-    vp['secure_position'] = np.where(vp['dir'], vp.mean_close > ref_value, ref_value > vp.mean_close)
+    vp['min_position'] = np.where(vp['dir'], (vp.mean_close - (vp.mean_close * .2 / 100)),
+                                  (vp.mean_close + (vp.mean_close * .2 / 100)))
+    vp['secure_position'] = np.where(vp['dir'], (vp.min_position >= ref_value) & (ref_value >= vp.low_close),
+                                     (ref_value >= vp.min_position) & (ref_value <= vp.high_close))
 
     operative_range = vp[(vp.low_close <= ref_value) & (vp.high_close >= ref_value)]
-
-    validate = {
-        'value': ref_value,
-        'mean': operative_range.iloc[0]['mean_close'],
-        'trend': operative_range.iloc[0]['dir'],
-        'volume_trend': operative_range.iloc[0]['vp_trend'],
-        'support': round(
-            operative_range.iloc[0]['low_close'] if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
-                'vp_trend'] else operative_range.iloc[0]['high_close'], 2),
-        'resistance': round(operative_range.iloc[0]['high_close'] if operative_range.iloc[0]['dir'] and
-                                                                     operative_range.iloc[0][
-                                                                         'vp_trend'] else operative_range.iloc[0][
-            'low_close'], 2),
-        'secure_buy': operative_range.iloc[0]['secure_position'],
-        'profit': round(operative_range.iloc[0]['profit'], 2),
-        'profit_value': round(operative_range.iloc[0]['profit_value'], 2),
-        'stop_loss': round(
-            (ref_value - (ref_value * .4 / 100)) if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
-                'vp_trend'] else (ref_value + (ref_value * .4 / 100)), 2),
-        'volume': operative_range.iloc[0]['total_trend']
-    }
+    if len(operative_range.index) > 0:
+        validate = {
+            'value': ref_value,
+            'mean': operative_range.iloc[0]['mean_close'],
+            'trend': operative_range.iloc[0]['dir'],
+            'volume_trend': operative_range.iloc[0]['vp_trend'],
+            'support': round(
+                operative_range.iloc[0]['low_close'] if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
+                    'vp_trend'] else operative_range.iloc[0]['high_close'], 2),
+            'resistance': round(operative_range.iloc[0]['high_close'] if operative_range.iloc[0]['dir'] and
+                                                                         operative_range.iloc[0][
+                                                                             'vp_trend'] else operative_range.iloc[0][
+                'low_close'], 2),
+            'secure_buy': operative_range.iloc[0]['secure_position'],
+            'profit': round(operative_range.iloc[0]['profit'], 2),
+            'profit_value': round(operative_range.iloc[0]['profit_value'], 2),
+            'stop_loss': round(
+                (ref_value - (ref_value * .4 / 100)) if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
+                    'vp_trend'] else (ref_value + (ref_value * .4 / 100)), 2),
+            'volume': operative_range.iloc[0]['total_trend']
+        }
+    else:
+        validate = {
+            'value': ref_value,
+            'mean': ref_value,
+            'trend': True,
+            'volume_trend': True,
+            'support': ref_value,
+            'resistance': ref_value,
+            'secure_buy': False,
+            'profit': ref_value,
+            'profit_value': 0,
+            'stop_loss': ref_value,
+            'volume': False
+        }
     return validate
 
 
 def get_volume_profile(df):
-    return ta.vp(close=df.close, volume=df.volume, width=15, sort_close=True)
+    return ta.vp(close=df.close, volume=df.volume, width=24, sort_close=True)
 
 
 def analysis(df, ma_f, ma_s, period):
