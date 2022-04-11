@@ -68,6 +68,7 @@ class CryptoBot:
                         last_row = df.iloc[-1, :]
                         self.update_indicators(last_row=last_row, size=size)
                         length = get_type_trade(size, self.temporalities)
+                        time.sleep(2)
                         vp = get_volume_profile(df)
                         self.temporalities[length][size]['analysis'] = get_volume_analisys(vp,
                                                                                            self.temporalities[length][
@@ -77,7 +78,7 @@ class CryptoBot:
                         # self.evaluate_trend()
                         if self.first_iteration:
                             self.decide(testing=False)
-                        time.sleep(4)
+                        time.sleep(2)
                 logging_changes(temporalities=self.temporalities,
                                 available_sizes=self.strategy['available_sizes'], crypto=self.crypto)
                 self.trade['last_risk'] = self.trade['risk']
@@ -177,7 +178,7 @@ class CryptoBot:
         save_result(df=df, symbol=self.symbol, crypto=self.crypto)
         self.show_stats()
         show_operative(trade=self.trade, process_is_started=self.process_is_started, symbol=self.symbol,
-                       operative=self.operative, chat_ids=self.chat_ids)
+                       operative=self.operative, chat_ids=self.chat_ids, temporalities=self.temporalities)
         self.operative = False
 
     def decide(self, testing=False):
