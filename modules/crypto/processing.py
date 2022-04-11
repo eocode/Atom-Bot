@@ -4,9 +4,10 @@ import matplotlib
 from datetime import datetime
 import pandas_ta as ta
 
-from modules.financing.crypto.extractor import get_file_name, convert_columns_to_float, \
+from modules.crypto.extractor import get_file_name, convert_columns_to_float, \
     get_binance_symbol_data, save_extracted_data, save_clean_result, get_type_trade
 import math
+from ta.volatility import BollingerBands
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -91,6 +92,46 @@ def get_stats(df):
     return max_mins
 
 
+def get_volume_analisys(vp, ref_value):
+    vp['mean_close'] = round(vp['mean_close'], 2)
+    vp['vp_trend'] = vp.pos_volume > vp.neg_volume
+    vp['total_trend'] = (vp.total_volume - vp.total_volume.shift(1)) >= 0
+    vp['dist_high'] = abs(ref_value - vp.high_close)
+    vp['dist_low'] = abs(ref_value - vp.low_close)
+    vp['dir'] = vp.dist_high > vp.dist_low
+    vp['profit'] = np.where(vp['dir'], ref_value + ((vp.dist_high * 90) / 100), ref_value - (vp.dist_low * 90) / 100)
+    vp['profit_value'] = np.where(vp['dir'], vp.dist_high, vp.dist_low)
+    vp['secure_position'] = np.where(vp['dir'], vp.mean_close > ref_value, ref_value > vp.mean_close)
+
+    operative_range = vp[(vp.low_close <= ref_value) & (vp.high_close >= ref_value)]
+
+    validate = {
+        'value': ref_value,
+        'mean': operative_range.iloc[0]['mean_close'],
+        'trend': operative_range.iloc[0]['dir'],
+        'volume_trend': operative_range.iloc[0]['vp_trend'],
+        'support': round(
+            operative_range.iloc[0]['low_close'] if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
+                'vp_trend'] else operative_range.iloc[0]['high_close'], 2),
+        'resistance': round(operative_range.iloc[0]['high_close'] if operative_range.iloc[0]['dir'] and
+                                                                     operative_range.iloc[0][
+                                                                         'vp_trend'] else operative_range.iloc[0][
+            'low_close'], 2),
+        'secure_buy': operative_range.iloc[0]['secure_position'],
+        'profit': round(operative_range.iloc[0]['profit'], 2),
+        'profit_value': round(operative_range.iloc[0]['profit_value'], 2),
+        'stop_loss': round(
+            (ref_value - (ref_value * .4 / 100)) if operative_range.iloc[0]['dir'] and operative_range.iloc[0][
+                'vp_trend'] else (ref_value + (ref_value * .4 / 100)), 2),
+        'volume': operative_range.iloc[0]['total_trend']
+    }
+    return validate
+
+
+def get_volume_profile(df):
+    return ta.vp(close=df.close, volume=df.volume, width=15, sort_close=True)
+
+
 def analysis(df, ma_f, ma_s, period):
     df["ema_f"] = ta.ema(high=df.high, low=df.low, close=df.close, length=ma_f)
     df["ema_s"] = ta.ema(high=df.high, low=df.low, close=df.close, length=ma_s)
@@ -115,6 +156,17 @@ def analysis(df, ma_f, ma_s, period):
     df['adx_ups'] = df.groupby(
         (df['adx_s'] != df['adx_s'].shift(1)).cumsum()).cumcount() + 1
     df['ATR'] = df.ta.atr()
+
+    indicator_bb = BollingerBands(close=df.close, window=10, window_dev=1.8)
+    df['bb_bbm'] = indicator_bb.bollinger_mavg()
+    df['b_m'] = (df['bb_bbm'] - df['bb_bbm'].shift(1)) >= 0
+    df['bb_bbh'] = indicator_bb.bollinger_hband()
+    df['bb_bbl'] = indicator_bb.bollinger_lband()
+    df['bb_bbhi'] = indicator_bb.bollinger_hband_indicator()
+    df['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
+
+    df['pvt'] = ta.pvt(close=df.close, volume=df.volume)
+    df['pvt_t'] = (df['pvt'] - df['pvt'].shift(1)) >= 0
 
     df['close_variation'] = df['close'] - df['close'].shift(1)
     #
@@ -357,7 +409,9 @@ def download_test_data(symbol, items, indicators, period):
 def load_test_data(items, trades, symbol):
     for time, options in items:
         df = pd.read_csv(get_file_name(symbol, time, 'sma-%s' % options['days_t']))
+        vp = get_volume_profile(df)
         trades[get_type_trade(time, trades)][time]['data'] = df
+        trades[get_type_trade(time, trades)][time]['data_vp'] = vp
 
 
 def save_result(df, symbol, crypto):

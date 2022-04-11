@@ -6,7 +6,7 @@ import os
 
 from telebot.types import ReplyKeyboardRemove
 
-from bot.connect.thread_connector import async_fn, limit
+from connect.thread_connector import async_fn, limit
 from bot.constants import version
 from bot.bot import bot
 from modules.core.data.user import get_user_info, load_user

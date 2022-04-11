@@ -3,7 +3,8 @@ from modules.core.model.account import update_market
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 from modules.core.data.user import User, user_data
-from bot.connect.message_connector import send_message
+from connect.message_connector import send_message
+from modules.crypto.data.dictionary import bitso_order_books, binance_order_books
 
 
 @bot.message_handler(commands=["elegir_mercado"])

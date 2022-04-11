@@ -1,5 +1,5 @@
-from bot.connect.binance_connector import BinanceConnector
-from bot.connect.sql_connector import SQLConnector
+from connect.binance_connector import BinanceConnector
+from connect.sql_connector import SQLConnector
 
 system_connectors = {}
 

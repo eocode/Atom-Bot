@@ -1,15 +1,14 @@
 # Load DB configuration
 from time import sleep
 
-from bot.connect.message_connector import say_hello
+from connect.message_connector import say_hello
 import sys
 
 # Load arthur
-from bot.bot import init
+from bot.bot import init, bot
 
 # Load all available commands with modules
 from bot import *
-from bot.connect.resources_connector import init_operatives
 
 if __name__ == "__main__":
     args = sys.argv

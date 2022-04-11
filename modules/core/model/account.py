@@ -4,7 +4,7 @@ from sqlalchemy import Column, String
 from datetime import datetime
 
 from modules.core.data.bot_system import system
-from bot.connect.sql_connector import Base
+from connect.sql_connector import Base
 
 
 class Account(Base):

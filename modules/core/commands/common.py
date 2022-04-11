@@ -1,12 +1,9 @@
 from bot.bot import bot
-from bot.connect.message_connector import send_voice, name, send_message, get_chat_info
-from bot.connect.resources_connector import get_monitor
+from connect.message_connector import send_voice, name, send_message, get_chat_info
 from bot.constants import version
 from modules.core.cognitive.greetings import get_greeting
 from modules.core.model.account import update_settings
 import unidecode
-
-from modules.financing.crypto.data.dictionary import binance_order_books
 
 
 @bot.message_handler(commands=["acerca"])
@@ -91,17 +88,17 @@ def command_help(m):
     help_text += "Como asistente puedo apoyarte a operar en el mercado crypto con algunas alertas para el mercado de futuros, solo pidelo"
     send_message(user.cid, help_text, play=False)
 
-
-@bot.message_handler(commands=["alertas"])
-def command_alerts(m):
-    for key, value in binance_order_books.items():
-        get_monitor(value['crypto'] + value['pair']).show_operative()
-
-
-@bot.message_handler(commands=["resultados"])
-def command_results(m):
-    for key, value in binance_order_books.items():
-        get_monitor(value['crypto'] + value['pair']).show_stats()
+#
+# @bot.message_handler(commands=["alertas"])
+# def command_alerts(m):
+#     for key, value in binance_order_books.items():
+#         get_monitor(value['crypto'] + value['pair']).show_operative()
+#
+#
+# @bot.message_handler(commands=["resultados"])
+# def command_results(m):
+#     for key, value in binance_order_books.items():
+#         get_monitor(value['crypto'] + value['pair']).show_stats()
 
 
 @bot.message_handler(func=lambda m: True)
@@ -120,12 +117,6 @@ def echo_message(m):
         else:
             if text.lower() == "ayuda":
                 command_help(m)
-            else:
-                if text.lower() == "alertas":
-                    command_alerts(m)
-                else:
-                    if text.lower() == "resultados":
-                        command_results(m)
 
 
 # @bot.message_handler(commands=["ver_graficos"])
