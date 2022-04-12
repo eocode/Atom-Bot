@@ -23,7 +23,7 @@ class TraderOPS:
                 'sma_f': 10,
                 'days': 1095,
                 'days_s': 2000,
-                'days_t': 1095,
+                'days_t': 2000,
                 'plot': 90
             },
             '1d': {
@@ -31,55 +31,55 @@ class TraderOPS:
                 'sma_f': 10,
                 'days': 270,
                 'days_s': 45,
-                'days_t': 90,
+                'days_t': 45,
                 'plot': 90
             },
             '4h': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 60,
-                'days_s': 15,
-                'days_t': 60,
+                'days_s': 14,
+                'days_t': 14,
                 'plot': 90
             },
             '1h': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 30,
-                'days_s': 15,
-                'days_t': 60,
+                'days_s': 14,
+                'days_t': 14,
                 'plot': 90
             },
             '30m': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 3,
-                'days_s': 15,
-                'days_t': 30,
+                'days_s': 14,
+                'days_t': 14,
                 'plot': 90
             },
             '15m': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 3,
-                'days_s': 15,
-                'days_t': 30,
+                'days_s': 14,
+                'days_t': 14,
                 'plot': 90
             },
             '5m': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 3,
-                'days_s': 15,
-                'days_t': 30,
+                'days_s': 14,
+                'days_t': 14,
                 'plot': 90
             },
             '1m': {
                 'sma_s': 55,
                 'sma_f': 10,
                 'days': 3,
-                'days_s': 10,
-                'days_t': 10,
+                'days_s': 7,
+                'days_t': 7,
                 'plot': 90
             }
         }
@@ -189,4 +189,7 @@ class TraderOPS:
             }
         }
         self.result_indicators = ['time', 'Local', 'Action', 'Temp', 'Operative', 'Value', 'Profit', 'Result',
-                                  'Risk', 'Time', 'Elapsed', 'MinDif', 'MaxDif', 'Min', 'Max']
+                                  'Risk', 'Support', 'Resistance', 'Stop_Loss', 'profit', 'trend', 'volume_trend',
+                                  'volume',
+                                  'Time', 'Elapsed', 'MinDif', 'MaxDif',
+                                  'Min', 'Max']

@@ -44,6 +44,19 @@ df['macd_a'] = macd['MACD_12_26_9_A_0']
 df.to_csv('test.csv')
 
 vp = get_volume_profile(df)
+ref_value = 3020
+vp['mean_close'] = round(vp['mean_close'], 2)
+vp['vp_trend'] = vp.pos_volume > vp.neg_volume
+vp['total_trend'] = (vp.total_volume - vp.total_volume.shift(1)) >= 0
+vp['dist_high'] = abs(ref_value - vp.high_close)
+vp['dist_low'] = abs(ref_value - vp.low_close)
+vp['dir'] = vp.dist_high > vp.dist_low
+vp['profit'] = np.where(vp['dir'], ref_value + ((vp.dist_high * 90) / 100), ref_value - (vp.dist_low * 90) / 100)
+vp['profit_value'] = np.where(vp['dir'], vp.dist_high, vp.dist_low)
+vp['min_position'] = np.where(vp['dir'], (vp.mean_close - (vp.mean_close * .2 / 100)),
+                              (vp.mean_close + (vp.mean_close * .2 / 100)))
+vp['secure_position'] = np.where(vp['dir'], (vp.min_position >= ref_value) & (ref_value >= vp.low_close),
+                                 (ref_value >= vp.min_position) & (ref_value <= vp.high_close))
 print(vp)
-res = get_volume_analisys(vp, ref_value=3042)
+res = get_volume_analisys(vp, ref_value=3000)
 print(res)

@@ -1,5 +1,4 @@
-def rc_1(trade, temporalities):
-
+def rc_1(trade, temporalities, strategy):
     # Long
     if (
             temporalities['micro']['1m']['trade']['RSI'] and
@@ -20,9 +19,8 @@ def rc_1(trade, temporalities):
     return None, False
 
 
-def rc_1_evaluate(trade, temporalities):
+def rc_1_evaluate(trade, temporalities, strategy):
     close = False
-
 
     # Long
     if trade['operative'] == 'long':

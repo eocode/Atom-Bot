@@ -59,7 +59,6 @@ class CryptoBot:
             while True:
                 for size, options in self.configuration.items():
                     if size in self.strategy['available_sizes']:
-                        # if check_if_update(size=size, crypto=self.crypto, strategy=self.strategy):
                         data = get_binance_symbol_data(symbol=self.symbol, kline_size=size, auto_increment=False,
                                                        save=False, sma=options['days_s'])
                         options['data'] = analysis(df=data, ma_f=options['sma_f'], ma_s=options['sma_s'],
@@ -257,6 +256,9 @@ class CryptoBot:
         self.trade['support'] = self.temporalities['micro']['1m']['analysis']['support']
         self.trade['resistance'] = self.temporalities['micro']['1m']['analysis']['resistance']
         self.trade['profit'] = self.temporalities['micro']['1m']['analysis']['profit']
+        self.trade['trend'] = self.temporalities['micro']['1m']['analysis']['trend']
+        self.trade['volume_trend'] = self.temporalities['micro']['1m']['analysis']['volume_trend']
+        self.trade['volume'] = self.temporalities['micro']['1m']['analysis']['volume']
         self.trade['stop_loss'] = self.temporalities['micro']['1m']['analysis']['stop_loss']
         date_time_obj = datetime.datetime.strptime(str(self.temporalities['micro']['1m']['fingerprint']),
                                                    '%Y-%m-%d %H:%M:%S')
