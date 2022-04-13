@@ -90,6 +90,9 @@ def show_trade(chat_ids, trade, symbol):
     message = "%s en %s\n" % (symbol, ' 🟢 ' if trade['operative'] == 'long' else ' 🔴 ')
     message += "Soporte: %s \nResistencia: %s\n" % (trade['support'], trade['resistance'])
     message += "Profit: %s \nStopLoss: %s\n" % (trade['profit'], trade['stop_loss'])
+    message += "Volumen: %s \nProbabilidad: %s %s\n" % (
+        ' 🟢 ' if trade['volume_trend'] == 'long' else ' 🔴 ', ' 🟢 ' if trade['trend'] == 'long' else ' 🔴 ',
+        ' 🟢 ' if trade['secure_buy'] == 'long' else ' 🔴 ')
     send_messages(trade=trade, chat_ids=chat_ids, message=message)
 
 

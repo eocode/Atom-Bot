@@ -259,6 +259,7 @@ class CryptoBot:
         self.trade['trend'] = self.temporalities['micro']['1m']['analysis']['trend']
         self.trade['volume_trend'] = self.temporalities['micro']['1m']['analysis']['volume_trend']
         self.trade['volume'] = self.temporalities['micro']['1m']['analysis']['volume']
+        self.trade['secure_buy'] = self.temporalities['micro']['1m']['analysis']['secure_buy']
         self.trade['stop_loss'] = self.temporalities['micro']['1m']['analysis']['stop_loss']
         date_time_obj = datetime.datetime.strptime(str(self.temporalities['micro']['1m']['fingerprint']),
                                                    '%Y-%m-%d %H:%M:%S')
