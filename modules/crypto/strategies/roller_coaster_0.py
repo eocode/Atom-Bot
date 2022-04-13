@@ -29,7 +29,8 @@ def rc_0_evaluate(trade, temporalities, strategy):
                 not temporalities['micro']['1m']['trade']['RSI'] and
                 not temporalities['micro']['5m']['trade']['RSI'] and
                 not temporalities['short']['15m']['trade']['RSI'] and
-                not temporalities['short']['30m']['trade']['RSI']
+                not temporalities['short']['30m']['trade']['RSI'] and
+                not temporalities['medium']['1h']['trade']['RSI']
         )):
             close = True
 
@@ -39,7 +40,9 @@ def rc_0_evaluate(trade, temporalities, strategy):
                 temporalities['micro']['1m']['trade']['RSI'] and
                 temporalities['micro']['5m']['trade']['RSI'] and
                 temporalities['short']['15m']['trade']['RSI'] and
-                temporalities['short']['30m']['trade']['RSI']
+                temporalities['short']['30m']['trade']['RSI'] and
+                temporalities['short']['30m']['trade']['RSI'] and
+                temporalities['medium']['1h']['trade']['RSI']
         )):
             close = True
 
