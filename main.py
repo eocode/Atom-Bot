@@ -8,7 +8,6 @@ import sys
 from bot.bot import init, bot
 
 # Load all available commands with modules
-from bot import *
 
 if __name__ == "__main__":
     args = sys.argv

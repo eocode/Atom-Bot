@@ -5,25 +5,30 @@ from modules.crypto.utilities import elapsed_time, profit, trade_variation
 import time
 
 
-def logging_changes(temporalities, available_sizes, crypto):
+def logging_changes(temporalities, strategy, crypto):
     logging_message(
         "-------------------------------------------------------------------> %s actualizado" % crypto)
-    message = ''
-    for size in available_sizes:
+    message = '%s %s RSI:\n' % (
+        temporalities['micro']['1m']['trade']['close'], temporalities['micro']['1m']['fingerprint'])
+    for size in strategy['available_sizes']:
         length = get_type_trade(size, temporalities)
         rsi = temporalities[length][size]['trade']['RSI']
-        t = temporalities[length][size]['analysis']['trend']
-        vt = temporalities[length][size]['analysis']['volume_trend']
-        s = temporalities[length][size]['analysis']['support']
-        r = temporalities[length][size]['analysis']['resistance']
-        b = temporalities[length][size]['analysis']['secure_buy']
-        p = temporalities[length][size]['analysis']['profit']
-        pv = temporalities[length][size]['analysis']['profit_value']
-        v = temporalities[length][size]['analysis']['volume']
-        sl = temporalities[length][size]['analysis']['stop_loss']
-        m = temporalities[length][size]['analysis']['mean']
-        message += "%s - RSI: %s | t: %s | vt: %s | b: %s | v: %s | s: %s | r: %s | p: %s | pv: %s | sl: %s | m: %s \n" % (
-            size.ljust(3), ' 🟢 ' if rsi else ' 🔴 ', ' 🟢 ' if t else ' 🔴 ', ' 🟢 ' if vt else ' 🔴 ',
+        message += "%s %s |" % (
+            '🟢' if rsi else '🔴', size.ljust(3))
+    for size in strategy['value_sizes']:
+        length = get_type_trade(size, temporalities)
+        t = temporalities[length][size]['analysis']['mid']['trend']
+        vt = temporalities[length][size]['analysis']['mid']['volume_trend']
+        s = temporalities[length][size]['analysis']['mid']['support']
+        r = temporalities[length][size]['analysis']['mid']['resistance']
+        b = temporalities[length][size]['analysis']['mid']['secure_buy']
+        p = temporalities[length][size]['analysis']['mid']['profit']
+        pv = temporalities[length][size]['analysis']['mid']['profit_value']
+        v = temporalities[length][size]['analysis']['mid']['volume']
+        sl = temporalities[length][size]['analysis']['mid']['stop_loss']
+        m = temporalities[length][size]['analysis']['mid']['mean']
+        message += "\n%s | t: %s | vt: %s | b: %s | v: %s | s: %s | r: %s | p: %s | pv: %s | sl: %s | m: %s" % (
+            size.ljust(3), ' 🟢 ' if t else ' 🔴 ', ' 🟢 ' if vt else ' 🔴 ',
             ' 🟢 ' if b else ' 🔴 ', ' 🟢 ' if v else ' 🔴 ', s, r, p, pv, sl, m)
     logging_message(message)
 

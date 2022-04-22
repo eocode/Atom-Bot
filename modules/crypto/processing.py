@@ -107,8 +107,20 @@ def get_volume_analisys(vp, ref_value):
                                      (ref_value >= vp.min_position) & (ref_value <= vp.high_close))
 
     operative_range = vp[(vp.low_close <= ref_value) & (vp.high_close >= ref_value)]
+    operative_range_sup = vp[(vp.low_close == operative_range.iloc[0].high_close)]
+    operative_range_inf = vp[(vp.high_close == operative_range.iloc[0].low_close)]
+    validate = {
+        'inf': set_operative_ranges(operative_range_inf, ref_value),
+        'mid': set_operative_ranges(operative_range, ref_value),
+        'sup': set_operative_ranges(operative_range_sup, ref_value)
+    }
+    return validate
+
+
+def set_operative_ranges(operative_range, ref_value):
     if len(operative_range.index) > 0:
         validate = {
+            'available': True,
             'value': ref_value,
             'mean': operative_range.iloc[0]['mean_close'],
             'trend': operative_range.iloc[0]['dir'],
@@ -130,6 +142,7 @@ def get_volume_analisys(vp, ref_value):
         }
     else:
         validate = {
+            'available': False,
             'value': ref_value,
             'mean': ref_value,
             'trend': True,

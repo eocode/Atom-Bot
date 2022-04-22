@@ -79,7 +79,7 @@ class CryptoBot:
                             self.decide(testing=False)
                         time.sleep(2)
                 logging_changes(temporalities=self.temporalities,
-                                available_sizes=self.strategy['available_sizes'], crypto=self.crypto)
+                                strategy=self.strategy, crypto=self.crypto)
                 self.trade['last_risk'] = self.trade['risk']
                 self.trade['last_trend'] = self.trade['trend']
                 time.sleep(2)
@@ -194,8 +194,7 @@ class CryptoBot:
                 self.operative = True
                 self.trade['trend_negative'] = 0
                 self.trade['trend_positive'] = 0
-                self.save_trade('micro', '1m',
-                                self.temporalities['micro']['1m']['trade']['close'],
+                self.save_trade(self.temporalities['micro']['1m']['trade']['close'],
                                 trade_operative)
                 notify(testing=testing, message='Iniciado', action='Abrir', trade=self.trade, crypto=self.crypto,
                        profit=profit(trade=self.trade, temporalities=self.temporalities), save=self.testing,
@@ -247,20 +246,25 @@ class CryptoBot:
         self.temporalities[length][size]['trade']['time'] = last_row['momentum_t']
         self.temporalities[length][size]['trade']['ema'] = last_row['buy_ema']
 
-    def save_trade(self, temp, size, close, operative):
-        self.trade['temp'] = temp
+    def save_trade(self, close, operative):
         self.trade['operative'] = operative
-        self.trade['last_time'] = size
-        self.trade['last_temp'] = temp
         self.trade['value'] = close
-        self.trade['support'] = self.temporalities['micro']['1m']['analysis']['support']
-        self.trade['resistance'] = self.temporalities['micro']['1m']['analysis']['resistance']
-        self.trade['profit'] = self.temporalities['micro']['1m']['analysis']['profit']
-        self.trade['trend'] = self.temporalities['micro']['1m']['analysis']['trend']
-        self.trade['volume_trend'] = self.temporalities['micro']['1m']['analysis']['volume_trend']
-        self.trade['volume'] = self.temporalities['micro']['1m']['analysis']['volume']
-        self.trade['secure_buy'] = self.temporalities['micro']['1m']['analysis']['secure_buy']
-        self.trade['stop_loss'] = self.temporalities['micro']['1m']['analysis']['stop_loss']
+        self.trade['support'] = self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid'][
+            'support']
+        self.trade['resistance'] = \
+            self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid']['resistance']
+        self.trade['profit'] = self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid'][
+            'profit']
+        self.trade['trend'] = self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid'][
+            'trend']
+        self.trade['volume_trend'] = \
+            self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid']['volume_trend']
+        self.trade['volume'] = self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid'][
+            'volume']
+        self.trade['secure_buy'] = \
+            self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid']['secure_buy']
+        self.trade['stop_loss'] = \
+            self.temporalities[self.trade['last_temp']][self.trade['last_size']]['analysis']['mid']['stop_loss']
         date_time_obj = datetime.datetime.strptime(str(self.temporalities['micro']['1m']['fingerprint']),
                                                    '%Y-%m-%d %H:%M:%S')
         self.trade['fingerprint'] = date_time_obj
