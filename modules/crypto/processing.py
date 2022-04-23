@@ -177,15 +177,15 @@ def analysis(df, ma_f, ma_s, period):
     df['buy_change'] = (df['buy_ema'] != df['buy_ema'].shift(1)) & df['buy_ema']
     df['sell_change'] = (df['sell_ema'] != df['sell_ema'].shift(1)) & df['sell_ema']
 
-    df["RSI"] = ta.rsi(high=df.high, low=df.low, close=df.close, length=period)
-    df['RSIs'] = (df['RSI'] - df['RSI'].shift(1)) >= 0
-    df['RSI_ups'] = df.groupby(
-        (df['RSIs'] != df['RSIs'].shift(1)).cumsum()).cumcount() + 1
-    df['adx'] = ta.adx(high=df.high, low=df.low, close=df.close, length=period)['ADX_%s' % period]
-    df['adx_s'] = (df['adx'] - df['adx'].shift(1)) >= 0
-    df['adx_ups'] = df.groupby(
-        (df['adx_s'] != df['adx_s'].shift(1)).cumsum()).cumcount() + 1
-    df['ATR'] = df.ta.atr()
+    # df["RSI"] = ta.rsi(high=df.high, low=df.low, close=df.close, length=period)
+    # df['RSIs'] = (df['RSI'] - df['RSI'].shift(1)) >= 0
+    # df['RSI_ups'] = df.groupby(
+    #     (df['RSIs'] != df['RSIs'].shift(1)).cumsum()).cumcount() + 1
+    # df['adx'] = ta.adx(high=df.high, low=df.low, close=df.close, length=period)['ADX_%s' % period]
+    # df['adx_s'] = (df['adx'] - df['adx'].shift(1)) >= 0
+    # df['adx_ups'] = df.groupby(
+    #     (df['adx_s'] != df['adx_s'].shift(1)).cumsum()).cumcount() + 1
+    # df['ATR'] = df.ta.atr()
 
     indicator_bb = BollingerBands(close=df.close, window=10, window_dev=1.8)
     df['bb_bbm'] = indicator_bb.bollinger_mavg()
@@ -201,7 +201,7 @@ def analysis(df, ma_f, ma_s, period):
     df['close_variation'] = df['close'] - df['close'].shift(1)
     #
     # df = ema(df, ma_f, ma_s)
-    # df = rsi(df, period)
+    df = rsi(df, period)
     df = momentum(df)
 
     df['trend'] = df['momentum_s'] & df['RSIs']

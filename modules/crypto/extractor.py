@@ -162,18 +162,30 @@ def get_klines(symbol, kline_size, data_df):
                                                              end_str=newest_point.strftime("%d %b %Y %H:%M:%S"))
 
 
+def get_binance_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
+    try:
+        if old_date is None or new_date is None:
+            old_date = (pd.to_datetime(data.iloc[-1:].timestamp.item()) + timedelta(minutes=1)).strftime(
+                "%d %b %Y %H:%M:%S")
+            new_date = pd.to_datetime(system('algorithms').client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
+                                      unit='ms').strftime("%d %b %Y %H:%M:%S")
+
+        # print(old_date, new_date)
+
+        return system('algorithms').client.get_historical_klines(symbol=symbol, interval=kline_size,
+                                                                 start_str=old_date,
+                                                                 end_str=new_date)
+    except:
+        print('Error de extracción, reintentando')
+        return None
+
+
 def get_klines_times(symbol, kline_size, data, old_date=None, new_date=None):
-    if old_date is None or new_date is None:
-        old_date = (pd.to_datetime(data.iloc[-1:].timestamp.item()) + timedelta(minutes=1)).strftime(
-            "%d %b %Y %H:%M:%S")
-        new_date = pd.to_datetime(system('algorithms').client.get_klines(symbol=symbol, interval=kline_size)[-1][0],
-                                  unit='ms').strftime("%d %b %Y %H:%M:%S")
-
-    # print(old_date, new_date)
-
-    return system('algorithms').client.get_historical_klines(symbol=symbol, interval=kline_size,
-                                                             start_str=old_date,
-                                                             end_str=new_date)
+    ok = True
+    while ok:
+        res = get_binance_klines_times(symbol, kline_size, data)
+        if res is not None:
+            return res
 
 
 def get_binance_symbol_data(symbol, kline_size, save=False, sma=None, auto_increment=True):

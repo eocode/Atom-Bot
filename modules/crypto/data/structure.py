@@ -143,7 +143,7 @@ class TraderOPS:
         }
         self.indicators = [
             'timestamp', 'high', 'low', 'open', 'close', 'volume', 'ema_f', 'ema_s', 'f', 's', 'buy_ema', 'sell_ema',
-            'buy_change', 'sell_change', 'RSI', 'RSIs', 'RSI_ups', 'adx', 'adx_s', 'adx_ups', 'ATR', 'momentum',
+            'buy_change', 'sell_change', 'RSI', 'RSIs', 'RSI_ups', 'momentum',
             'momentum_s',
             'momentum_ups', 'momentum_t', 'bb_bbm', 'b_m', 'bb_bbh', 'bb_bbl', 'bb_bbhi', 'bb_bbli', 'pvt', 'pvt_t'
         ]
